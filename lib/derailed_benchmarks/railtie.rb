@@ -1,5 +1,7 @@
-class DerailedBenchmarks < Rails::Railtie
-  rake_tasks do
-    load "tasks/perf.rake"
+module DerailedBenchmarks
+  class Railtie < Rails::Railtie
+    rake_tasks do
+      load "derailed_benchmarks/tasks"
+    end
   end
 end

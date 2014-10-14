@@ -1,3 +1,3 @@
-class DerailedBenchmarks
+module DerailedBenchmarks
   VERSION = "0.0.0"
 end

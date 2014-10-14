@@ -20,6 +20,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "memory_profiler", "~> 0"
   gem.add_dependency "get_process_mem", "~> 0"
-  gem.add_dependency "benchmark-ips",   "~> 0"
+  gem.add_dependency "benchmark-ips",   "~> 2"
+  gem.add_dependency "stackprof",       "~> 0"
 end
 
