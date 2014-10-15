@@ -7,7 +7,7 @@ namespace :perf do
 
     require 'get_process_mem'
 
-    TEST_CNT         = (ENV['TEST_CNT'] || ENV['CNT'] || 1_000).to_i
+    TEST_COUNT         = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
 
     ENV["RAILS_ENV"] ||= "production"
     ENV['RACK_ENV']  = ENV["RAILS_ENV"]
@@ -38,20 +38,21 @@ namespace :perf do
 
     puts "Booting: #{Rails.env}"
 
-    if ENV["USE_SERVER"]
+    PATH_TO_HIT = ENV["PATH_TO_HIT"] || "/"
+    if server = ENV["USE_SERVER"]
       @port = (3000..3900).to_a.sample
       thread = Thread.new do
-        Rack::Server.start(app: APP, :Port => @port, environment: "none", server: "webrick")
+        Rack::Server.start(app: APP, :Port => @port, environment: "none", server: server)
       end
       sleep 1
 
       def call_app
-        `curl http://localhost:#{@port} -s`
+        `curl http://localhost:#{@port}#{PATH_TO_HIT} -s`
         raise "Bad request: #{response.body}" unless $?.success?
       end
     else
       def call_app
-        response = @app.get("/")
+        response = @app.get(PATH_TO_HIT)
         raise "Bad request: #{response.body}" unless response.status == 200
         response
       end
@@ -59,24 +60,17 @@ namespace :perf do
   end
 
 
-  desc "hits the url TEST_CNT times"
+  desc "hits the url TEST_COUNT times"
   task :test => [:setup] do
     Benchmark.bm { |x|
-      x.report("#{TEST_CNT} requests") {
-        TEST_CNT.times {
+      x.report("#{TEST_COUNT} requests") {
+        TEST_COUNT.times {
           call_app
         }
       }
     }
   end
 
-  # desc "miniprofiler" do
-  #  Rack::MiniProfiler.counter("slug") do
-  #    Slug.for(title).presence || "topic"
-  #  end
-  # end
-
-  desc "sampling stack time"
   task :stackprof => [:setup] do
     # [:wall, :cpu, :object]
     require 'stackprof'
@@ -89,13 +83,53 @@ namespace :perf do
     puts `#{cmd}`
   end
 
-  task :kernel_requirepatch do
+  task :kernel_require_patch do
     require 'get_process_mem'
+
+    class RequireTree
+      attr_reader :name
+      attr_accessor :cost
+
+      def initialize(name)
+        @name = name
+        @children = {}
+      end
+
+      def <<(tree)
+        @children[tree.name] = tree
+      end
+
+      def [](name)
+        @children[name]
+      end
+
+      def children
+        @children.values
+      end
+
+      def cost
+        @cost || 0
+      end
+
+      def sorted_children
+        children.sort { |c1, c2| c2.cost <=> c1.cost }
+      end
+
+      def print_sorted_children(level = 0)
+        return if cost < ENV['CUT_OFF'].to_f
+        puts "  " * level + "#{name}: #{cost.round(4)} mb"
+        level += 1
+        sorted_children.each do |child|
+          child.print_sorted_children(level)
+        end
+      end
+    end
+
+
 
     module Kernel
       alias :original_require :require
-      REQUIRE_HASH  = Hash.new { 0 }
-      FILE_HASH     = Hash.new { 0 }
+      REQUIRE_STACK = []
 
       def require file
         Kernel.require(file)
@@ -105,34 +139,45 @@ namespace :perf do
         alias :original_require :require
       end
     end
+
+    TOP_REQUIRE = RequireTree.new("TOP")
+    REQUIRE_STACK.push(TOP_REQUIRE)
+
     Kernel.define_singleton_method(:require) do |file|
-      name = file.split("/").first
-      mem = GetProcessMem.new
-      before = mem.mb
-      original_require file
-      after = mem.mb
-      REQUIRE_HASH[name] += after - before
-      FILE_HASH[file] = after - before
+      mem    = GetProcessMem.new
+      node   = RequireTree.new(file)
+
+      parent = REQUIRE_STACK.last
+      parent << node
+      REQUIRE_STACK.push(node)
+      begin
+        before = mem.mb
+        original_require file
+      ensure
+        REQUIRE_STACK.pop # node
+        after = mem.mb
+      end
+      node.cost = after - before
     end
   end
 
   desc "show memory usage caused by invoking require per gem"
-  task :require_bench => [:kernel_requirepatch , :setup] do
-
-    TEST_CNT.times {
-      call_app
-    }
-
-    puts "require file [individual]: cost (mb)"
-    puts "============"
-    FILE_HASH.sort {|(k,v), (k2,v2)| v2 <=> v }.each do |k,v|
-      puts "#{k}: #{v.round(2)}"
-    end
+  task :require_bench => [:kernel_require_patch , :setup] do
+    ENV['CUT_OFF'] ||= "0.3"
+    puts "## Impact of `require <file>` on RAM"
     puts
-    puts "file: cost (mb)"
-    puts "=========="
-    REQUIRE_HASH.sort {|(k,v), (k2,v2)| v2 <=> v }.each do |k,v|
-      puts "#{k}: #{v.round(2)}"
+    puts "Showing all `require <file>` calls that consume #{ENV['CUT_OFF']} mb or more of RSS"
+    puts "Configure with `CUT_OFF=0` for all entries or `CUT_OFF=5` for few entries"
+
+    puts "Note: Files only count against RAM on their first load."
+    puts "      If multiple libraries require the same file, then"
+    puts "       the 'cost' only shows up under the first library"
+    puts
+
+    call_app
+
+    TOP_REQUIRE.sorted_children.each do |child|
+      child.print_sorted_children
     end
   end
 
@@ -145,7 +190,7 @@ namespace :perf do
       unless ENV["SKIP_FILE_WRITE"]
         ruby = `ruby -v`
         FileUtils.mkdir_p("tmp")
-        file = File.open("tmp/#{Time.now.iso8601}-#{ruby}-memory-#{TEST_CNT}-times.txt", 'w')
+        file = File.open("tmp/#{Time.now.iso8601}-#{ruby}-memory-#{TEST_COUNT}-times.txt", 'w')
         file.sync = true
       end
 
@@ -158,7 +203,7 @@ namespace :perf do
         end
       end
 
-      TEST_CNT.times {
+      TEST_COUNT.times {
         call_app
       }
     ensure
@@ -168,17 +213,17 @@ namespace :perf do
     end
   end
 
-  desc "ips"
+  desc "iterations per second"
   task :ips => [:setup] do
     Benchmark.ips do |x|
       x.report("ips") { call_app }
     end
   end
 
-  desc "outputs GC::Profiler.report data while app is called TEST_CNT times"
+  desc "outputs GC::Profiler.report data while app is called TEST_COUNT times"
   task :gc => [:setup] do
     GC::Profiler.enable
-    TEST_CNT.times { call_app }
+    TEST_COUNT.times { call_app }
     GC::Profiler.report
     GC::Profiler.disable
   end
@@ -193,20 +238,7 @@ namespace :perf do
     GC.start
     GC.disable
 
-    # ObjectSpace.each_object do |obj|
-    #   before[obj.class] += 1
-    # end
-
-    # module Kernel
-    #   alias :original_caller_locations :caller_locations
-    #   def caller_locations(*args)
-    #     puts "========="
-    #     puts caller
-    #     original_caller_locations(*args)
-    #   end
-    # end
-
-    TEST_CNT.times { call_app }
+    TEST_COUNT.times { call_app }
 
     rvalue_size = GC::INTERNAL_CONSTANTS[:RVALUE_SIZE]
     ObjectSpace.each_object do |obj|
@@ -225,17 +257,17 @@ namespace :perf do
     pp after_size.sort {|(k,v), (k2, v2)| v2 <=> v }
   end
 
-  desc "outputs allocated object diff after app is called TEST_CNT times"
+  desc "outputs allocated object diff after app is called TEST_COUNT times"
   task :allocated_objects => [:setup] do
     call_app
     GC.start
     GC.disable
     start = ObjectSpace.count_objects
-    TEST_CNT.times { call_app }
+    TEST_COUNT.times { call_app }
     finish = ObjectSpace.count_objects
     GC.enable
     finish.each do |k,v|
-      puts k => (v - start[k]) / TEST_CNT.to_f
+      puts k => (v - start[k]) / TEST_COUNT.to_f
     end
   end
 
@@ -246,7 +278,7 @@ namespace :perf do
     call_app
     GC.start
 
-    num = Integer(ENV["TEST_CNT"] || 1)
+    num = Integer(ENV["TEST_COUNT"] || 1)
     opts = {}
     opts[:ignore_files] = /#{ENV['IGNORE_FILES_REGEXP']}/ if ENV['IGNORE_FILES_REGEXP']
     puts "Running #{num} times"

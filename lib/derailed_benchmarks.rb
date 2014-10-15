@@ -1,3 +1,2 @@
-module MyPlugin
-  require 'derailed_benchmarks/railtie' if defined?(Rails)
+module DerailedBenchmarks
 end
