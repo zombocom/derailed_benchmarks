@@ -2,6 +2,8 @@
 
 A series of things you can use to benchmark a Rails app
 
+![](http://media.giphy.com/media/lfbxexWy71b6U/giphy.gif)
+
 ## Install
 
 Put this in your gemfile:
