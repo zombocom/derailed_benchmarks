@@ -60,6 +60,18 @@ All the rake tasks accept configuration in the form of environment variables. Fo
 $ rake -f perf.rake perf:test TEST_COUNT=100_000
 ```
 
+## Rack Setup
+
+Using Rails? You don't need to do anything special. If you're using Rack, you need to tell us how to boot your app. In your `perf.rake` file add a task:
+
+```
+task :rack_load do
+  DERAILED_APP = # your code here
+end
+```
+
+Set the constant `DERAILED_APP` to your Rack app. See [schneems/derailed_benchmarks#1](https://github.com/schneems/derailed_benchmarks/pull/1) for more info.
+
 
 ## Config
 

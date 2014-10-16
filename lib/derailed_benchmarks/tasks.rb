@@ -1,12 +1,6 @@
 namespace :perf do
-  task :setup do
-    require 'benchmark/ips'
-    require 'rack/file'
-    require 'time'
-    require 'rack/test'
 
-    require 'get_process_mem'
-
+  task :rails_load do
     TEST_COUNT         = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
 
     ENV["RAILS_ENV"] ||= "production"
@@ -23,24 +17,49 @@ namespace :perf do
 
     Rails.env = ENV["RAILS_ENV"]
 
-    APP = Rails.application
-    # puts APP.method(:initialize!).source_location
+    DERAILED_APP = Rails.application
 
     if APP.respond_to?(:initialized?)
       APP.initialize! unless APP.initialized?
     else
       APP.initialize! unless APP.instance_variable_get(:@initialized)
     end
+
     if defined? ActiveRecord
       ActiveRecord::Migrator.migrations_paths = APP.paths['db/migrate'].to_a
       ActiveRecord::Migration.verbose = true
       ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
     end
 
-    APP.config.consider_all_requests_local = true
+    DERAILED_APP.config.consider_all_requests_local = true
+  end
 
+  task :rack_load do
+    puts "You're not using Rails"
+    puts "You need to tell derailed how to boot your app"
+    puts "In your perf.rake add:"
+    puts
+    puts "task :rack_load do"
+    puts "  # DERAILED_APP = your code here"
+    puts "end"
+  end
 
-    @app = Rack::MockRequest.new(APP)
+  task :setup do
+    require 'benchmark/ips'
+    require 'rack/file'
+    require 'time'
+    require 'rack/test'
+    require 'get_process_mem'
+
+    specs = Bundler.locked_gems.specs.each_with_object({}) {|spec, hash| hash[spec.name] = spec }
+
+    if specs["railties"]
+      Rake::Task["perf:rails_load"].invoke
+    else
+      Rake::Task["perf:rack_load"].invoke
+    end
+
+    @app = Rack::MockRequest.new(DERAILED_APP)
 
     puts "Booting: #{Rails.env}"
 
@@ -48,7 +67,7 @@ namespace :perf do
     if server = ENV["USE_SERVER"]
       @port = (3000..3900).to_a.sample
       thread = Thread.new do
-        Rack::Server.start(app: APP, :Port => @port, environment: "none", server: server)
+        Rack::Server.start(app: DERAILED_APP, :Port => @port, environment: "none", server: server)
       end
       sleep 1
 
