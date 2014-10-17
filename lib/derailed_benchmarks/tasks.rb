@@ -26,8 +26,12 @@ namespace :perf do
     APP = Rails.application
     # puts APP.method(:initialize!).source_location
 
-    APP.initialize! unless APP.initialized?
-    ActiveRecord::Migrator.migrations_paths = ActiveRecord::Tasks::DatabaseTasks.migrations_paths
+    if APP.respond_to?(:initialized?)
+      APP.initialize! unless APP.initialized?
+    else
+      APP.initialize! unless APP.instance_variable_get(:@initialized)
+    end
+    ActiveRecord::Migrator.migrations_paths = APP.paths['db/migrate'].to_a
     ActiveRecord::Migration.verbose = true
     ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
 
