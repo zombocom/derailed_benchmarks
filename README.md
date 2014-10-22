@@ -9,7 +9,7 @@ A series of things you can use to benchmark a Rails app
 Put this in your gemfile:
 
 ```
-gem 'derailed_benchmarks' group: :development
+gem 'derailed_benchmarks', group: :development
 ```
 
 Then run `$ bundle install`.
