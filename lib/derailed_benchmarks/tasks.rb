@@ -31,9 +31,11 @@ namespace :perf do
     else
       APP.initialize! unless APP.instance_variable_get(:@initialized)
     end
-    ActiveRecord::Migrator.migrations_paths = APP.paths['db/migrate'].to_a
-    ActiveRecord::Migration.verbose = true
-    ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
+    if defined? ActiveRecord
+      ActiveRecord::Migrator.migrations_paths = APP.paths['db/migrate'].to_a
+      ActiveRecord::Migration.verbose = true
+      ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
+    end
 
     APP.config.consider_all_requests_local = true
 
