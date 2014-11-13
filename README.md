@@ -60,6 +60,14 @@ All the rake tasks accept configuration in the form of environment variables. Fo
 $ rake -f perf.rake perf:test TEST_COUNT=100_000
 ```
 
+Tests run against the production environment by default, but it's easy to
+change this if your app doesn't run locally with `RAILS_ENV` set to
+`production`. For example:
+
+```
+$ rake -f perf.rake perf:mem RAILS_ENV=development
+```
+
 ## Rack Setup
 
 Using Rails? You don't need to do anything special. If you're using Rack, you need to tell us how to boot your app. In your `perf.rake` file add a task:
