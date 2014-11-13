@@ -19,14 +19,14 @@ namespace :perf do
 
     DERAILED_APP = Rails.application
 
-    if APP.respond_to?(:initialized?)
-      APP.initialize! unless APP.initialized?
+    if DERAILED_APP.respond_to?(:initialized?)
+      DERAILED_APP.initialize! unless DERAILED_APP.initialized?
     else
-      APP.initialize! unless APP.instance_variable_get(:@initialized)
+      DERAILED_APP.initialize! unless DERAILED_APP.instance_variable_get(:@initialized)
     end
 
     if defined? ActiveRecord
-      ActiveRecord::Migrator.migrations_paths = APP.paths['db/migrate'].to_a
+      ActiveRecord::Migrator.migrations_paths = DERAILED_APP.paths['db/migrate'].to_a
       ActiveRecord::Migration.verbose = true
       ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
     end
