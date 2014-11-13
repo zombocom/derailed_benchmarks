@@ -4,6 +4,12 @@ A series of things you can use to benchmark a Rails app
 
 ![](http://media.giphy.com/media/lfbxexWy71b6U/giphy.gif)
 
+## Compatibility/Requirements
+
+This gem has been tested and is known to work with Rails 3.2 using Ruby
+2.1. It is not expected to work with older versions of Ruby. You'll need to
+install `curl` as well in the off chance you haven't already.
+
 ## Install
 
 Put this in your gemfile:
