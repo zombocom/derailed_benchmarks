@@ -4,6 +4,12 @@ A series of things you can use to benchmark a Rails app
 
 ![](http://media.giphy.com/media/lfbxexWy71b6U/giphy.gif)
 
+## Compatibility/Requirements
+
+This gem has been tested and is known to work with Rails 3.2 using Ruby
+2.1. It is not expected to work with older versions of Ruby. You'll need to
+install `curl` as well in the off chance you haven't already.
+
 ## Install
 
 Put this in your gemfile:
@@ -58,6 +64,14 @@ All the rake tasks accept configuration in the form of environment variables. Fo
 
 ```
 $ rake -f perf.rake perf:test TEST_COUNT=100_000
+```
+
+Tests run against the production environment by default, but it's easy to
+change this if your app doesn't run locally with `RAILS_ENV` set to
+`production`. For example:
+
+```
+$ rake -f perf.rake perf:mem RAILS_ENV=development
 ```
 
 ## Rack Setup
