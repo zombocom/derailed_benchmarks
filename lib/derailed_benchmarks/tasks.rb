@@ -108,86 +108,9 @@ namespace :perf do
     puts `#{cmd}`
   end
 
-  task :kernel_require_patch do
-    require 'get_process_mem'
-
-    class RequireTree
-      attr_reader :name
-      attr_accessor :cost
-
-      def initialize(name)
-        @name = name
-        @children = {}
-      end
-
-      def <<(tree)
-        @children[tree.name] = tree
-      end
-
-      def [](name)
-        @children[name]
-      end
-
-      def children
-        @children.values
-      end
-
-      def cost
-        @cost || 0
-      end
-
-      def sorted_children
-        children.sort { |c1, c2| c2.cost <=> c1.cost }
-      end
-
-      def print_sorted_children(level = 0)
-        return if cost < ENV['CUT_OFF'].to_f
-        puts "  " * level + "#{name}: #{cost.round(4)} mb"
-        level += 1
-        sorted_children.each do |child|
-          child.print_sorted_children(level)
-        end
-      end
-    end
-
-
-
-    module Kernel
-      alias :original_require :require
-      REQUIRE_STACK = []
-
-      def require file
-        Kernel.require(file)
-      end
-
-      class << self
-        alias :original_require :require
-      end
-    end
-
-    TOP_REQUIRE = RequireTree.new("TOP")
-    REQUIRE_STACK.push(TOP_REQUIRE)
-
-    Kernel.define_singleton_method(:require) do |file|
-      mem    = GetProcessMem.new
-      node   = RequireTree.new(file)
-
-      parent = REQUIRE_STACK.last
-      parent << node
-      REQUIRE_STACK.push(node)
-      begin
-        before = mem.mb
-        original_require file
-      ensure
-        REQUIRE_STACK.pop # node
-        after = mem.mb
-      end
-      node.cost = after - before
-    end
-  end
-
   desc "show memory usage caused by invoking require per gem"
-  task :require_bench => [:kernel_require_patch , :setup] do
+  task :require_bench => [:setup] do
+    require 'core_ext/kernel_require.rb'
     ENV['CUT_OFF'] ||= "0.3"
     puts "## Impact of `require <file>` on RAM"
     puts
@@ -201,9 +124,7 @@ namespace :perf do
 
     call_app
 
-    TOP_REQUIRE.sorted_children.each do |child|
-      child.print_sorted_children
-    end
+    TOP_REQUIRE.print_sorted_children
   end
 
   desc "outputs ram usage over time"

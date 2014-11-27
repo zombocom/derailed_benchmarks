@@ -1,0 +1,2 @@
+class RelativeChild
+end

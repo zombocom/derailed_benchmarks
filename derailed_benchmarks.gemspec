@@ -21,5 +21,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency "memory_profiler", "~> 0"
   gem.add_dependency "get_process_mem", "~> 0"
   gem.add_dependency "benchmark-ips",   "~> 2"
-end
+  gem.add_dependency "rake",            "~> 10.4"
 
+  gem.add_development_dependency "capybara", "~> 2"
+  gem.add_development_dependency "rails",    "~> 3"
+end
