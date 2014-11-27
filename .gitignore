@@ -1,2 +1,4 @@
 .DS_Store
 *.gem
+test/dummy/tmp/*
+test/dummy/log/*
