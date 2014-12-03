@@ -3,6 +3,14 @@ require 'shellwords'
 
 class TasksTest < ActiveSupport::TestCase
 
+  def setup
+    FileUtils.mkdir_p(dummy_path('tmp'))
+  end
+
+  def teardown
+    FileUtils.remove_entry_secure(dummy_path('tmp'))
+  end
+
   def rake(cmd, assert_success: true, env: {})
     env_string = env.map {|key, value| "#{key.shellescape}=#{value.to_s.shellescape}" }.join(" ")
     cmd        = "env #{env_string} rake -f perf.rake #{cmd} --trace"
@@ -13,10 +21,6 @@ class TasksTest < ActiveSupport::TestCase
     end
 
     result
-  end
-
-  def teardown
-    FileUtils.remove_entry_secure(dummy_path('tmp'))
   end
 
   test 'test' do
@@ -30,13 +34,12 @@ class TasksTest < ActiveSupport::TestCase
 
   test 'PATH_TO_HIT' do
     result = rake "perf:test", env: { "PATH_TO_HIT" => 'foo' }
-    assert_match "endpoint: 'foo'", result
+    assert_match 'Endpoint: "foo"', result
   end
 
   test 'USE_SERVER' do
     result = rake "perf:test", env: { "USE_SERVER" => 'webrick', "TEST_COUNT" => 1 }
-    puts result.inspect
-    assert_match "WEBrick::HTTPServer#start", result
+    assert_match 'Server: "webrick"', result
   end
 
   test '' do

@@ -5,6 +5,8 @@ class DerailedBenchmarksTest < ActiveSupport::TestCase
     assert_kind_of Module, DerailedBenchmarks
   end
 
-  test "foo" do
+  test "gem_is_bundled?" do
+    assert DerailedBenchmarks.gem_is_bundled?("rack")
+    refute DerailedBenchmarks.gem_is_bundled?("wicked")
   end
 end

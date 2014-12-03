@@ -18,7 +18,6 @@ module Kernel
   # def require_relative(file)
   #   Kernel.require_relative(file)
   # end
-
   class << self
     alias :original_require          :require
     # alias :original_require_relative :require_relative

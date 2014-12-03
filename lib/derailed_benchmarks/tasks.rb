@@ -1,8 +1,5 @@
 namespace :perf do
-
   task :rails_load do
-    TEST_COUNT         = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
-
     ENV["RAILS_ENV"] ||= "production"
     ENV['RACK_ENV']  = ENV["RAILS_ENV"]
     ENV["DISABLE_SPRING"] = "true"
@@ -11,7 +8,13 @@ namespace :perf do
 
     ENV['LOG_LEVEL'] = "FATAL"
 
-    '.:lib:test:config'.split(':').each { |x| $: << x }
+    require 'rails'
+
+    puts "Booting: #{Rails.env}"
+
+    %W{ . lib test config }.each do |file|
+      $LOAD_PATH << file
+    end
 
     require 'application'
 
@@ -45,45 +48,39 @@ namespace :perf do
   end
 
   task :setup do
-    require 'benchmark/ips'
-    require 'rack/file'
-    require 'time'
-    require 'rack/test'
-    require 'get_process_mem'
-
-    specs = Bundler.locked_gems.specs.each_with_object({}) {|spec, hash| hash[spec.name] = spec }
-
-    if specs["railties"]
+    if DerailedBenchmarks.gem_is_bundled?("railties")
       Rake::Task["perf:rails_load"].invoke
     else
       Rake::Task["perf:rack_load"].invoke
     end
 
-    @app = Rack::MockRequest.new(DERAILED_APP)
+    TEST_COUNT  = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
+    PATH_TO_HIT = ENV["PATH_TO_HIT"] || ENV['ENDPOINT'] || "/"
+    puts "Endpoint: #{ PATH_TO_HIT.inspect }"
 
-    puts "Booting: #{Rails.env}"
-
-    PATH_TO_HIT = ENV["PATH_TO_HIT"] || "/"
     if server = ENV["USE_SERVER"]
       @port = (3000..3900).to_a.sample
+      puts "Port: #{ @port.inspect }"
+      puts "Server: #{ server.inspect }"
       thread = Thread.new do
         Rack::Server.start(app: DERAILED_APP, :Port => @port, environment: "none", server: server)
       end
       sleep 1
 
       def call_app
-        `curl http://localhost:#{@port}#{PATH_TO_HIT} -s`
-        raise "Bad request: #{response.body}" unless $?.success?
+        response = `curl http://localhost:#{@port}#{PATH_TO_HIT} -s`
+        raise "Bad request: #{ response }" unless $?.success?
       end
     else
+      @app = Rack::MockRequest.new(DERAILED_APP)
+
       def call_app
         response = @app.get(PATH_TO_HIT)
-        raise "Bad request: #{response.body}" unless response.status == 200
+        raise "Bad request: #{ response.body }" unless response.status == 200
         response
       end
     end
   end
-
 
   desc "hits the url TEST_COUNT times"
   task :test => [:setup] do
@@ -110,7 +107,8 @@ namespace :perf do
 
   desc "show memory usage caused by invoking require per gem"
   task :require_bench => [:setup] do
-    require 'core_ext/kernel_require.rb'
+    require 'derailed_benchmarks/core_ext/kernel_require.rb'
+
     ENV['CUT_OFF'] ||= "0.3"
     puts "## Impact of `require <file>` on RAM"
     puts
@@ -233,5 +231,4 @@ namespace :perf do
     end
     report.pretty_print
   end
-
 end

@@ -9,21 +9,21 @@ require 'pathname'
 
 require 'derailed_benchmarks'
 
-# require File.expand_path("../dummy/config/environment.rb",  __FILE__)
-# require "rails/test_help"
+require File.expand_path("../dummy/config/environment.rb",  __FILE__)
+require "rails/test_help"
 
-# ActionMailer::Base.delivery_method    = :test
-# ActionMailer::Base.perform_deliveries = true
-# ActionMailer::Base.default_url_options[:host] = "test.com"
+ActionMailer::Base.delivery_method    = :test
+ActionMailer::Base.perform_deliveries = true
+ActionMailer::Base.default_url_options[:host] = "test.com"
 
-# Rails.backtrace_cleaner.remove_silencers!
+Rails.backtrace_cleaner.remove_silencers!
 
 # Configure capybara for integration testing
-# require "capybara/rails"
-# Capybara.default_driver   = :rack_test
-# Capybara.default_selector = :css
+require "capybara/rails"
+Capybara.default_driver   = :rack_test
+Capybara.default_selector = :css
 
-# # Run any available migration
+# Run any available migration
 # ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
 
 # Load support files
@@ -38,9 +38,13 @@ end
 
 
 def fixtures_dir(name = "")
-  Pathname.new(File.expand_path("../fixtures", __FILE__)).join(name)
+  root_path("test/fixtures").join(name)
 end
 
-def root_path(name)
+def root_path(name = "")
   Pathname.new(File.expand_path("../..", __FILE__)).join(name)
+end
+
+def dummy_path(name = "")
+  root_path("test/dummy").join(name)
 end
