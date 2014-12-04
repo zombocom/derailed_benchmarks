@@ -1,8 +1,5 @@
 namespace :perf do
-
   task :rails_load do
-    TEST_COUNT         = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
-
     ENV["RAILS_ENV"] ||= "production"
     ENV['RACK_ENV']  = ENV["RAILS_ENV"]
     ENV["DISABLE_SPRING"] = "true"
@@ -11,7 +8,13 @@ namespace :perf do
 
     ENV['LOG_LEVEL'] = "FATAL"
 
-    '.:lib:test:config'.split(':').each { |x| $: << x }
+    require 'rails'
+
+    puts "Booting: #{Rails.env}"
+
+    %W{ . lib test config }.each do |file|
+      $LOAD_PATH << file
+    end
 
     require 'application'
 
@@ -45,45 +48,39 @@ namespace :perf do
   end
 
   task :setup do
-    require 'benchmark/ips'
-    require 'rack/file'
-    require 'time'
-    require 'rack/test'
-    require 'get_process_mem'
-
-    specs = Bundler.locked_gems.specs.each_with_object({}) {|spec, hash| hash[spec.name] = spec }
-
-    if specs["railties"]
+    if DerailedBenchmarks.gem_is_bundled?("railties")
       Rake::Task["perf:rails_load"].invoke
     else
       Rake::Task["perf:rack_load"].invoke
     end
 
-    @app = Rack::MockRequest.new(DERAILED_APP)
+    TEST_COUNT  = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
+    PATH_TO_HIT = ENV["PATH_TO_HIT"] || ENV['ENDPOINT'] || "/"
+    puts "Endpoint: #{ PATH_TO_HIT.inspect }"
 
-    puts "Booting: #{Rails.env}"
-
-    PATH_TO_HIT = ENV["PATH_TO_HIT"] || "/"
     if server = ENV["USE_SERVER"]
       @port = (3000..3900).to_a.sample
+      puts "Port: #{ @port.inspect }"
+      puts "Server: #{ server.inspect }"
       thread = Thread.new do
         Rack::Server.start(app: DERAILED_APP, :Port => @port, environment: "none", server: server)
       end
       sleep 1
 
       def call_app
-        `curl http://localhost:#{@port}#{PATH_TO_HIT} -s`
-        raise "Bad request: #{response.body}" unless $?.success?
+        response = `curl http://localhost:#{@port}#{PATH_TO_HIT} -s`
+        raise "Bad request: #{ response }" unless $?.success?
       end
     else
+      @app = Rack::MockRequest.new(DERAILED_APP)
+
       def call_app
         response = @app.get(PATH_TO_HIT)
-        raise "Bad request: #{response.body}" unless response.status == 200
+        raise "Bad request: #{ response.body }" unless response.status == 200
         response
       end
     end
   end
-
 
   desc "hits the url TEST_COUNT times"
   task :test => [:setup] do
@@ -108,86 +105,10 @@ namespace :perf do
     puts `#{cmd}`
   end
 
-  task :kernel_require_patch do
-    require 'get_process_mem'
-
-    class RequireTree
-      attr_reader :name
-      attr_accessor :cost
-
-      def initialize(name)
-        @name = name
-        @children = {}
-      end
-
-      def <<(tree)
-        @children[tree.name] = tree
-      end
-
-      def [](name)
-        @children[name]
-      end
-
-      def children
-        @children.values
-      end
-
-      def cost
-        @cost || 0
-      end
-
-      def sorted_children
-        children.sort { |c1, c2| c2.cost <=> c1.cost }
-      end
-
-      def print_sorted_children(level = 0)
-        return if cost < ENV['CUT_OFF'].to_f
-        puts "  " * level + "#{name}: #{cost.round(4)} mb"
-        level += 1
-        sorted_children.each do |child|
-          child.print_sorted_children(level)
-        end
-      end
-    end
-
-
-
-    module Kernel
-      alias :original_require :require
-      REQUIRE_STACK = []
-
-      def require file
-        Kernel.require(file)
-      end
-
-      class << self
-        alias :original_require :require
-      end
-    end
-
-    TOP_REQUIRE = RequireTree.new("TOP")
-    REQUIRE_STACK.push(TOP_REQUIRE)
-
-    Kernel.define_singleton_method(:require) do |file|
-      mem    = GetProcessMem.new
-      node   = RequireTree.new(file)
-
-      parent = REQUIRE_STACK.last
-      parent << node
-      REQUIRE_STACK.push(node)
-      begin
-        before = mem.mb
-        original_require file
-      ensure
-        REQUIRE_STACK.pop # node
-        after = mem.mb
-      end
-      node.cost = after - before
-    end
-  end
-
   desc "show memory usage caused by invoking require per gem"
-  task :require_bench => [:kernel_require_patch , :setup] do
+  task :require_bench => [:setup] do
+    require 'derailed_benchmarks/core_ext/kernel_require.rb'
+
     ENV['CUT_OFF'] ||= "0.3"
     puts "## Impact of `require <file>` on RAM"
     puts
@@ -201,9 +122,7 @@ namespace :perf do
 
     call_app
 
-    TOP_REQUIRE.sorted_children.each do |child|
-      child.print_sorted_children
-    end
+    TOP_REQUIRE.print_sorted_children
   end
 
   desc "outputs ram usage over time"
@@ -312,5 +231,4 @@ namespace :perf do
     end
     report.pretty_print
   end
-
 end
