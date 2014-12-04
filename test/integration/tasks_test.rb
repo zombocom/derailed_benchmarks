@@ -11,7 +11,9 @@ class TasksTest < ActiveSupport::TestCase
     FileUtils.remove_entry_secure(dummy_path('tmp'))
   end
 
-  def rake(cmd, assert_success: true, env: {})
+  def rake(cmd, options = {})
+    assert_success = options[:assert_success] || true
+    env             = options[:env]           || {}
     env_string = env.map {|key, value| "#{key.shellescape}=#{value.to_s.shellescape}" }.join(" ")
     cmd        = "env #{env_string} rake -f perf.rake #{cmd} --trace"
     puts "Running: #{cmd}"
