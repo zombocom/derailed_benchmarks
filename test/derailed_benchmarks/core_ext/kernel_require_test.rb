@@ -4,6 +4,11 @@ class KernelRequireTest < ActiveSupport::TestCase
 
   setup do
     require 'derailed_benchmarks/core_ext/kernel_require'
+    GC.disable
+  end
+
+  teardown do
+    GC.enable
   end
 
   def assert_node_in_parent(file_name, parent)
@@ -16,7 +21,6 @@ class KernelRequireTest < ActiveSupport::TestCase
 
   test "core extension profiles useage" do
     require fixtures_dir("require/parent_one.rb")
-
     parent    = assert_node_in_parent("parent_one.rb", TOP_REQUIRE)
     child_one = assert_node_in_parent("child_one.rb", parent)
     child_two = assert_node_in_parent("child_two.rb", parent)
