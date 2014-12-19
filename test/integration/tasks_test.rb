@@ -15,7 +15,7 @@ class TasksTest < ActiveSupport::TestCase
     assert_success = options[:assert_success] || true
     env             = options[:env]           || {}
     env_string = env.map {|key, value| "#{key.shellescape}=#{value.to_s.shellescape}" }.join(" ")
-    cmd        = "env #{env_string} rake -f perf.rake #{cmd} --trace"
+    cmd        = "env #{env_string} bundle exec rake -f perf.rake #{cmd} --trace"
     puts "Running: #{cmd}"
     result = `cd #{rails_app_path} && #{cmd}`
     if assert_success
@@ -25,9 +25,16 @@ class TasksTest < ActiveSupport::TestCase
     result
   end
 
-  # test '' do
-  #   rake 'perf:test', env: { "PATH_TO_HIT" => "authenticated" }
-  # end
+  test 'hitting authenticated devise apps' do
+    env = { "PATH_TO_HIT" => "authenticated", "USE_AUTH" => "true", "TEST_COUNT" => "2" }
+    result = rake 'perf:test', env: env
+    assert_match 'Auth: true', result
+
+    env["USE_SERVER"] = "webrick"
+    result = rake 'perf:test', env: env
+    assert_match 'Auth: true',        result
+    assert_match 'Server: "webrick"', result
+  end
 
   test 'test' do
     rake "perf:test"
@@ -39,12 +46,18 @@ class TasksTest < ActiveSupport::TestCase
   end
 
   test 'PATH_TO_HIT' do
-    result = rake "perf:test", env: { "PATH_TO_HIT" => 'foo' }
+    env    = { "PATH_TO_HIT" => 'foo', "TEST_COUNT" => "2" }
+    result = rake "perf:test", env: env
     assert_match 'Endpoint: "foo"', result
+
+    env["USE_SERVER"] = "webrick"
+    result = rake "perf:test", env: env
+    assert_match 'Endpoint: "foo"',   result
+    assert_match 'Server: "webrick"', result
   end
 
   test 'USE_SERVER' do
-    result = rake "perf:test", env: { "USE_SERVER" => 'webrick', "TEST_COUNT" => 1 }
+    result = rake "perf:test", env: { "USE_SERVER" => 'webrick', "TEST_COUNT" => "2" }
     assert_match 'Server: "webrick"', result
   end
 

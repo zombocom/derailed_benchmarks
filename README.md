@@ -119,6 +119,10 @@ TEST_COUNT=1
 
 Note some tasks have different defaults.
 
+### USE_AUTH
+
+See the section on [Authentication](#authentication) below.
+
 
 ## Task Specific notes
 
@@ -151,6 +155,56 @@ action_controller/railtie: 1.06 mb
         rack/request: 0.05 mb
 ```
 
+## Authentication
+
+If you're trying to test an endpoint that has authentication you'll need to tell your task how to bypass that authentication. Authentication is controlled by the `DerailedBenchmarks.auth` object. There is a built in support for Devise. If you're using some other authentication method, you can write your own authentication strategy.
+
+To enable authentication in a test run with:
+
+```
+USE_AUTH=true
+```
+
+See below how to customize authentication.
+
+### Authentication with Devise
+
+If you're using devise, there is a built in auth helper that will detect the presence of the devise gem and load automatically. If you want you can customize the user that is logged in by setting that value in your `perf.rake` file.
+
+```
+DerailedBenchmarks.auth.user = User.find_or_create!(twitter: "schneems")
+```
+
+You will need to provide a valid user, so depending on the validations you have in your `user.rb`, you may need to provide different parameters.
+
+If you're trying to authenticate a non-user model, you'll need to write your own custom auth strategy.
+
+### Custom Authentication Strategy
+
+To implement your own authentication strategy You will need to create a class that [inherits from auth_helper.rb](lib/derailed_benchmarks/auth_helper.rb). You will need to implement a `setup` and a `call` method. You can see an example of [how the devise auth helper was written](lib/derailed_benchmarks/auth_helpers/devise.rb). You can put this code in your `perf.rake` file.
+
+```ruby
+class MyCustomAuth < DerailedBenchmarks::AuthHelper
+  def setup
+    # initialize code here
+  end
+
+  def call(env)
+    # log something in on each request
+    app.call(env)
+  end
+end
+```
+
+The devise strategy works by enabling test mode inside of the Rack request and inserting a stub user. You'll need to duplicate that logic for your own authentication scheme if you're not using devise.
+
+Once you have your class, you'll need to set `DerailedBenchmarks.auth` to a new instance of your class. In your `perf.rake` file add:
+
+```ruby
+DerailedBenchmarks.auth = MyCustomAuth.new
+```
+
+Now on every request that is made with the `USE_AUTH` environment variable set, the `MyCustomAuth#call` method will be invoked.
 
 ## License
 
