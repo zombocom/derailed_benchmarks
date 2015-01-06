@@ -25,12 +25,12 @@ module Kernel
 
   # The core extension we use to measure require time of all requires
   # When a file is required we create a tree node with its file name.
-  # We then push it onto a stack, this is because requireing a file can
+  # We then push it onto a stack, this is because requiring a file can
   # require other files before it is finished.
   #
   # When a child file is required, a tree node is created and the child file
   # is pushed onto the parents tree. We then repeat the process as child
-  # files may require aditional files.
+  # files may require additional files.
   #
   # When a require returns we remove it from the require stack so we don't
   # accidentally push additional children nodes to it. We then store the
