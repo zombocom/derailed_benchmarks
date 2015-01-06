@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'bundler/setup'
+
 # Configure Rails Envinronment
 ENV["RAILS_ENV"] = "test"
 
