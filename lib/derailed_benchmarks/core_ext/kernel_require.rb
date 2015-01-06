@@ -58,9 +58,9 @@ TOP_REQUIRE = DerailedBenchmarks::RequireTree.new("TOP")
 REQUIRE_STACK.push(TOP_REQUIRE)
 
 Kernel.define_singleton_method(:require) do |file|
-  measure_memory_impact(file) {|file|  original_require(file) }
+  measure_memory_impact(file) { |file| original_require(file) }
 end
 
 # Kernel.define_singleton_method(:require_relative) do |file|
-#   measure_memory_impact(file) {|file| original_require_relative(file) }
+#   measure_memory_impact(file) { |file| original_require_relative(file) }
 # end
