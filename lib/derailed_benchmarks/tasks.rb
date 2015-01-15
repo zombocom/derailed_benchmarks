@@ -42,8 +42,10 @@ namespace :perf do
     puts "You need to tell derailed how to boot your app"
     puts "In your perf.rake add:"
     puts
-    puts "task :rack_load do"
-    puts "  # DERAILED_APP = your code here"
+    puts "namespace :perf do"
+    puts "  task :rack_load do"
+    puts "    # DERAILED_APP = your code here"
+    puts "  end"
     puts "end"
   end
 
