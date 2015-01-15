@@ -79,8 +79,10 @@ $ rake -f perf.rake perf:mem RAILS_ENV=development
 Using Rails? You don't need to do anything special. If you're using Rack, you need to tell us how to boot your app. In your `perf.rake` file add a task:
 
 ```
-task :rack_load do
-  DERAILED_APP = # your code here
+namespace :perf do
+  task :rack_load do
+    DERAILED_APP = # your code here
+  end
 end
 ```
 
