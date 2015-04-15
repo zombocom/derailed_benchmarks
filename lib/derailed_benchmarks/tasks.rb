@@ -107,9 +107,12 @@ namespace :perf do
     puts `#{cmd}`
   end
 
-  desc "show memory usage caused by invoking require per gem"
-  task :require_bench => [:setup] do
+  task :kernel_require_patch do
     require 'derailed_benchmarks/core_ext/kernel_require.rb'
+  end
+
+  desc "show memory usage caused by invoking require per gem"
+  task :require_bench => [:kernel_require_patch, :setup] do
 
     ENV['CUT_OFF'] ||= "0.3"
     puts "## Impact of `require <file>` on RAM"

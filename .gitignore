@@ -1,4 +1,4 @@
 .DS_Store
 *.gem
-/test/dummy/tmp/*
-/test/dummy/log/*
+/test/rails_app/tmp/*
+/test/rails_app/log/*

@@ -4,11 +4,11 @@ require 'shellwords'
 class TasksTest < ActiveSupport::TestCase
 
   def setup
-    FileUtils.mkdir_p(dummy_path('tmp'))
+    FileUtils.mkdir_p(rails_app_path('tmp'))
   end
 
   def teardown
-    FileUtils.remove_entry_secure(dummy_path('tmp'))
+    FileUtils.remove_entry_secure(rails_app_path('tmp'))
   end
 
   def rake(cmd, options = {})
@@ -17,13 +17,17 @@ class TasksTest < ActiveSupport::TestCase
     env_string = env.map {|key, value| "#{key.shellescape}=#{value.to_s.shellescape}" }.join(" ")
     cmd        = "env #{env_string} rake -f perf.rake #{cmd} --trace"
     puts "Running: #{cmd}"
-    result = `cd #{dummy_path} && #{cmd}`
+    result = `cd #{rails_app_path} && #{cmd}`
     if assert_success
-      assert $?.success?, "Expected #{cmd} to return a success status.\nOutput: #{result}"
+      assert $?.success?, "Expected '#{cmd}' to return a success status.\nOutput: #{result}"
     end
 
     result
   end
+
+  # test '' do
+  #   rake 'perf:test', env: { "PATH_TO_HIT" => "authenticated" }
+  # end
 
   test 'test' do
     rake "perf:test"

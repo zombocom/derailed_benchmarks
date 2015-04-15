@@ -6,10 +6,13 @@ require "action_controller/railtie"
 require "action_view/railtie"
 require "action_mailer/railtie"
 
-Bundler.require
+Bundler.require :default
+require 'devise'
 
 module Dummy
   class Application < Rails::Application
+    config.action_mailer.default_url_options = { host: 'localhost:3000' }
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -40,5 +43,6 @@ module Dummy
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
+    config.serve_static_assets = true
   end
 end
