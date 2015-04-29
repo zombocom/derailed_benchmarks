@@ -26,4 +26,5 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency "capybara", "~> 2"
   gem.add_development_dependency "rails",    "~> 3"
+  gem.add_development_dependency "devise",   "~> 3"
 end
