@@ -97,7 +97,11 @@ namespace :perf do
 
   task :stackprof => [:setup] do
     # [:wall, :cpu, :object]
-    require 'stackprof'
+    begin
+      require 'stackprof'
+    rescue LoadError
+      raise "Install stackprof to run this command `$ gem install stackprof`"
+    end
     file = "tmp/#{Time.now.iso8601}-stackprof-cpu-myapp.dump"
     StackProf.run(mode: :cpu, out: file) do
       Rake::Task["perf:test"].invoke
