@@ -29,9 +29,14 @@ namespace :perf do
     end
 
     if defined? ActiveRecord
-      ActiveRecord::Tasks::DatabaseTasks.create_current
+      if defined? ActiveRecord::Tasks::DatabaseTasks
+        ActiveRecord::Tasks::DatabaseTasks.create_current
+      else # Rails 3.2
+        raise "No valid database for #{ENV['RAILS_ENV']}, please create one" unless ActiveRecord::Base.connection.active?.inspect
+      end
+
       ActiveRecord::Migrator.migrations_paths = DERAILED_APP.paths['db/migrate'].to_a
-      ActiveRecord::Migration.verbose = true
+      ActiveRecord::Migration.verbose         = true
       ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
     end
 
