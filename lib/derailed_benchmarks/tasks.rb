@@ -29,8 +29,14 @@ namespace :perf do
     end
 
     if defined? ActiveRecord
+      if defined? ActiveRecord::Tasks::DatabaseTasks
+        ActiveRecord::Tasks::DatabaseTasks.create_current
+      else # Rails 3.2
+        raise "No valid database for #{ENV['RAILS_ENV']}, please create one" unless ActiveRecord::Base.connection.active?.inspect
+      end
+
       ActiveRecord::Migrator.migrations_paths = DERAILED_APP.paths['db/migrate'].to_a
-      ActiveRecord::Migration.verbose = true
+      ActiveRecord::Migration.verbose         = true
       ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
     end
 
@@ -60,6 +66,7 @@ namespace :perf do
     PATH_TO_HIT = ENV["PATH_TO_HIT"] || ENV['ENDPOINT'] || "/"
     puts "Endpoint: #{ PATH_TO_HIT.inspect }"
 
+    DERAILED_APP = DerailedBenchmarks.add_auth(DERAILED_APP)
     if server = ENV["USE_SERVER"]
       @port = (3000..3900).to_a.sample
       puts "Port: #{ @port.inspect }"
@@ -69,9 +76,10 @@ namespace :perf do
       end
       sleep 1
 
-      def call_app
-        response = `curl http://localhost:#{@port}#{PATH_TO_HIT} -s`
-        raise "Bad request: #{ response }" unless $?.success?
+      def call_app(path = File.join("/", PATH_TO_HIT))
+        cmd = "curl http://localhost:#{@port}#{path} -s --fail 2>&1"
+        response = `#{cmd}`
+        raise "Bad request to #{cmd.inspect} Response:\n#{ response.inspect }" unless $?.success?
       end
     else
       @app = Rack::MockRequest.new(DERAILED_APP)

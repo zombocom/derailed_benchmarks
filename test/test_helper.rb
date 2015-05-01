@@ -27,7 +27,7 @@ Capybara.default_driver   = :rack_test
 Capybara.default_selector = :css
 
 # Run any available migration
-# ActiveRecord::Migrator.migrate File.expand_path("../rails_app/db/migrate/", __FILE__)
+ActiveRecord::Migrator.migrate File.expand_path("../rails_app/db/migrate/", __FILE__)
 
 # Load support files
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
