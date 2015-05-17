@@ -1,3 +1,4 @@
+
 namespace :perf do
   task :rails_load do
     ENV["RAILS_ENV"] ||= "production"
@@ -103,13 +104,15 @@ namespace :perf do
     }
   end
 
+  desc "stackprof"
   task :stackprof => [:setup] do
     # [:wall, :cpu, :object]
     begin
       require 'stackprof'
     rescue LoadError
-      raise "Install stackprof to run this command `$ gem install stackprof`"
+      raise "Add stackprof to your gemfile to continue `gem 'stackprof', group: :development`"
     end
+    TEST_COUNT = (ENV["TEST_COUNT"] ||= "100").to_i
     file = "tmp/#{Time.now.iso8601}-stackprof-cpu-myapp.dump"
     StackProf.run(mode: :cpu, out: file) do
       Rake::Task["perf:test"].invoke
@@ -124,9 +127,7 @@ namespace :perf do
   end
 
   desc "show memory usage caused by invoking require per gem"
-  task :require_bench => [:kernel_require_patch, :setup] do
-
-    ENV['CUT_OFF'] ||= "0.3"
+  task :mem => [:kernel_require_patch, :setup] do
     puts "## Impact of `require <file>` on RAM"
     puts
     puts "Showing all `require <file>` calls that consume #{ENV['CUT_OFF']} mb or more of RSS"
@@ -234,7 +235,7 @@ namespace :perf do
 
 
   desc "profiles ruby allocation"
-  task :mem => [:setup] do
+  task :objects => [:setup] do
     require 'memory_profiler'
     call_app
     GC.start

@@ -1,6 +1,8 @@
 require 'get_process_mem'
 require 'derailed_benchmarks/require_tree'
 
+ENV['CUT_OFF'] ||= "0.3"
+
 # This file contains classes and monkey patches to measure the amount of memory
 # useage requiring an individual file adds.
 
@@ -61,6 +63,10 @@ Kernel.define_singleton_method(:require) do |file|
   measure_memory_impact(file) { |file| original_require(file) }
 end
 
-# Kernel.define_singleton_method(:require_relative) do |file|
-#   measure_memory_impact(file) { |file| original_require_relative(file) }
-# end
+# Don't forget to assign a cost to the top level
+cost_before_requiring_anything = GetProcessMem.new.mb
+TOP_REQUIRE.cost = cost_before_requiring_anything
+def TOP_REQUIRE.print_sorted_children(*args)
+  self.cost = GetProcessMem.new.mb - self.cost
+  super
+end

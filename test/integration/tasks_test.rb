@@ -64,12 +64,12 @@ class TasksTest < ActiveSupport::TestCase
   test '' do
   end
 
-  test 'mem' do
-    rake "perf:mem"
+  test 'objects' do
+    rake "perf:objects"
   end
 
-  test 'require_bench' do
-    rake "perf:require_bench"
+  test 'mem' do
+    rake "perf:mem"
   end
 
   test 'ram_over_time' do
