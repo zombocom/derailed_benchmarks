@@ -35,7 +35,7 @@ module DerailedBenchmarks
     # Recursively prints all child nodes
     def print_sorted_children(level = 0, out = STDOUT)
       return if cost < ENV['CUT_OFF'].to_f
-      out.puts "  " * level + "#{name}: #{cost.round(4)} mb"
+      out.puts "  " * level + "#{name}: #{cost.round(4)} MiB"
       level += 1
       sorted_children.each do |child|
         child.print_sorted_children(level, out)

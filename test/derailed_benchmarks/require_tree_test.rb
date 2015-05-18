@@ -43,9 +43,9 @@ class RequireTree < ActiveSupport::TestCase
     assert_equal expected, parent.sorted_children
 
     expected = <<-OUT
-parent: #{ parent.cost.round(4) } mb
-  large: #{ large.cost.round(4) } mb
-  small: #{ small.cost.round(4) } mb
+parent: #{ parent.cost.round(4) } MiB
+  large: #{ large.cost.round(4) } MiB
+  small: #{ small.cost.round(4) } MiB
 OUT
     capture  = StringIO.new
     parent.print_sorted_children(0, capture)
