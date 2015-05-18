@@ -29,6 +29,7 @@ class RequireTree < ActiveSupport::TestCase
 
   test "sorts children" do
     parent = tree("parent")
+    parent.cost = rand(5..10)
     small  = tree("small")
     small.cost = rand(10..100)
 
