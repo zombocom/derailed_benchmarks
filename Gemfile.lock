@@ -6,7 +6,7 @@ PATH
       get_process_mem (~> 0)
       memory_profiler (~> 0)
       rack (~> 1)
-      rake (~> 10.4)
+      rake (~> 10)
 
 GEM
   remote: https://rubygems.org/
@@ -40,7 +40,7 @@ GEM
       multi_json (~> 1.0)
     arel (3.0.3)
     bcrypt (3.1.10)
-    benchmark-ips (2.1.1)
+    benchmark-ips (2.2.0)
     builder (3.0.4)
     capybara (2.4.4)
       mime-types (>= 1.16)
