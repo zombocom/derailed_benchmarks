@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    derailed_benchmarks (0.0.0)
+    derailed_benchmarks (1.0.0)
       benchmark-ips (~> 2)
       get_process_mem (~> 0)
       memory_profiler (~> 0)

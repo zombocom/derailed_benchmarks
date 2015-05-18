@@ -7,8 +7,16 @@ A series of things you can use to benchmark a Rails or Ruby app.
 ## Compatibility/Requirements
 
 This gem has been tested and is known to work with Rails 3.2+ using Ruby
-2.1+. It is not expected to work with older or newer versions of Ruby. You'll need to
-install `curl` as well in the off chance you haven't already.
+2.1+. Some commands __may__ work on older versions of Ruby, but not all commands are supported.
+
+For some benchmarks, not all, you'll need to verify you have a working version of curl on your OS:
+
+```
+$ which curl
+/usr/bin/curl
+$ curl -V
+curl 7.37.1 #...
+```
 
 ## Install
 
@@ -21,6 +29,14 @@ gem 'derailed', group: :development
 Then run `$ bundle install`.
 
 While executing your commands you may need to use `bundle exec` before typing the command.
+
+To use all profiling methods available also add:
+
+```
+gem "stackprof", group: :development
+```
+
+You must be using Ruby 2.1+ to install these libraries. If you're on an older version of Ruby, what are you waiting for?
 
 ## Use
 

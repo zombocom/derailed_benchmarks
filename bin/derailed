@@ -53,6 +53,8 @@ class DerailedBenchmarkCLI < Thor
     report.pretty_print
   end
 
+  map :"bundler:objects" => :"bundle:objects"
+
   desc "bundle:mem", "measures memory used by gems at boot time"
   define_method(:"bundle:mem") do |env = "production"|
     env = [:default] + env.split(",")
@@ -65,6 +67,7 @@ class DerailedBenchmarkCLI < Thor
     after  = mem.mb
     TOP_REQUIRE.print_sorted_children
   end
+  map :"bundler:mem" => :"bundle:mem"
 
   private
     def setup_bundler!
