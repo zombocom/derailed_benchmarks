@@ -62,16 +62,21 @@ This will load each of your gems in your Gemfile and see how much memory they co
 
 ```
 $ derailed bundle:mem
-TOP: 54.1836 mb
-  mail: 18.9688 mb
-    mime/types: 17.4453 mb
-    mail/field: 0.4023 mb
-    mail/message: 0.3906 mb
-  action_view/view_paths: 0.4453 mb
-    action_view/base: 0.4336 mb
+TOP: 54.1836 MiB
+  mail: 18.9688 MiB
+    mime/types: 17.4453 MiB
+    mail/field: 0.4023 MiB
+    mail/message: 0.3906 MiB
+  action_view/view_paths: 0.4453 MiB
+    action_view/base: 0.4336 MiB
 ```
 
-Here we can see that `mail` uses 18mb, with the majority coming from `mime/types`. You can use this information to prune out large dependencies you don't need. Also if you see a large memory use by a gem that you do need, please open up an issue with that library to let them know (be sure to include reproduction instructions). Hopefully as a community we can identify memory hotspots and reduce their impact. Before we can fix performance problems, we need to know where those problems exist.
+_Aside: A "MiB", which is the [IEEE] and [IEC] symbol for Mebibyte, is 2<sup>20</sup> bytes / 1024 Kibibytes (which are in turn 1024 bytes)._
+
+[IEEE]: http://en.wikipedia.org/wiki/IEEE_1541-2002
+[IEC]: http://en.wikipedia.org/wiki/IEC_80000-13
+
+Here we can see that `mail` uses 18MiB, with the majority coming from `mime/types`. You can use this information to prune out large dependencies you don't need. Also if you see a large memory use by a gem that you do need, please open up an issue with that library to let them know (be sure to include reproduction instructions). Hopefully as a community we can identify memory hotspots and reduce their impact. Before we can fix performance problems, we need to know where those problems exist.
 
 By default this task will only return results from the `:default` and `"production"` groups. If you want a different group you can run with.
 
@@ -202,7 +207,7 @@ PID: 78675
 183.62109375
 ```
 
-Here we can see that while the memory use is increasing, it levels off around 183 MB. You'll want to run this task using ever increasing values of `TEST_COUNT=` for example
+Here we can see that while the memory use is increasing, it levels off around 183 MiB. You'll want to run this task using ever increasing values of `TEST_COUNT=` for example
 
 ```
 $ TEST_COUNT=5000 derailed exec perf:ram_over_time
@@ -246,13 +251,13 @@ This task does essentially the same thing, however it hits your app with one req
 ```
 $ derailed exec perf:mem
 
-TOP: 54.1836 mb
-  mail: 18.9688 mb
-    mime/types: 17.4453 mb
-    mail/field: 0.4023 mb
-    mail/message: 0.3906 mb
-  action_view/view_paths: 0.4453 mb
-    action_view/base: 0.4336 mb
+TOP: 54.1836 MiB
+  mail: 18.9688 MiB
+    mime/types: 17.4453 MiB
+    mail/field: 0.4023 MiB
+    mail/message: 0.3906 MiB
+  action_view/view_paths: 0.4453 MiB
+    action_view/base: 0.4336 MiB
 ```
 
 You can use `CUT_OFF=0.3` to only show files that have above a certain memory useage, this can be used to help eliminate noise.
