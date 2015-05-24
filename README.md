@@ -40,7 +40,7 @@ You must be using Ruby 2.1+ to install these libraries. If you're on an older ve
 
 ## Use
 
-There are two ways to use benchmark an app. Derailed can either try to boot your web app and run requests against it while benchmarking, or it can also staically give you more information about your dependencies that are in your your Gemfile. Booting your app will always be more accurate, but if you cannot get your app to run in production locally, you'll still find the static information useful.
+There are two ways to use benchmark an app. Derailed can either try to boot your web app and run requests against it while benchmarking, or it can statically give you more information about the dependencies that are in your Gemfile. Booting your app will always be more accurate, but if you cannot get your app to run in production locally, you'll still find the static information useful.
 
 ## Static Benchmarking
 
