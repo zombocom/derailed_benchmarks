@@ -130,7 +130,7 @@ namespace :perf do
   task :mem => [:kernel_require_patch, :setup] do
     puts "## Impact of `require <file>` on RAM"
     puts
-    puts "Showing all `require <file>` calls that consume #{ENV['CUT_OFF']} mb or more of RSS"
+    puts "Showing all `require <file>` calls that consume #{ENV['CUT_OFF']} MiB or more of RSS"
     puts "Configure with `CUT_OFF=0` for all entries or `CUT_OFF=5` for few entries"
 
     puts "Note: Files only count against RAM on their first load."
