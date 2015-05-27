@@ -110,7 +110,7 @@ allocated memory by gem
    8103432  json-1.8.2
 ```
 
-Once you identify a gem that creates a large amout of memory using `$ derailed bundle:mem` you can pull that gem into it's own Gemfile and run `$ derailed bundle:objects` to get detailed information about it. This information can be used by contributors and library authors to identify and eliminate object creation hotspots.
+Once you identify a gem that creates a large amount of memory using `$ derailed bundle:mem` you can pull that gem into it's own Gemfile and run `$ derailed bundle:objects` to get detailed information about it. This information can be used by contributors and library authors to identify and eliminate object creation hotspots.
 
 
 By default this task will only return results from the `:default` and `"production"` groups. If you want a different group you can run with.
