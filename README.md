@@ -88,6 +88,35 @@ You can use `CUT_OFF=0.3` to only show files that have above a certain memory us
 
 Note: This method won't include files in your own app, only items in your Gemfile. For that you'll need to use `derailed exec mem`. See below for more info.
 
+The same file may be required by several libraries, since Ruby only requires files once, the cost is only associated with the first library to require a file. To make this more visible duplicate entries will list all the parents they belong to. For example both `mail` and `fog` require `mime/types. So it may show up something like this in your app:
+
+```
+$ derailed bundle:mem
+TOP: 54.1836 MiB
+  mail: 18.9688 MiB
+    mime/types: 17.4453 MiB (Also required by: fog/storage)
+    mail/field: 0.4023 MiB
+    mail/message: 0.3906 MiB
+```
+
+That way you'll know that simply removing the top level library (mail) would not result in a memory reduction. The output is trucated after the first two entries:
+
+
+```
+fog/core: 0.9844 MiB (Also required by: fog/xml, fog/json, and 48 others)
+fog/rackspace: 0.957 MiB
+fog/joyent: 0.7227 MiB
+  fog/joyent/compute: 0.7227 MiB
+```
+
+If you want to see everything that requires `fog/core` you can run `CUT_OFF=0 bundle exec derailed bundle:mem` to get the full output that you can then grep through manually.
+
+Update: While `mime/types` looks horible in these examples, it's been fixed. You can add this to the top of your gemfile for free memory:
+
+```ruby
+gem 'mime-types', '~> 2.4.3', require: 'mime/types/columnar'
+```
+
 ### Objects created at Require time
 
 To get more info about the objects, using [memory_profiler](https://github.com/SamSaffron/memory_profiler), created when your dependencies are required you can run:

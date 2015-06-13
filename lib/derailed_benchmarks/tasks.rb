@@ -1,4 +1,3 @@
-
 namespace :perf do
   task :rails_load do
     ENV["RAILS_ENV"] ||= "production"
@@ -66,6 +65,9 @@ namespace :perf do
     TEST_COUNT  = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
     PATH_TO_HIT = ENV["PATH_TO_HIT"] || ENV['ENDPOINT'] || "/"
     puts "Endpoint: #{ PATH_TO_HIT.inspect }"
+
+    require 'rack/test'
+    require 'rack/file'
 
     DERAILED_APP = DerailedBenchmarks.add_auth(DERAILED_APP)
     if server = ENV["USE_SERVER"]
@@ -145,6 +147,7 @@ namespace :perf do
 
   desc "outputs ram usage over time"
   task :ram_over_time => [:setup] do
+    require 'get_process_mem'
     puts "PID: #{Process.pid}"
     ram = GetProcessMem.new
     @keep_going = true
@@ -177,6 +180,8 @@ namespace :perf do
 
   desc "iterations per second"
   task :ips => [:setup] do
+    require 'benchmark/ips'
+
     Benchmark.ips do |x|
       x.report("ips") { call_app }
     end

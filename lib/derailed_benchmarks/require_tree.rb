@@ -2,8 +2,11 @@
 # RequireTree.new('get_process_mem')
 module DerailedBenchmarks
   class RequireTree
+    REQUIRED_BY = {}
+
     attr_reader   :name
     attr_accessor :cost
+    attr_accessor :parent
 
     def initialize(name)
       @name     = name
@@ -12,6 +15,8 @@ module DerailedBenchmarks
 
     def <<(tree)
       @children[tree.name.to_s] = tree
+      tree.parent = self
+      (REQUIRED_BY[tree.name.to_s] ||= []) << self.name
     end
 
     def [](name)
@@ -32,10 +37,23 @@ module DerailedBenchmarks
       children.sort { |c1, c2| c2.cost <=> c1.cost }
     end
 
+    def to_string
+      str = "#{name}: #{cost.round(4)} MiB"
+      if parent && REQUIRED_BY[self.name.to_s]
+        names = REQUIRED_BY[self.name.to_s].uniq - [parent.name.to_s]
+        if names.any?
+          str << " (Also required by: #{ names.first(2).join(", ") }"
+          str << ", and #{names.count - 2} others" if names.count > 3
+          str << ")"
+        end
+      end
+      str
+    end
+
     # Recursively prints all child nodes
     def print_sorted_children(level = 0, out = STDOUT)
       return if cost < ENV['CUT_OFF'].to_f
-      out.puts "  " * level + "#{name}: #{cost.round(4)} MiB"
+      out.puts "  " * level + self.to_string
       level += 1
       sorted_children.each do |child|
         child.print_sorted_children(level, out)
