@@ -1,5 +1,10 @@
 # A Log of Changes!
 
+## [1.0.1] - 2015-20-06
+
+- `bundle:mem` and similar tasks now keep track of duplicate requires and display them along side of memory requirements. This makes it easier to identify where components are used by multiple libraries
+- Add rake to gemspec which gets rid of `Unresolved specs during Gem::Specification.reset:` warning
+- Outputs of memory are now done in [mebibytes](https://en.wikipedia.org/wiki/Mebibyte), a more accurate unit for the value we're measuring (hint: it's what you think MB is).
 
 ## [1.0.0] - 2015-15-05
 
