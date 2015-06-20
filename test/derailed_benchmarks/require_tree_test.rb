@@ -6,6 +6,10 @@ class RequireTree < ActiveSupport::TestCase
     DerailedBenchmarks::RequireTree.new(name)
   end
 
+  def teardown
+    DerailedBenchmarks::RequireTree.const_set("REQUIRED_BY",  {})
+  end
+
   test "default_cost" do
     parent =  tree("parent")
     assert_equal 0,       parent.cost
@@ -46,6 +50,41 @@ class RequireTree < ActiveSupport::TestCase
 parent: #{ parent.cost.round(4) } MiB
   large: #{ large.cost.round(4) } MiB
   small: #{ small.cost.round(4) } MiB
+OUT
+    capture  = StringIO.new
+
+    parent.print_sorted_children(0, capture)
+
+    assert_equal expected, capture.string
+  end
+
+  test "attributes duplicate children" do
+    parent = tree("parent")
+    parent.cost = rand(5..10)
+    small  = tree("small")
+    small.cost = rand(10..100)
+
+    large  = tree("large")
+    large.cost = small.cost + 1
+
+    dup    = tree("large")
+    dup.cost = 0.4
+    small << dup
+
+    parent << small
+    parent << large
+
+    expected = [large, small]
+    assert_equal expected, parent.sorted_children
+
+    expected = [dup]
+    assert_equal expected, small.sorted_children
+
+    expected = <<-OUT
+parent: #{ parent.cost.round(4) } MiB
+  large: #{ large.cost.round(4) } MiB (Also required by: small)
+  small: #{ small.cost.round(4) } MiB
+    large: #{ dup.cost.round(4) } MiB (Also required by: parent)
 OUT
     capture  = StringIO.new
     parent.print_sorted_children(0, capture)

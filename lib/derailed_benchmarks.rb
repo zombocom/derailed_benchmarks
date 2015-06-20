@@ -1,10 +1,7 @@
 require 'time'
-
-require 'rack/test'
-require 'rack/file'
-require 'benchmark/ips'
-require 'get_process_mem'
 require 'bundler'
+
+require 'get_process_mem'
 
 module DerailedBenchmarks
   def self.gem_is_bundled?(name)

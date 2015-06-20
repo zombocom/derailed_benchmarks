@@ -13,7 +13,7 @@ $: << lib
 
 
 require File.join(lib, 'derailed_benchmarks.rb')
-require 'bundler'
+
 Bundler.setup
 
 require 'thor'
@@ -22,6 +22,7 @@ class DerailedBenchmarkCLI < Thor
 
   desc "exec", "executes given derailed benchmark"
   def exec(task = nil)
+    setup_bundler!
     require 'derailed_benchmarks'
     require 'rake'
     Rake::TaskManager.record_task_metadata = true
