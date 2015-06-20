@@ -4,6 +4,8 @@ A series of things you can use to benchmark a Rails or Ruby app.
 
 ![](http://media.giphy.com/media/lfbxexWy71b6U/giphy.gif)
 
+[![Build Status](https://travis-ci.org/schneems/derailed_benchmarks.svg)](https://travis-ci.org/schneems/derailed_benchmarks)
+
 ## Compatibility/Requirements
 
 This gem has been tested and is known to work with Rails 3.2+ using Ruby
