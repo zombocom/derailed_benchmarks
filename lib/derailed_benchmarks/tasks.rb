@@ -248,6 +248,8 @@ namespace :perf do
     num = Integer(ENV["TEST_COUNT"] || 1)
     opts = {}
     opts[:ignore_files] = /#{ENV['IGNORE_FILES_REGEXP']}/ if ENV['IGNORE_FILES_REGEXP']
+    opts[:allow_files]  = "#{ENV['ALLOW_FILES']}"         if ENV['ALLOW_FILES']
+
     puts "Running #{num} times"
     report = MemoryProfiler.report(opts) do
       num.times { call_app }
