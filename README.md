@@ -113,7 +113,7 @@ fog/joyent: 0.7227 MiB
 
 If you want to see everything that requires `fog/core` you can run `CUT_OFF=0 bundle exec derailed bundle:mem` to get the full output that you can then grep through manually.
 
-Update: While `mime/types` looks horible in these examples, it's been fixed. You can add this to the top of your gemfile for free memory:
+Update: While `mime/types` looks horrible in these examples, it's been fixed. You can add this to the top of your gemfile for free memory:
 
 ```ruby
 gem 'mime-types', '~> 2.4.3', require: 'mime/types/columnar'
