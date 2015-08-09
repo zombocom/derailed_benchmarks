@@ -157,7 +157,7 @@ Note: This method won't include files in your own app, only items in your Gemfil
 
 This benchmarking will attempt to boot your Rails app and run benchmarks against it. Unlike the static benchmarking with `$ derailed bundle:*` these will include information about your specific app. The pro is you'll get more information and potentially identify problems in your app code, the con is that it requires you to be able to boot and run your application in a `production` environment locally, which for some apps is non-trivial.
 
-You may want to check out [mini-profiler](https://github.com/MiniProfiler/rack-mini-profiler), here's a [mini-profiler walkthrough](http://www.justinweiss.com/blog/2015/05/11/a-new-way-to-understand-your-rails-apps-performance/?utm_source=rubyweekly&utm_medium=email). It's great and does slightly different benchmarking than what you'll find here.
+You may want to check out [mini-profiler](https://github.com/MiniProfiler/rack-mini-profiler), here's a [mini-profiler walkthrough](http://www.justinweiss.com/blog/2015/05/11/a-new-way-to-understand-your-rails-apps-performance). It's great and does slightly different benchmarking than what you'll find here.
 
 ### Running in Production Locally.
 
