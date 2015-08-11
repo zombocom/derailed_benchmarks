@@ -35,7 +35,7 @@ While executing your commands you may need to use `bundle exec` before typing th
 To use all profiling methods available also add:
 
 ```
-gem "stackprof", group: :development
+gem 'stackprof', group: :development
 ```
 
 You must be using Ruby 2.1+ to install these libraries. If you're on an older version of Ruby, what are you waiting for?
