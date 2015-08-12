@@ -114,7 +114,7 @@ namespace :perf do
     rescue LoadError
       raise "Add stackprof to your gemfile to continue `gem 'stackprof', group: :development`"
     end
-    TEST_COUNT = (ENV["TEST_COUNT"] ||= "100").to_i
+    STACKPROF_TEST_COUNT = (ENV["TEST_COUNT"] ||= "100").to_i
     file = "tmp/#{Time.now.iso8601}-stackprof-cpu-myapp.dump"
     StackProf.run(mode: :cpu, out: file) do
       Rake::Task["perf:test"].invoke
