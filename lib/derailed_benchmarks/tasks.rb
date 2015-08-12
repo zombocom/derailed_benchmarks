@@ -69,13 +69,13 @@ namespace :perf do
     require 'rack/test'
     require 'rack/file'
 
-    DERAILED_APP = DerailedBenchmarks.add_auth(DERAILED_APP)
+    DERAILED_AUTHED_APP = DerailedBenchmarks.add_auth(DERAILED_APP)
     if server = ENV["USE_SERVER"]
       @port = (3000..3900).to_a.sample
       puts "Port: #{ @port.inspect }"
       puts "Server: #{ server.inspect }"
       thread = Thread.new do
-        Rack::Server.start(app: DERAILED_APP, :Port => @port, environment: "none", server: server)
+        Rack::Server.start(app: DERAILED_AUTHED_APP, :Port => @port, environment: "none", server: server)
       end
       sleep 1
 
@@ -85,7 +85,7 @@ namespace :perf do
         raise "Bad request to #{cmd.inspect} Response:\n#{ response.inspect }" unless $?.success?
       end
     else
-      @app = Rack::MockRequest.new(DERAILED_APP)
+      @app = Rack::MockRequest.new(DERAILED_AUTHED_APP)
 
       def call_app
         response = @app.get(PATH_TO_HIT)
