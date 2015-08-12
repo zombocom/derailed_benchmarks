@@ -185,10 +185,10 @@ $ RAILS_ENV=production rails server
 
 You may need to disable enforcing SSL or other domain restrictions temporarially. If you do these, don't forget to add them back in before deploying any code (eek!).
 
-You can get information from STDOUT if you're using `rails_12factor` gem, or from `logs/production.log` by running
+You can get information from STDOUT if you're using `rails_12factor` gem, or from `log/production.log` by running
 
 ```
-$ tail -f logs/production.log
+$ tail -f log/production.log
 ```
 
 Once you've fixed all errors and you can run a server in production, you're almost there.
