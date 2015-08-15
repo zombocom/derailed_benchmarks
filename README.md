@@ -169,7 +169,7 @@ For starters try booting into a console:
 $ RAILS_ENV=production rails console
 ```
 
-You may get errors, complaining about not being able to connect to the `production` database. For this, you can either create a local database with the name of your production database, or you can copy the info from your `development` group to your `production` groupu in your `database.yml`.
+You may get errors, complaining about not being able to connect to the `production` database. For this, you can either create a local database with the name of your production database, or you can copy the info from your `development` group to your `production` group in your `database.yml`.
 
 You may be missing environment variables expected in `production` such as `SECRET_KEY_BASE`. For those you can either commit them to your `.env` file (if you're using one). Or add them directly to the command:
 
