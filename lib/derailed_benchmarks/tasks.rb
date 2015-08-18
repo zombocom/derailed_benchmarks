@@ -97,6 +97,8 @@ namespace :perf do
 
   desc "hits the url TEST_COUNT times"
   task :test => [:setup] do
+    require 'benchmark'
+
     Benchmark.bm { |x|
       x.report("#{TEST_COUNT} requests") {
         TEST_COUNT.times {
