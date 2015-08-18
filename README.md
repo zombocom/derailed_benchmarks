@@ -50,7 +50,7 @@ This section covers how to get memory information from your Gemfile without havi
 
 All commands in this section will begin with `$ derailed bundle:`
 
-For more information on the relationship between memory and performance please read/watch [How Ruby Uses Memory](http://www.schneems.com/2015/05/11/how-ruby-uses-memory.html).
+For more information on the relationship between memory and performance please read/watch [How Ruby Uses Memory](http://www.schneems.com/2015/05/11/how-ruby-uses-memory/).
 
 ### Memory used at Require time
 
