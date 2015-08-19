@@ -147,8 +147,8 @@ namespace :perf do
     TOP_REQUIRE.print_sorted_children
   end
 
-  desc "outputs ram usage over time"
-  task :ram_over_time => [:setup] do
+  desc "outputs memory usage over time"
+  task :mem_over_time => [:setup] do
     require 'get_process_mem'
     puts "PID: #{Process.pid}"
     ram = GetProcessMem.new
@@ -178,6 +178,11 @@ namespace :perf do
       ram_thread.join
       file.close unless ENV["SKIP_FILE_WRITE"]
     end
+  end
+
+  task :ram_over_time do
+    Kernel.warn("The ram_over_time task is deprecated. Use mem_over_time")
+    Rake::Task["perf:ram_over_time"].invoke
   end
 
   desc "iterations per second"
