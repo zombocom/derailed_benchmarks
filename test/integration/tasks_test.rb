@@ -72,11 +72,11 @@ class TasksTest < ActiveSupport::TestCase
     rake "perf:mem"
   end
 
-  test 'ram_over_time' do
-    rake "perf:ram_over_time"
+  test 'mem_over_time' do
+    rake "perf:mem_over_time"
   end
 
   test 'ips' do
-    rake "perf:ram_over_time"
+    rake "perf:mem_over_time"
   end
 end
