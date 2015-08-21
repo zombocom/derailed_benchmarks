@@ -155,7 +155,7 @@ namespace :perf do
     @keep_going = true
     begin
       unless ENV["SKIP_FILE_WRITE"]
-        ruby = `ruby -v`
+        ruby = `ruby -v`.chomp
         FileUtils.mkdir_p("tmp")
         file = File.open("tmp/#{Time.now.iso8601}-#{ruby}-memory-#{TEST_COUNT}-times.txt", 'w')
         file.sync = true
