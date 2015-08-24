@@ -1,5 +1,8 @@
 # A Log of Changes!
 
+## [1.1.0] - unreleased
+- Set custom auth user using a lambda in perf.rake
+
 ## [1.0.1] - 2015-20-06
 
 - `bundle:mem` and similar tasks now keep track of duplicate requires and display them along side of memory requirements. This makes it easier to identify where components are used by multiple libraries

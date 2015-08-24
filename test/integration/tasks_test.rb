@@ -36,6 +36,12 @@ class TasksTest < ActiveSupport::TestCase
     assert_match 'Server: "webrick"', result
   end
 
+  test 'authenticate with a custom user' do
+    env = { "AUTH_CUSTOM_USER" => "true", "PATH_TO_HIT" => "authenticated", "USE_AUTH" => "true", "TEST_COUNT" => "2" }
+    result = rake 'perf:test', env: env
+    assert_match 'Auth: true', result
+  end
+
   test 'test' do
     rake "perf:test"
   end
