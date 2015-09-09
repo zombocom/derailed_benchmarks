@@ -57,13 +57,13 @@ For more information on the relationship between memory and performance please r
 Each gem you add to your project can increase your memory at boot. You can get visibility into the total memory used by each gem in your Gemfile by running:
 
 ```
-$ derailed bundle:mem
+$ bundle exec derailed bundle:mem
 ```
 
 This will load each of your gems in your Gemfile and see how much memory they consume when they are required. For example if you're using the `mail` gem. The output might look like this
 
 ```
-$ derailed bundle:mem
+$ bundle exec derailed bundle:mem
 TOP: 54.1836 MiB
   mail: 18.9688 MiB
     mime/types: 17.4453 MiB
@@ -83,7 +83,7 @@ Here we can see that `mail` uses 18MiB, with the majority coming from `mime/type
 By default this task will only return results from the `:default` and `"production"` groups. If you want a different group you can run with.
 
 ```
-$ derailed bundle:mem development
+$ bundle exec derailed bundle:mem development
 ```
 
 You can use `CUT_OFF=0.3` to only show files that have above a certain memory useage, this can be used to help eliminate noise.
@@ -93,7 +93,7 @@ Note: This method won't include files in your own app, only items in your Gemfil
 The same file may be required by several libraries, since Ruby only requires files once, the cost is only associated with the first library to require a file. To make this more visible duplicate entries will list all the parents they belong to. For example both `mail` and `fog` require `mime/types. So it may show up something like this in your app:
 
 ```
-$ derailed bundle:mem
+$ bundle exec derailed bundle:mem
 TOP: 54.1836 MiB
   mail: 18.9688 MiB
     mime/types: 17.4453 MiB (Also required by: fog/storage)
@@ -124,7 +124,7 @@ gem 'mime-types', '~> 2.4.3', require: 'mime/types/columnar'
 To get more info about the objects, using [memory_profiler](https://github.com/SamSaffron/memory_profiler), created when your dependencies are required you can run:
 
 ```
-$ derailed bundle:objects
+$ bundle exec derailed bundle:objects
 ```
 
 This will output detailed information about objects created while your dependencies are loaded
@@ -147,7 +147,7 @@ Once you identify a gem that creates a large amount of memory using `$ derailed 
 By default this task will only return results from the `:default` and `"production"` groups. If you want a different group you can run with.
 
 ```
-$ derailed bundle:objects development
+$ bundle exec derailed bundle:objects development
 ```
 
 Note: This method won't include files in your own app, only items in your Gemfile. For that you'll need to use `derailed exec objects`. See below for more info.
@@ -216,13 +216,13 @@ Instead of going over each command we'll look at common problems and which comma
 If your app appears to be leaking ever increasing amounts of memory, you'll want to first verify if it's an actual unbound "leak" or if it's just using more memory than you want. A true memory leak will increase memory use forever, most apps will increase memory use until they hit a "plateau". To diagnose this you can run:
 
 ```
-$ derailed exec perf:mem_over_time
+$ bundle exec derailed exec perf:mem_over_time
 ```
 
 This will boot your app and hit it with requests and output the memory to stdout (and a file under ./tmp). It may look like this:
 
 ```
-$ derailed exec perf:mem_over_time
+$ bundle exec derailed exec perf:mem_over_time
 Booting: production
 Endpoint: "/"
 PID: 78675
@@ -257,7 +257,7 @@ If you're pretty sure that there's a memory leak, but you can't confirm it using
 If you've identified a memory leak, or you simply want to see where your memory use is coming from you'll want to use
 
 ```
-$ derailed exec perf:objects
+$ bundle exec derailed exec perf:objects
 ```
 
 This task hits your app and uses memory_profiler to see where objects are created. You'll likely want to run once, then run it with a higher `TEST_COUNT` so that you can see hotspots where objects are created on __EVERY__ request versus just maybe on the first.
@@ -269,7 +269,7 @@ $ TEST_COUNT=10 derailed exec perf:objects
 
 This is an expensive operation, so you likely want to keep the count lowish. Once you've identified a hotspot read [how ruby uses memory](http://www.sitepoint.com/ruby-uses-memory/) for some tips on reducing object allocations.
 
-This is is similar to `$ derailed bundle:objects` however it includes objects created at runtime. It's much more useful for actual production performance debugging, the other is more useful for library authors to debug.
+This is is similar to `$ bundle exec derailed bundle:objects` however it includes objects created at runtime. It's much more useful for actual production performance debugging, the other is more useful for library authors to debug.
 
 
 ### Memory Is large at boot.
@@ -280,7 +280,7 @@ This task does essentially the same thing, however it hits your app with one req
 
 
 ```
-$ derailed exec perf:mem
+$ bundle exec derailed exec perf:mem
 
 TOP: 54.1836 MiB
   mail: 18.9688 MiB
@@ -302,7 +302,7 @@ Well...aren't they all. If you've already looked into decreasing object allocati
 One technique is to use a "sampling" stack profiler. This type of profiling looks at what method is being executed at a given interval and records it. At the end of execution it counts all the times a given method was being called and shows you the percent of time spent in each method. This is a very low overhead method to looking into execution time. Ruby 2.1+ has this available in gem form it's called [stackprof](https://github.com/tmm1/stackprof). As you guessed you can run this with derailed benchmarks, first add it to your gemfile `gem "stackprof", group: :development` then execute:
 
 ```
-$ derailed exec perf:stackprof
+$ bundle exec derailed exec perf:stackprof
 ==================================
   Mode: cpu(1000)
   Samples: 16067 (1.07% miss rate)
@@ -344,7 +344,7 @@ From here you can dig into individual methods.
 Micro benchmarks might tell you at the code level how much faster something is, but what about the overall application speed. If you're trying to figure out how effective a performance change is to your application, it is useful to compare it to your existing app performance. To help you with that you can use:
 
 ```
-$ derailed exec perf:ips
+$ bundle exec derailed exec perf:ips
 Endpoint: "/"
 Calculating -------------------------------------
                  ips     1.000  i/100ms
@@ -357,7 +357,7 @@ This will hit an endpoint in your application using [benchmark-ips](https://gith
 If you care you can also run pure benchmark (without ips):
 
 ```
-$ derailed exec perf:test
+$ bundle exec derailed exec perf:test
 ```
 
 But I wouldn't, benchmark-ips is a better measure.
@@ -373,7 +373,7 @@ All the tasks accept configuration in the form of environment variables.
 For tasks that are run a number of times you can set the number using `TEST_COUNT` for example:
 
 ```
-$ derailed exec perf:test TEST_COUNT=100_000
+$ TEST_COUNT=100_000 bundle exec derailed exec perf:test
 ```
 
 ## Hitting a different endpoint with `PATH_TO_HIT`
@@ -389,7 +389,7 @@ $ PATH_TO_HIT=/users/new derailed exec perf:mem
 All tests are run without a webserver (directly using `Rack::Mock` by default), if you want to use a webserver set `USE_SERVER` to a Rack::Server compliant server, such as `webrick`.
 
 ```
-$ USE_SERVER=webrick derailed exec perf:mem
+$ USE_SERVER=webrick bundle exec derailed exec perf:mem
 ```
 
 Or
@@ -410,7 +410,7 @@ change this if your app doesn't run locally with `RAILS_ENV` set to
 `production`. For example:
 
 ```
-$ derailed exec perf:mem RAILS_ENV=development
+$ RAILS_ENV=development bundle exec derailed exec perf:mem 
 ```
 
 ## perf.rake
@@ -471,7 +471,7 @@ If you're trying to test an endpoint that has authentication you'll need to tell
 To enable authentication in a test run with:
 
 ```
-$ USE_AUTH=true derailed exec perf:mem
+$ USE_AUTH=true bundle exec derailed exec perf:mem
 ```
 
 See below how to customize authentication.
