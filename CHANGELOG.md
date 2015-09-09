@@ -1,7 +1,10 @@
 # A Log of Changes!
 
-## [1.1.0] - unreleased
+## [1.1.0] - 2015-09-09
+
 - Set custom auth user using a lambda in perf.rake
+- Changed `perf:ram_over_time` changed to `perf:mem_over_time`
+- Fixed gem warnings
 
 ## [1.0.1] - 2015-20-06
 
