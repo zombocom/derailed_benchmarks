@@ -410,7 +410,7 @@ change this if your app doesn't run locally with `RAILS_ENV` set to
 `production`. For example:
 
 ```
-$ RAILS_ENV=development bundle exec derailed exec perf:mem 
+$ RAILS_ENV=development bundle exec derailed exec perf:mem
 ```
 
 ## perf.rake
@@ -463,6 +463,26 @@ end
 ```
 
 Set the constant `DERAILED_APP` to your Rack app. See [schneems/derailed_benchmarks#1](https://github.com/schneems/derailed_benchmarks/pull/1) for more info.
+
+An example of setting this up could look like:
+
+
+```ruby
+# perf.rake
+
+require 'bundler'
+Bundler.setup
+
+require 'derailed_benchmarks'
+require 'derailed_benchmarks/tasks'
+
+namespace :perf do
+  task :rack_load do
+    require_relative 'lib/application'
+    DERAILED_APP = MyApplication::Routes
+  end
+end
+```
 
 ## Authentication
 
