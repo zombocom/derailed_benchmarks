@@ -1,5 +1,9 @@
 # A Log of Changes!
 
+## [1.1.1] - 2015-10-01
+
+- Added ability to create a heap dump `perf:heap`.
+
 ## [1.1.0] - 2015-09-09
 
 - Set custom auth user using a lambda in perf.rake

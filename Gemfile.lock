@@ -1,9 +1,10 @@
 PATH
   remote: .
   specs:
-    derailed_benchmarks (1.1.0)
+    derailed_benchmarks (1.1.1)
       benchmark-ips (~> 2)
       get_process_mem (~> 0)
+      heap_inspect (~> 0)
       memory_profiler (~> 0)
       rack (~> 1)
       rake (~> 10)
@@ -58,6 +59,7 @@ GEM
       warden (~> 1.2.3)
     erubis (2.7.0)
     get_process_mem (0.2.0)
+    heap_inspect (0.1.0)
     hike (1.2.3)
     i18n (0.7.0)
     journey (1.0.4)
