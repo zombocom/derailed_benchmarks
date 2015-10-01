@@ -263,4 +263,24 @@ namespace :perf do
     end
     report.pretty_print
   end
+
+  desc "heap analyzer"
+  task :heap => [:setup] do
+    require 'objspace'
+
+    file_name = "tmp/#{Time.now.iso8601}-heap.dump"
+    ObjectSpace.trace_object_allocations_start
+    call_app
+    GC.start
+
+    puts "Heap file generated: #{ file_name.inspect }"
+    ObjectSpace.dump_all(output: File.open(file_name, 'w'))
+
+    require 'heap_inspect'
+
+    HeapInspect::Analyzer.new(file_name).analyze
+
+    puts ""
+    puts "Try uploading #{file_name.inspect} to http://tenderlove.github.io/heap-analyzer/"
+  end
 end
