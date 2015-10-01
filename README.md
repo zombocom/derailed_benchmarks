@@ -271,6 +271,32 @@ This is an expensive operation, so you likely want to keep the count lowish. Onc
 
 This is is similar to `$ bundle exec derailed bundle:objects` however it includes objects created at runtime. It's much more useful for actual production performance debugging, the other is more useful for library authors to debug.
 
+## I want a Heap Dump
+
+If you're still struggling with runtime memory you can generate a heap dump that can later be analyzed using [heap_inspect](https://github.com/schneems/heap_inspect).
+
+
+```
+$ bundle exec derailed exec perf:heap
+Booting: production
+Heap file generated: "tmp/2015-10-01T12:31:03-05:00-heap.dump"
+
+Analyzing Heap
+==============
+Generation:  0 object count: 209307
+Generation: 35 object count: 31236
+Generation: 36 object count: 36705
+Generation: 37 object count: 1301
+Generation: 38 object count: 8
+
+Try uploading "tmp/2015-10-01T12:31:03-05:00-heap.dump" to http://tenderlove.github.io/heap-analyzer/
+```
+
+For more help on getting data from a heap dump see
+
+```
+$ heap_inspect --help
+```
 
 ### Memory Is large at boot.
 
