@@ -116,7 +116,7 @@ If you want to see everything that requires `fog/core` you can run `CUT_OFF=0 bu
 Update: While `mime/types` looks horrible in these examples, it's been fixed. You can add this to the top of your gemfile for free memory:
 
 ```ruby
-gem 'mime-types', '~> 2.4.3', require: 'mime/types/columnar'
+gem 'mime-types', [ '~> 2.6', '>= 2.6.1' ], require: 'mime/types/columnar'
 ```
 
 ### Objects created at Require time
