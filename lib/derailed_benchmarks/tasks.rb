@@ -270,17 +270,22 @@ namespace :perf do
 
     file_name = "tmp/#{Time.now.iso8601}-heap.dump"
     ObjectSpace.trace_object_allocations_start
-    call_app
+    puts "Running #{ TEST_COUNT } times"
+    TEST_COUNT.times {
+      call_app
+    }
     GC.start
 
     puts "Heap file generated: #{ file_name.inspect }"
     ObjectSpace.dump_all(output: File.open(file_name, 'w'))
 
-    require 'heap_inspect'
+    require 'heapy'
 
-    HeapInspect::Analyzer.new(file_name).analyze
+    Heapy::Analyzer.new(file_name).analyze
 
     puts ""
-    puts "Try uploading #{file_name.inspect} to http://tenderlove.github.io/heap-analyzer/"
+    puts "Run `$ heapy --help` for more options"
+    puts ""
+    puts "Also try uploading #{file_name.inspect} to http://tenderlove.github.io/heap-analyzer/"
   end
 end
