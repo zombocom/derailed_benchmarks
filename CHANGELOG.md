@@ -1,5 +1,9 @@
 # A Log of Changes!
 
+## [1.1.2] - 2015-10-05
+
+- Added ability to use TEST_COUNT environment variable with `perf:heap`.
+
 ## [1.1.1] - 2015-10-01
 
 - Added ability to create a heap dump `perf:heap`.
