@@ -269,7 +269,7 @@ namespace :perf do
     require 'objspace'
 
     file_name = "tmp/#{Time.now.iso8601}-heap.dump"
-    FileUtils.mkdir_p file_name
+    FileUtils.mkdir_p("tmp")
     ObjectSpace.trace_object_allocations_start
     puts "Running #{ TEST_COUNT } times"
     TEST_COUNT.times {
