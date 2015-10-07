@@ -535,7 +535,11 @@ $ cat perf.rake
 If you want you can customize the user that is logged in by setting that value in your `perf.rake` file.
 
 ```
-DerailedBenchmarks.auth.user = -> { User.find_or_create!(twitter: "schneems") }
+DerailedBenchmarks.auth.user = -> { 
+  User.where(twitter: "schneems").first_or_create do |user|
+    user.password = "12345"
+  end
+}
 ```
 
 You will need to provide a valid user, so depending on the validations you have in your `user.rb`, you may need to provide different parameters.
