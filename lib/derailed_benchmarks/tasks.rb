@@ -28,7 +28,7 @@ namespace :perf do
       DERAILED_APP.initialize! unless DERAILED_APP.instance_variable_get(:@initialized)
     end
 
-    if defined? ActiveRecord
+    if  ENV["DERAILED_SKIP_ACTIVE_RECORD"] != "true" && defined? ActiveRecord
       if defined? ActiveRecord::Tasks::DatabaseTasks
         ActiveRecord::Tasks::DatabaseTasks.create_current
       else # Rails 3.2
