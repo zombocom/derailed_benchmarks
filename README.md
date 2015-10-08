@@ -204,7 +204,7 @@ $ derailed exec --help
   $ derailed exec perf:ips  # iterations per second
   $ derailed exec perf:mem  # show memory usage caused by invoking require per gem
   $ derailed exec perf:objects  # profiles ruby allocation
-  $ derailed exec perf:mem_over_time  # outputs memory usage over time
+  $ derailed exec perf:ram_over_time  # outputs memory usage over time
   $ derailed exec perf:test  # hits the url TEST_COUNT times
 ```
 
@@ -216,13 +216,13 @@ Instead of going over each command we'll look at common problems and which comma
 If your app appears to be leaking ever increasing amounts of memory, you'll want to first verify if it's an actual unbound "leak" or if it's just using more memory than you want. A true memory leak will increase memory use forever, most apps will increase memory use until they hit a "plateau". To diagnose this you can run:
 
 ```
-$ bundle exec derailed exec perf:mem_over_time
+$ bundle exec derailed exec perf:ram_over_time
 ```
 
 This will boot your app and hit it with requests and output the memory to stdout (and a file under ./tmp). It may look like this:
 
 ```
-$ bundle exec derailed exec perf:mem_over_time
+$ bundle exec derailed exec perf:ram_over_time
 Booting: production
 Endpoint: "/"
 PID: 78675
@@ -241,9 +241,9 @@ PID: 78675
 Here we can see that while the memory use is increasing, it levels off around 183 MiB. You'll want to run this task using ever increasing values of `TEST_COUNT=` for example
 
 ```
-$ TEST_COUNT=5000 derailed exec perf:mem_over_time
-$ TEST_COUNT=10_000 derailed exec perf:mem_over_time
-$ TEST_COUNT=20_000 derailed exec perf:mem_over_time
+$ TEST_COUNT=5000 derailed exec perf:ram_over_time
+$ TEST_COUNT=10_000 derailed exec perf:ram_over_time
+$ TEST_COUNT=20_000 derailed exec perf:ram_over_time
 ```
 
 Adjust your counts appropriately so you can get results in a reasonable amount of time. If your memory never levels off, congrats! You've got a memory leak! I recommend copying and pasting values from the file generated into google docs and graphing it so you can get a better sense of the slope of your line.
