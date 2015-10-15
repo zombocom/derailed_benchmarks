@@ -1,5 +1,9 @@
 # A Log of Changes!
 
+## [1.1.3] - 2015-10-15
+
+- Update docs
+
 ## [1.1.2] - 2015-10-05
 
 - Added ability to use TEST_COUNT environment variable with `perf:heap`.

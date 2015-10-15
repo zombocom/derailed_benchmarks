@@ -275,7 +275,6 @@ This is is similar to `$ bundle exec derailed bundle:objects` however it include
 
 If you're still struggling with runtime memory you can generate a heap dump that can later be analyzed using [heap_inspect](https://github.com/schneems/heap_inspect).
 
-
 ```
 $ bundle exec derailed exec perf:heap
 Booting: production
@@ -295,7 +294,7 @@ Try uploading "tmp/2015-10-01T12:31:03-05:00-heap.dump" to http://tenderlove.git
 For more help on getting data from a heap dump see
 
 ```
-$ heap_inspect --help
+$ heapy --help
 ```
 
 ### Memory Is large at boot.
