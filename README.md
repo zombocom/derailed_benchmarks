@@ -24,7 +24,7 @@ curl 7.37.1 #...
 
 Put this in your gemfile:
 
-```
+```ruby
 gem 'derailed', group: :development
 ```
 
@@ -34,7 +34,7 @@ While executing your commands you may need to use `bundle exec` before typing th
 
 To use all profiling methods available also add:
 
-```
+```ruby
 gem 'stackprof', group: :development
 ```
 
@@ -479,7 +479,7 @@ $ rake -f perf.rake -T
 
 Using Rails? You don't need to do anything special. If you're using Rack, you need to tell us how to boot your app. In your `perf.rake` file add a task:
 
-```
+```ruby
 namespace :perf do
   task :rack_load do
     DERAILED_APP = # your code here
@@ -533,7 +533,7 @@ $ cat perf.rake
 
 If you want you can customize the user that is logged in by setting that value in your `perf.rake` file.
 
-```
+```ruby
 DerailedBenchmarks.auth.user = -> { User.find_or_create!(twitter: "schneems") }
 ```
 
