@@ -427,6 +427,13 @@ This boots a webserver and hits it using `curl` instead of in memory. This is us
 
 Note: this plugs in the given webserver directly into rack, it doesn't use any `puma.config` file etc. that you have set-up. If you want to do this, i'm open to suggestions on how (and pull requests)
 
+### Excluding ActiveRecord
+
+By default, derailed will load ActiveRecord if the gem is included as a dependency.  It is included by default, if you just include the `rails` gem.  If you are using a different ORM, you will either need to only include the `railties` gem, or set the `DERAILED_SKIP_ACTIVE_RECORD` flag.
+
+```
+$ DERAILED_SKIP_ACTIVE_RECORD=true
+```
 
 ### Running in a different environment
 
