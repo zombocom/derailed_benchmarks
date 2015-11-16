@@ -76,7 +76,7 @@ class DerailedBenchmarkCLI < Thor
       require 'bundler/setup'
 
       begin
-        if ENV["DERAILED_SKIP_ACTIVE_RECORD"] == "true"
+        if ENV["DERAILED_SKIP_ACTIVE_RECORD"]
           require "action_controller/railtie"
           require "action_mailer/railtie"
           require "sprockets/railtie"
