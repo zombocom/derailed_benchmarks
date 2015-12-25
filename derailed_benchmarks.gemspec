@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "memory_profiler", "~> 0"
   gem.add_dependency "get_process_mem", "~> 0"
   gem.add_dependency "benchmark-ips",   "~> 2"
-  gem.add_dependency "rack",            "~> 1"
+  gem.add_dependency "rack",            ">= 1"
   gem.add_dependency "rake",            "~> 10"
   gem.add_dependency "thor",            "~> 0.19"
 
