@@ -76,7 +76,14 @@ class DerailedBenchmarkCLI < Thor
       require 'bundler/setup'
 
       begin
-        require 'rails/all'
+        if ENV["DERAILED_SKIP_ACTIVE_RECORD"]
+          require "action_controller/railtie"
+          require "action_mailer/railtie"
+          require "sprockets/railtie"
+          require "rails/test_unit/railtie"
+        else
+          require 'rails/all'
+        end
       rescue LoadError
       end
     end
