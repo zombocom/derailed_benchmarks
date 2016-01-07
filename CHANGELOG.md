@@ -1,5 +1,10 @@
 # A Log of Changes!
 
+## [1.3.0] - 2015-01-07
+
+- Allow environment variable to skip Active Record setup.
+- Allow Rack 2 to work with Derailed.
+
 ## [1.1.3] - 2015-10-15
 
 - Update docs
