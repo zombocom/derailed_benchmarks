@@ -6,7 +6,7 @@ PATH
       get_process_mem (~> 0)
       heapy (~> 0)
       memory_profiler (~> 0)
-      rack (~> 1)
+      rack (>= 1)
       rake (~> 10)
       thor (~> 0.19)
 
@@ -59,7 +59,7 @@ GEM
       warden (~> 1.2.3)
     erubis (2.7.0)
     get_process_mem (0.2.0)
-    heapy (0.1.0)
+    heapy (0.1.2)
     hike (1.2.3)
     i18n (0.7.0)
     journey (1.0.4)
@@ -67,7 +67,7 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    memory_profiler (0.9.5)
+    memory_profiler (0.9.6)
     mime-types (1.25.1)
     mini_portile (0.6.2)
     multi_json (1.11.0)
@@ -136,4 +136,4 @@ DEPENDENCIES
   test-unit (~> 3.0)
 
 BUNDLED WITH
-   1.10.6
+   1.11.2
