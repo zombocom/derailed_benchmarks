@@ -88,7 +88,7 @@ $ bundle exec derailed bundle:mem development
 
 You can use `CUT_OFF=0.3` to only show files that have above a certain memory useage, this can be used to help eliminate noise.
 
-Note: This method won't include files in your own app, only items in your Gemfile. For that you'll need to use `derailed exec mem`. See below for more info.
+Note: This method won't include files in your own app, only items in your Gemfile. For that you'll need to use `bundle exec derailed exec mem`. See below for more info.
 
 The same file may be required by several libraries, since Ruby only requires files once, the cost is only associated with the first library to require a file. To make this more visible duplicate entries will list all the parents they belong to. For example both `mail` and `fog` require `mime/types. So it may show up something like this in your app:
 
@@ -141,7 +141,7 @@ allocated memory by gem
    8103432  json-1.8.2
 ```
 
-Once you identify a gem that creates a large amount of memory using `$ derailed bundle:mem` you can pull that gem into it's own Gemfile and run `$ derailed bundle:objects` to get detailed information about it. This information can be used by contributors and library authors to identify and eliminate object creation hotspots.
+Once you identify a gem that creates a large amount of memory using `$ bundle exec derailed bundle:mem` you can pull that gem into it's own Gemfile and run `$ bundle exec derailed bundle:objects` to get detailed information about it. This information can be used by contributors and library authors to identify and eliminate object creation hotspots.
 
 
 By default this task will only return results from the `:default` and `"production"` groups. If you want a different group you can run with.
@@ -150,12 +150,12 @@ By default this task will only return results from the `:default` and `"producti
 $ bundle exec derailed bundle:objects development
 ```
 
-Note: This method won't include files in your own app, only items in your Gemfile. For that you'll need to use `derailed exec objects`. See below for more info.
+Note: This method won't include files in your own app, only items in your Gemfile. For that you'll need to use `bundle exec derailed exec objects`. See below for more info.
 
 
 ## Dynamic app Benchmarking
 
-This benchmarking will attempt to boot your Rails app and run benchmarks against it. Unlike the static benchmarking with `$ derailed bundle:*` these will include information about your specific app. The pro is you'll get more information and potentially identify problems in your app code, the con is that it requires you to be able to boot and run your application in a `production` environment locally, which for some apps is non-trivial.
+This benchmarking will attempt to boot your Rails app and run benchmarks against it. Unlike the static benchmarking with `$ bundle exec derailed bundle:*` these will include information about your specific app. The pro is you'll get more information and potentially identify problems in your app code, the con is that it requires you to be able to boot and run your application in a `production` environment locally, which for some apps is non-trivial.
 
 You may want to check out [mini-profiler](https://github.com/MiniProfiler/rack-mini-profiler), here's a [mini-profiler walkthrough](http://www.justinweiss.com/blog/2015/05/11/a-new-way-to-understand-your-rails-apps-performance). It's great and does slightly different benchmarking than what you'll find here.
 
@@ -198,7 +198,7 @@ Once you've fixed all errors and you can run a server in production, you're almo
 You can run commands against your app by running `$ derailed exec`. There are sections on setting up Rack and using authenticated requests below. You can see what commands are available by running:
 
 ```
-$ derailed exec --help
+$ bundle exec derailed exec --help
   $ derailed exec perf:allocated_objects  # outputs allocated object diff after app is called TEST_COUNT times
   $ derailed exec perf:gc  # outputs GC::Profiler.report data while app is called TEST_COUNT times
   $ derailed exec perf:ips  # iterations per second
@@ -241,9 +241,9 @@ PID: 78675
 Here we can see that while the memory use is increasing, it levels off around 183 MiB. You'll want to run this task using ever increasing values of `TEST_COUNT=` for example
 
 ```
-$ TEST_COUNT=5000 derailed exec perf:mem_over_time
-$ TEST_COUNT=10_000 derailed exec perf:mem_over_time
-$ TEST_COUNT=20_000 derailed exec perf:mem_over_time
+$ TEST_COUNT=5000 bundle exec derailed exec perf:mem_over_time
+$ TEST_COUNT=10_000 bundle exec derailed exec perf:mem_over_time
+$ TEST_COUNT=20_000 bundle exec derailed exec perf:mem_over_time
 ```
 
 Adjust your counts appropriately so you can get results in a reasonable amount of time. If your memory never levels off, congrats! You've got a memory leak! I recommend copying and pasting values from the file generated into google docs and graphing it so you can get a better sense of the slope of your line.
@@ -257,14 +257,14 @@ If you're pretty sure that there's a memory leak, but you can't confirm it using
 If you've identified a memory leak, or you simply want to see where your memory use is coming from you'll want to use
 
 ```
-$ bundle exec derailed exec perf:objects
+$ bundle exec bundle exec derailed exec perf:objects
 ```
 
 This task hits your app and uses memory_profiler to see where objects are created. You'll likely want to run once, then run it with a higher `TEST_COUNT` so that you can see hotspots where objects are created on __EVERY__ request versus just maybe on the first.
 
 
 ```
-$ TEST_COUNT=10 derailed exec perf:objects
+$ TEST_COUNT=10 bundle exec derailed exec perf:objects
 ```
 
 This is an expensive operation, so you likely want to keep the count lowish. Once you've identified a hotspot read [how ruby uses memory](http://www.sitepoint.com/ruby-uses-memory/) for some tips on reducing object allocations.
@@ -406,7 +406,7 @@ $ TEST_COUNT=100_000 bundle exec derailed exec perf:test
 By default tasks will hit your homepage `/`. If you want to hit a different url use `PATH_TO_HIT` for example if you wanted to go to `users/new` you can execute:
 
 ```
-$ PATH_TO_HIT=/users/new derailed exec perf:mem
+$ PATH_TO_HIT=/users/new bundle exec derailed exec perf:mem
 ```
 
 ### Using a real web server with USE_SERVER
@@ -420,7 +420,7 @@ $ USE_SERVER=webrick bundle exec derailed exec perf:mem
 Or
 
 ```
-$ USE_SERVER=puma derailed exec perf:mem
+$ USE_SERVER=puma bundle exec derailed exec perf:mem
 ```
 
 This boots a webserver and hits it using `curl` instead of in memory. This is useful if you think the performance issue is related to your webserver.
