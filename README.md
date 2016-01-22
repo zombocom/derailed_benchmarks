@@ -75,8 +75,8 @@ TOP: 54.1836 MiB
 
 _Aside: A "MiB", which is the [IEEE] and [IEC] symbol for Mebibyte, is 2<sup>20</sup> bytes / 1024 Kibibytes (which are in turn 1024 bytes)._
 
-[IEEE]: http://en.wikipedia.org/wiki/IEEE_1541-2002
-[IEC]: http://en.wikipedia.org/wiki/IEC_80000-13
+[IEEE]: https://en.wikipedia.org/wiki/IEEE_1541-2002
+[IEC]: https://en.wikipedia.org/wiki/IEC_80000-13
 
 Here we can see that `mail` uses 18MiB, with the majority coming from `mime/types`. You can use this information to prune out large dependencies you don't need. Also if you see a large memory use by a gem that you do need, please open up an issue with that library to let them know (be sure to include reproduction instructions). Hopefully as a community we can identify memory hotspots and reduce their impact. Before we can fix performance problems, we need to know where those problems exist.
 
@@ -157,7 +157,7 @@ Note: This method won't include files in your own app, only items in your Gemfil
 
 This benchmarking will attempt to boot your Rails app and run benchmarks against it. Unlike the static benchmarking with `$ bundle exec derailed bundle:*` these will include information about your specific app. The pro is you'll get more information and potentially identify problems in your app code, the con is that it requires you to be able to boot and run your application in a `production` environment locally, which for some apps is non-trivial.
 
-You may want to check out [mini-profiler](https://github.com/MiniProfiler/rack-mini-profiler), here's a [mini-profiler walkthrough](http://www.justinweiss.com/blog/2015/05/11/a-new-way-to-understand-your-rails-apps-performance). It's great and does slightly different benchmarking than what you'll find here.
+You may want to check out [mini-profiler](https://github.com/MiniProfiler/rack-mini-profiler), here's a [mini-profiler walkthrough](http://www.justinweiss.com/articles/a-new-way-to-understand-your-rails-apps-performance/). It's great and does slightly different benchmarking than what you'll find here.
 
 ### Running in Production Locally.
 
@@ -273,7 +273,7 @@ This is is similar to `$ bundle exec derailed bundle:objects` however it include
 
 ## I want a Heap Dump
 
-If you're still struggling with runtime memory you can generate a heap dump that can later be analyzed using [heap_inspect](https://github.com/schneems/heap_inspect).
+If you're still struggling with runtime memory you can generate a heap dump that can later be analyzed using [heap_inspect](https://github.com/schneems/heapy).
 
 ```
 $ bundle exec derailed exec perf:heap
