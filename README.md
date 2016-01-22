@@ -101,7 +101,7 @@ TOP: 54.1836 MiB
     mail/message: 0.3906 MiB
 ```
 
-That way you'll know that simply removing the top level library (mail) would not result in a memory reduction. The output is trucated after the first two entries:
+That way you'll know that simply removing the top level library (mail) would not result in a memory reduction. The output is truncated after the first two entries:
 
 
 ```
