@@ -80,7 +80,7 @@ namespace :perf do
       sleep 1
 
       def call_app(path = File.join("/", PATH_TO_HIT))
-        cmd = "curl http://localhost:#{@port}#{path} -s --fail 2>&1"
+        cmd = "curl 'http://localhost:#{@port}#{path}' -s --fail 2>&1"
         response = `#{cmd}`
         raise "Bad request to #{cmd.inspect} Response:\n#{ response.inspect }" unless $?.success?
       end
