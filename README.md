@@ -257,7 +257,7 @@ If you're pretty sure that there's a memory leak, but you can't confirm it using
 If you've identified a memory leak, or you simply want to see where your memory use is coming from you'll want to use
 
 ```
-$ bundle exec bundle exec derailed exec perf:objects
+$ bundle exec derailed exec perf:objects
 ```
 
 This task hits your app and uses memory_profiler to see where objects are created. You'll likely want to run once, then run it with a higher `TEST_COUNT` so that you can see hotspots where objects are created on __EVERY__ request versus just maybe on the first.
