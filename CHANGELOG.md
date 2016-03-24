@@ -1,5 +1,10 @@
 # A Log of Changes!
 
+## [1.3.1]
+
+- Allow for use with Rack 11.
+
+
 ## [1.3.0] - 2015-01-07
 
 - Allow environment variable to skip Active Record setup.
