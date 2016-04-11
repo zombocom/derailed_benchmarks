@@ -409,7 +409,15 @@ By default tasks will hit your homepage `/`. If you want to hit a different url 
 $ PATH_TO_HIT=/users/new bundle exec derailed exec perf:mem
 ```
 
-### Using a real web server with USE_SERVER
+This method accepts a full uri. For example, allowing you to hit a subdomain endpoint:
+
+```
+$ PATH_TO_HIT=http://subdomain.lvh.me:3000/users/new bundle exec derailed exec perf:mem
+```
+
+Beware that you cannot combine a full uri with `USE_SERVER`.
+
+### Using a real web server with `USE_SERVER`
 
 All tests are run without a webserver (directly using `Rack::Mock` by default), if you want to use a webserver set `USE_SERVER` to a Rack::Server compliant server, such as `webrick`.
 
