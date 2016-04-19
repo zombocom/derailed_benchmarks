@@ -53,6 +53,7 @@ Dummy::Application.routes.draw do
   root to: "pages#index"
 
   get "foo", to: "pages#index"
+  get "foo_secret", to: "pages#secret"
 
   get "authenticated", to: "authenticated#index"
 

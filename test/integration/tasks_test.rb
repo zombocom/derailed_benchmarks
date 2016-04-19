@@ -62,6 +62,22 @@ class TasksTest < ActiveSupport::TestCase
     assert_match 'Server: "webrick"', result
   end
 
+  test 'HTTP headers' do
+    env = {
+      "PATH_TO_HIT" => 'foo_secret',
+      "TEST_COUNT" => "2",
+      "HTTP_AUTHORIZATION" => "Basic #{Base64.encode64("admin:secret")}",
+      "HTTP_CACHE_CONTROL" => "no-cache"
+    }
+    result = rake "perf:test", env: env
+    assert_match 'Endpoint: "foo_secret"', result
+    assert_match 'HTTP headers: {"Authorization"=>"Basic YWRtaW46c2VjcmV0\n", "Cache-Control"=>"no-cache"}', result
+
+    env["USE_SERVER"] = "webrick"
+    result = rake "perf:test", env: env
+    assert_match 'HTTP headers: {"Authorization"=>"Basic YWRtaW46c2VjcmV0\n", "Cache-Control"=>"no-cache"}', result
+  end
+
   test 'USE_SERVER' do
     result = rake "perf:test", env: { "USE_SERVER" => 'webrick', "TEST_COUNT" => "2" }
     assert_match 'Server: "webrick"', result

@@ -66,6 +66,19 @@ namespace :perf do
     PATH_TO_HIT = ENV["PATH_TO_HIT"] || ENV['ENDPOINT'] || "/"
     puts "Endpoint: #{ PATH_TO_HIT.inspect }"
 
+    HTTP_HEADER_PREFIX = "HTTP_".freeze
+    RACK_HTTP_HEADERS = ENV.select { |key| key.starts_with?(HTTP_HEADER_PREFIX) }
+
+    HTTP_HEADERS = RACK_HTTP_HEADERS.keys.inject({}) do |hash, rack_header_name|
+      # e.g. "HTTP_ACCEPT_CHARSET" -> "Accept-Charset"
+      header_name = rack_header_name[HTTP_HEADER_PREFIX.size..-1].split("_").map(&:downcase).map(&:capitalize).join("-")
+      hash[header_name] = RACK_HTTP_HEADERS[rack_header_name]
+      hash
+    end
+    puts "HTTP headers: #{HTTP_HEADERS}" unless HTTP_HEADERS.empty?
+
+    CURL_HTTP_HEADER_ARGS = HTTP_HEADERS.map { |http_header_name, value| "-H \"#{http_header_name}: #{value}\"" }.join(" ")
+
     require 'rack/test'
     require 'rack/file'
 
@@ -80,7 +93,7 @@ namespace :perf do
       sleep 1
 
       def call_app(path = File.join("/", PATH_TO_HIT))
-        cmd = "curl 'http://localhost:#{@port}#{path}' -s --fail 2>&1"
+        cmd = "curl #{CURL_HTTP_HEADER_ARGS} 'http://localhost:#{@port}#{path}' -s --fail 2>&1"
         response = `#{cmd}`
         raise "Bad request to #{cmd.inspect} Response:\n#{ response.inspect }" unless $?.success?
       end
@@ -88,7 +101,7 @@ namespace :perf do
       @app = Rack::MockRequest.new(DERAILED_APP)
 
       def call_app
-        response = @app.get(PATH_TO_HIT)
+        response = @app.get(PATH_TO_HIT, RACK_HTTP_HEADERS)
         raise "Bad request: #{ response.body }" unless response.status == 200
         response
       end
