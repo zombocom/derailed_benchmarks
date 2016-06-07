@@ -6,7 +6,7 @@ namespace :perf do
 
     ENV["SECRET_KEY_BASE"] ||= "foofoofoo"
 
-    ENV['LOG_LEVEL'] = "FATAL"
+    ENV['LOG_LEVEL'] ||= "FATAL"
 
     require 'rails'
 
