@@ -6,6 +6,9 @@ rvm:
   - 2.2
   - ruby-head
 
+before_install:
+  - gem install bundler -v 1.12.5
+
 matrix:
   allow_failures:
     - rvm: 1.9.3
