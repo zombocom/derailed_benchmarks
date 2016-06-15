@@ -25,7 +25,7 @@ curl 7.37.1 #...
 Put this in your gemfile:
 
 ```ruby
-gem 'derailed', group: :development
+gem 'derailed_benchmarks', group: :development
 ```
 
 Then run `$ bundle install`.
