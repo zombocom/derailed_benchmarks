@@ -269,7 +269,7 @@ $ TEST_COUNT=10 bundle exec derailed exec perf:objects
 
 This is an expensive operation, so you likely want to keep the count lowish. Once you've identified a hotspot read [how ruby uses memory](http://www.sitepoint.com/ruby-uses-memory/) for some tips on reducing object allocations.
 
-This is is similar to `$ bundle exec derailed bundle:objects` however it includes objects created at runtime. It's much more useful for actual production performance debugging, the other is more useful for library authors to debug.
+This is similar to `$ bundle exec derailed bundle:objects` however it includes objects created at runtime. It's much more useful for actual production performance debugging, the other is more useful for library authors to debug.
 
 ## I want a Heap Dump
 
