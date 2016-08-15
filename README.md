@@ -183,7 +183,7 @@ Once you can boot a console in production, you'll need to be able to boot a serv
 $ RAILS_ENV=production rails server
 ```
 
-You may need to disable enforcing SSL or other domain restrictions temporarially. If you do these, don't forget to add them back in before deploying any code (eek!).
+You may need to disable enforcing SSL or other domain restrictions temporarily. If you do these, don't forget to add them back in before deploying any code (eek!).
 
 You can get information from STDOUT if you're using `rails_12factor` gem, or from `log/production.log` by running
 
@@ -377,7 +377,7 @@ Calculating -------------------------------------
                  ips      3.306  (± 0.0%) i/s -     17.000
 ```
 
-This will hit an endpoint in your application using [benchmark-ips](https://github.com/evanphx/benchmark-ips). In "iterations per second" a higher value is always better. You can run your code change several times using this method, and then run your "baseline" codebase (without your changes) to see how it affects your overall performance. You'll want to run and record the results several times (including the std deviation) so you can help eliminate noise. Benchmarking is hard, this technique isn't perfect but it's definetly better than nothing.
+This will hit an endpoint in your application using [benchmark-ips](https://github.com/evanphx/benchmark-ips). In "iterations per second" a higher value is always better. You can run your code change several times using this method, and then run your "baseline" codebase (without your changes) to see how it affects your overall performance. You'll want to run and record the results several times (including the std deviation) so you can help eliminate noise. Benchmarking is hard, this technique isn't perfect but it's definitely better than nothing.
 
 If you care you can also run pure benchmark (without ips):
 
