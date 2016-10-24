@@ -18,6 +18,8 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
+  gem.required_ruby_version = ">= 2.2.0"
+
   gem.add_dependency "heapy",           "~> 0"
   gem.add_dependency "memory_profiler", "~> 0"
   gem.add_dependency "get_process_mem", "~> 0"
