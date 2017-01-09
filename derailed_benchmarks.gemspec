@@ -25,10 +25,10 @@ Gem::Specification.new do |gem|
   gem.add_dependency "get_process_mem", "~> 0"
   gem.add_dependency "benchmark-ips",   "~> 2"
   gem.add_dependency "rack",            ">= 1"
-  gem.add_dependency "rake",            "> 10", "< 12"
+  gem.add_dependency "rake",            "> 10", "< 13"
   gem.add_dependency "thor",            "~> 0.19"
 
   gem.add_development_dependency "capybara", "~> 2"
-  gem.add_development_dependency "rails",    "~> 3"
-  gem.add_development_dependency "devise",   "~> 3"
+  gem.add_development_dependency "rails",    "> 3", "< 6"
+  gem.add_development_dependency "devise",   "> 3", "< 5"
 end
