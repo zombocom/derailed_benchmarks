@@ -1,5 +1,10 @@
 # A Log of Changes!
 
+## [1.3.2]
+
+- Allow for use with Rack 11.
+
+
 ## [1.3.1]
 
 - Allow for use with Rack 11.
