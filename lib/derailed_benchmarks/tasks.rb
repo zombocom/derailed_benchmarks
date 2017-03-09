@@ -202,35 +202,6 @@ namespace :perf do
     GC::Profiler.disable
   end
 
-  task :foo => [:setup] do
-    require 'objspace'
-    call_app
-
-    before = Hash.new { 0 }
-    after  = Hash.new { 0 }
-    after_size = Hash.new { 0 }
-    GC.start
-    GC.disable
-
-    TEST_COUNT.times { call_app }
-
-    rvalue_size = GC::INTERNAL_CONSTANTS[:RVALUE_SIZE]
-    ObjectSpace.each_object do |obj|
-      after[obj.class] += 1
-      memsize = ObjectSpace.memsize_of(obj) + rvalue_size
-      # compensate for API bug
-      memsize = rvalue_size if memsize > 100_000_000_000
-      after_size[obj.class] += memsize
-    end
-
-    require 'pp'
-    pp after.sort {|(k,v), (k2, v2)| v2 <=> v }
-    puts "========="
-    puts
-    puts
-    pp after_size.sort {|(k,v), (k2, v2)| v2 <=> v }
-  end
-
   desc "outputs allocated object diff after app is called TEST_COUNT times"
   task :allocated_objects => [:setup] do
     call_app
