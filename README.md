@@ -401,7 +401,7 @@ For tasks that are run a number of times you can set the number using `TEST_COUN
 $ TEST_COUNT=100_000 bundle exec derailed exec perf:test
 ```
 
-## Hitting a different endpoint with `PATH_TO_HIT`
+### Hitting a different endpoint with `PATH_TO_HIT`
 
 By default tasks will hit your homepage `/`. If you want to hit a different url use `PATH_TO_HIT` for example if you wanted to go to `users/new` you can execute:
 
@@ -416,6 +416,16 @@ $ PATH_TO_HIT=http://subdomain.lvh.me:3000/users/new bundle exec derailed exec p
 ```
 
 Beware that you cannot combine a full uri with `USE_SERVER`.
+
+### Setting HTTP headers
+
+You can specify HTTP headers by setting `HTTP_<header name>` variables. Example:
+
+```
+$ HTTP_AUTHORIZATION="Basic YWRtaW46c2VjcmV0\n" \
+  HTTP_USER_AGENT="Mozilla/5.0" \
+  PATH_TO_HIT=/foo_secret bundle exec derailed exec perf:ips
+```
 
 ### Using a real web server with `USE_SERVER`
 
