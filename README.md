@@ -568,7 +568,7 @@ If you're trying to authenticate a non-user model, you'll need to write your own
 
 ### Custom Authentication Strategy
 
-To implement your own authentication strategy You will need to create a class that [inherits from auth_helper.rb](lib/derailed_benchmarks/auth_helper.rb). You will need to implement a `setup` and a `call` method. You can see an example of [how the devise auth helper was written](lib/derailed_benchmarks/auth_helpers/devise.rb). You can put this code in your `perf.rake` file.
+To implement your own authentication strategy You will need to create a class that [inherits from auth_helper.rb](lib/derailed_benchmarks/auth_helper.rb). You will need to implement a `setup` and a `call` method. You can see an example of [how the devise auth helper was written](lib/derailed_benchmarks/auth_helpers/devise.rb) and [how it can be done for Clearance](https://gist.github.com/zavan/f4d34dd86bf825db549a0ac28c7e10d5). You can put this code in your `perf.rake` file.
 
 ```ruby
 class MyCustomAuth < DerailedBenchmarks::AuthHelper
