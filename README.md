@@ -86,7 +86,7 @@ By default this task will only return results from the `:default` and `"producti
 $ bundle exec derailed bundle:mem development
 ```
 
-You can use `CUT_OFF=0.3` to only show files that have above a certain memory useage, this can be used to help eliminate noise.
+You can use `CUT_OFF=0.3` to only show files that have above a certain memory usage, this can be used to help eliminate noise.
 
 Note: This method won't include files in your own app, only items in your Gemfile. For that you'll need to use `bundle exec derailed exec mem`. See below for more info.
 
