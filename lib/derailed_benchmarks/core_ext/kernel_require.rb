@@ -19,13 +19,14 @@ module Kernel
     Kernel.require(file)
   end
 
-  # This breaks things, not sure how to fix
-  # def require_relative(file)
-  #   Kernel.require_relative(file)
-  # end
+  def require_relative(file)
+    # Kernel.require_relative(file)
+    require File.expand_path("../#{file}", caller_locations(1, 1)[0].absolute_path)
+  end
+
   class << self
     alias :original_require          :require
-    # alias :original_require_relative :require_relative
+    alias :original_require_relative :require_relative
   end
 
   # The core extension we use to measure require time of all requires

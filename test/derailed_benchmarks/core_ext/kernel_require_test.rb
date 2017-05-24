@@ -24,6 +24,7 @@ class KernelRequireTest < ActiveSupport::TestCase
     parent    = assert_node_in_parent("parent_one.rb", TOP_REQUIRE)
     child_one = assert_node_in_parent("child_one.rb", parent)
     child_two = assert_node_in_parent("child_two.rb", parent)
+    rel_child = assert_node_in_parent("relative_child", parent)
     rse_child = assert_node_in_parent("raise_child.rb", child_two)
   end
 end
