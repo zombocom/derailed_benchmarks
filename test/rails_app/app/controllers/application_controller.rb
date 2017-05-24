@@ -1,6 +1,12 @@
 class ApplicationController < ActionController::Base
+  if respond_to?(:before_filter) && !respond_to?(:before_action)
+    class << self
+      alias :before_action :before_filter
+    end
+  end
+
   protect_from_forgery
-  before_filter :pull_out_locale
+  before_action :pull_out_locale
 
 
   def pull_out_locale
