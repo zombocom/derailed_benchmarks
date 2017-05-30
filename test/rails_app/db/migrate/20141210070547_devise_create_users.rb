@@ -1,4 +1,4 @@
-inherited_class = Rails.version < "4.2" ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
+inherited_class = Rails.version < "5" ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
 class DeviseCreateUsers < inherited_class
   def change
     create_table(:users) do |t|

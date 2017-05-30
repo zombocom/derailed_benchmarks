@@ -28,7 +28,8 @@ Gem::Specification.new do |gem|
   gem.add_dependency "rake",            "> 10", "< 13"
   gem.add_dependency "thor",            "~> 0.19"
 
-  gem.add_development_dependency "capybara", "~> 2"
-  gem.add_development_dependency "rails",    "> 3", "< 6"
-  gem.add_development_dependency "devise",   "> 3", "< 5"
+  gem.add_development_dependency "capybara",  "~> 2"
+  gem.add_development_dependency "rails",     "> 3", "< 6"
+  gem.add_development_dependency "devise",    "> 3", "< 5"
+  gem.add_development_dependency "appraisal", "2.2.0"
 end
