@@ -139,6 +139,33 @@ namespace :perf do
     puts `#{cmd}`
   end
 
+  desc "stackprof_warmup"
+  task :stackprof_warmup => [:setup] do
+    # [:wall, :cpu, :object]
+    begin
+      require 'stackprof'
+    rescue LoadError
+      raise "Add stackprof to your gemfile to continue `gem 'stackprof', group: :development`"
+    end
+    TEST_COUNT = (ENV["TEST_COUNT"] || "10").to_i
+    INTERVAL = (ENV["INTERVAL"] || "100").to_i
+    MODE = (ENV["MODE"] || "wall").to_sym
+    types = ["cold"]
+    TEST_COUNT.times {|i| types << "warm.#{i}" }
+    types.each do |suffix|
+      file = "tmp/#{Time.now.iso8601}-stackprof.dump.#{suffix}"
+      result = StackProf.run(mode: MODE,
+                             raw: true,
+                             aggregate: false,
+                             interval: INTERVAL) do
+        call_app
+      end
+      File.open(file, 'w') do |f|
+        JSON.dump(result, f)
+      end
+    end
+  end
+
   task :kernel_require_patch do
     require 'derailed_benchmarks/core_ext/kernel_require.rb'
   end
