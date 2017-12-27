@@ -102,7 +102,7 @@ namespace :perf do
 
       def call_app
         response = @app.get(PATH_TO_HIT, RACK_HTTP_HEADERS)
-        raise "Bad request: #{ response.body }" unless response.status == 200
+        raise "Bad request to #{PATH_TO_HIT}. Response status: #{response.status}, body: #{ response.body }" unless response.status == 200
         response
       end
     end
