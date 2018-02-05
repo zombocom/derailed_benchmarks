@@ -319,7 +319,7 @@ TOP: 54.1836 MiB
 
 You can use `CUT_OFF=0.3` to only show files that have above a certain memory useage, this can be used to help eliminate noise.
 
-If your application code is exremely large at boot consider using `$ derailed exec perf:objects` to debug low level object creation.
+If your application code is extremely large at boot consider using `$ derailed exec perf:objects` to debug low level object creation.
 
 ## My app is Slow
 
