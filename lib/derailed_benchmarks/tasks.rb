@@ -13,7 +13,7 @@ namespace :perf do
     puts "Booting: #{Rails.env}"
 
     %W{ . lib test config }.each do |file|
-      $LOAD_PATH << file
+      $LOAD_PATH << File.expand_path(file)
     end
 
     require 'application'
