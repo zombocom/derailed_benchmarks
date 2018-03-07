@@ -1,5 +1,9 @@
 # A Log of Changes!
 
+## [1.3.3]
+
+- Make all paths added to $LOAD_PATH absolute instead of relative to allow for use with apps that use bootsnap.
+
 ## [1.3.2]
 
 - Allow for use with Rack 11.
