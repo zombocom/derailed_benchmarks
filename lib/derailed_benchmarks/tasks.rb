@@ -83,7 +83,7 @@ namespace :perf do
     require 'rack/test'
     require 'rack/file'
 
-    DERAILED_APP = DerailedBenchmarks.add_auth(DERAILED_APP)
+    DERAILED_APP = DerailedBenchmarks.add_auth(Object.class_eval { remove_const(:DERAILED_APP) })
     if server = ENV["USE_SERVER"]
       @port = (3000..3900).to_a.sample
       puts "Port: #{ @port.inspect }"
