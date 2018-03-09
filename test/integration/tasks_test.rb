@@ -51,6 +51,11 @@ class TasksTest < ActiveSupport::TestCase
     assert_match "1 requests", result
   end
 
+  test 'WARM_COUNT' do
+    result = rake "perf:test", env: { "WARM_COUNT" => 1 }
+    assert_match "Warming up app:", result
+  end
+
   test 'PATH_TO_HIT' do
     env    = { "PATH_TO_HIT" => 'foo', "TEST_COUNT" => "2" }
     result = rake "perf:test", env: env

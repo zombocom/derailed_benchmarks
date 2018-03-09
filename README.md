@@ -402,6 +402,16 @@ For tasks that are run a number of times you can set the number using `TEST_COUN
 $ TEST_COUNT=100_000 bundle exec derailed exec perf:test
 ```
 
+### Warming up your app before measuring with `WARM_COUNT`
+
+When you are measuring the long term performance of an application, especially if you're using jit you may want to let the application "warm up" without measuring this time. To allow for this you can specify `WARM_COUNT` and the application will be called that number of times before any measurements are taken.
+
+```
+$ WARM_COUNT=5_000 bundle exec derailed exec perf:test
+Warming up app: 5000 times
+# ...
+```
+
 ### Hitting a different endpoint with `PATH_TO_HIT`
 
 By default tasks will hit your homepage `/`. If you want to hit a different url use `PATH_TO_HIT` for example if you wanted to go to `users/new` you can execute:

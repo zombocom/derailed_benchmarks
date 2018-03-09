@@ -62,6 +62,7 @@ namespace :perf do
       Rake::Task["perf:rack_load"].invoke
     end
 
+    WARM_COUNT  = (ENV['WARM_COUNT'] || 0).to_i
     TEST_COUNT  = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
     PATH_TO_HIT = ENV["PATH_TO_HIT"] || ENV['ENDPOINT'] || "/"
     puts "Endpoint: #{ PATH_TO_HIT.inspect }"
@@ -105,6 +106,10 @@ namespace :perf do
         raise "Bad request: #{ response.body }" unless response.status == 200
         response
       end
+    end
+    if WARM_COUNT > 0
+      puts "Warming up app: #{WARM_COUNT} times"
+      WARM_COUNT.times { call_app }
     end
   end
 
