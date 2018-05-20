@@ -75,12 +75,22 @@ namespace :perf do
     puts "Endpoint: #{ PATH_TO_HIT.inspect }"
 
     # See https://www.rubydoc.info/github/rack/rack/file/SPEC#The_Environment
+    # All HTTP_ variables are accepted in the Rack environment hash, except HTTP_CONTENT_TYPE and HTTP_CONTENT_LENGTH.
+    # For those, the HTTP_ prefix has to be removed.
     HTTP_HEADER_PREFIX = "HTTP_".freeze
-    RACK_ENV_HASH = ENV.select { |key| key.start_with?(HTTP_HEADER_PREFIX) }
+    HTTP_HEADER_REGEXP = /^#{HTTP_HEADER_PREFIX}.+|CONTENT_(TYPE|LENGTH)$/
+    RACK_ENV_HASH = ENV.select { |key| key =~ HTTP_HEADER_REGEXP }
 
     HTTP_HEADERS = RACK_ENV_HASH.keys.inject({}) do |hash, rack_header_name|
       # e.g. "HTTP_ACCEPT_CHARSET" -> "Accept-Charset"
-      header_name = rack_header_name[HTTP_HEADER_PREFIX.size..-1].split("_").map(&:downcase).map(&:capitalize).join("-")
+      upper_case_header_name =
+        if rack_header_name.start_with?(HTTP_HEADER_PREFIX)
+          rack_header_name[HTTP_HEADER_PREFIX.size..-1]
+        else
+          rack_header_name
+        end
+
+      header_name = upper_case_header_name.split("_").map(&:downcase).map(&:capitalize).join("-")
 
       hash[header_name] = RACK_ENV_HASH[rack_header_name]
       hash

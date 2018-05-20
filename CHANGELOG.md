@@ -2,6 +2,7 @@
 
 ## [1.4.0] - unreleased
 - Support non-GET requests via REQUEST_METHOD and setting body via REQUEST_BODY
+- Add ability to set Content-Type and Content-Length headers via CONTENT_TYPE and CONTENT_LENGTH env vars (they don't work with HTTP_ variables)
 
 
 ## [1.3.4]

@@ -83,6 +83,25 @@ class TasksTest < ActiveSupport::TestCase
     assert_match 'HTTP headers: {"Authorization"=>"Basic YWRtaW46c2VjcmV0\n", "Cache-Control"=>"no-cache"}', result
   end
 
+  test 'CONTENT_TYPE' do
+    env = {
+      "REQUEST_METHOD" => "POST",
+      "PATH_TO_HIT" => "users",
+      "CONTENT_TYPE" => "application/json",
+      "REQUEST_BODY" => '{"user":{"email":"foo@bar.com","password":"123456","password_confirmation":"123456"}}',
+      "TEST_COUNT" => "2"
+    }
+
+    result = rake "perf:test", env: env
+    assert_match 'Body: {"user":{"email":"foo@bar.com","password":"123456","password_confirmation":"123456"}}', result
+    assert_match 'HTTP headers: {"Content-Type"=>"application/json"}', result
+
+    env["USE_SERVER"] = "webrick"
+    result = rake "perf:test", env: env
+    assert_match 'Body: {"user":{"email":"foo@bar.com","password":"123456","password_confirmation":"123456"}}', result
+    assert_match 'HTTP headers: {"Content-Type"=>"application/json"}', result
+  end
+
   test 'REQUEST_METHOD and REQUEST_BODY' do
     env = {
       "REQUEST_METHOD" => "POST",
