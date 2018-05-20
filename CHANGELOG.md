@@ -1,5 +1,9 @@
 # A Log of Changes!
 
+## [1.4.0] - unreleased
+- Support non-GET requests via REQUEST_METHOD and setting body via REQUEST_BODY
+
+
 ## [1.3.4]
 
 - Allow for "warming up tasks" via WARM_COUNT env var #119

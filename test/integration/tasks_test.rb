@@ -83,6 +83,25 @@ class TasksTest < ActiveSupport::TestCase
     assert_match 'HTTP headers: {"Authorization"=>"Basic YWRtaW46c2VjcmV0\n", "Cache-Control"=>"no-cache"}', result
   end
 
+  test 'REQUEST_METHOD and REQUEST_BODY' do
+    env = {
+      "REQUEST_METHOD" => "POST",
+      "PATH_TO_HIT" => "users",
+      "REQUEST_BODY" => "user%5Bemail%5D=foo%40bar.com&user%5Bpassword%5D=123456&user%5Bpassword_confirmation%5D=123456",
+      "TEST_COUNT" => "2"
+    }
+
+    result = rake "perf:test", env: env
+    assert_match 'Endpoint: "users"', result
+    assert_match 'Method: POST', result
+    assert_match 'Body: user%5Bemail%5D=foo%40bar.com&user%5Bpassword%5D=123456&user%5Bpassword_confirmation%5D=123456', result
+
+    env["USE_SERVER"] = "webrick"
+    result = rake "perf:test", env: env
+    assert_match 'Method: POST', result
+    assert_match 'Body: user%5Bemail%5D=foo%40bar.com&user%5Bpassword%5D=123456&user%5Bpassword_confirmation%5D=123456', result
+  end
+
   test 'USE_SERVER' do
     result = rake "perf:test", env: { "USE_SERVER" => 'webrick', "TEST_COUNT" => "2" }
     assert_match 'Server: "webrick"', result

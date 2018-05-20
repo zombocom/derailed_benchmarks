@@ -22,6 +22,9 @@ namespace :perf do
 
     DERAILED_APP = Rails.application
 
+    # Disables CSRF protection because of non-GET requests
+    DERAILED_APP.config.action_controller.allow_forgery_protection = false
+
     if DERAILED_APP.respond_to?(:initialized?)
       DERAILED_APP.initialize! unless DERAILED_APP.initialized?
     else
@@ -65,20 +68,33 @@ namespace :perf do
     WARM_COUNT  = (ENV['WARM_COUNT'] || 0).to_i
     TEST_COUNT  = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
     PATH_TO_HIT = ENV["PATH_TO_HIT"] || ENV['ENDPOINT'] || "/"
+    REQUEST_METHOD = ENV["REQUEST_METHOD"] || "GET"
+    REQUEST_BODY = ENV["REQUEST_BODY"]
+
+    puts "Method: #{REQUEST_METHOD}"
     puts "Endpoint: #{ PATH_TO_HIT.inspect }"
 
+    # See https://www.rubydoc.info/github/rack/rack/file/SPEC#The_Environment
     HTTP_HEADER_PREFIX = "HTTP_".freeze
-    RACK_HTTP_HEADERS = ENV.select { |key| key.starts_with?(HTTP_HEADER_PREFIX) }
+    RACK_ENV_HASH = ENV.select { |key| key.start_with?(HTTP_HEADER_PREFIX) }
 
-    HTTP_HEADERS = RACK_HTTP_HEADERS.keys.inject({}) do |hash, rack_header_name|
+    HTTP_HEADERS = RACK_ENV_HASH.keys.inject({}) do |hash, rack_header_name|
       # e.g. "HTTP_ACCEPT_CHARSET" -> "Accept-Charset"
       header_name = rack_header_name[HTTP_HEADER_PREFIX.size..-1].split("_").map(&:downcase).map(&:capitalize).join("-")
-      hash[header_name] = RACK_HTTP_HEADERS[rack_header_name]
+
+      hash[header_name] = RACK_ENV_HASH[rack_header_name]
       hash
     end
     puts "HTTP headers: #{HTTP_HEADERS}" unless HTTP_HEADERS.empty?
 
     CURL_HTTP_HEADER_ARGS = HTTP_HEADERS.map { |http_header_name, value| "-H \"#{http_header_name}: #{value}\"" }.join(" ")
+    CURL_BODY_ARG = REQUEST_BODY ? "-d '#{REQUEST_BODY}'" : nil
+
+    if REQUEST_METHOD != "GET" && REQUEST_BODY
+      RACK_ENV_HASH["GATEWAY_INTERFACE"] = "CGI/1.1"
+      RACK_ENV_HASH[:input] = REQUEST_BODY.dup
+      puts "Body: #{REQUEST_BODY}"
+    end
 
     require 'rack/test'
     require 'rack/file'
@@ -94,7 +110,7 @@ namespace :perf do
       sleep 1
 
       def call_app(path = File.join("/", PATH_TO_HIT))
-        cmd = "curl #{CURL_HTTP_HEADER_ARGS} 'http://localhost:#{@port}#{path}' -s --fail 2>&1"
+        cmd = "curl -X #{REQUEST_METHOD} #{CURL_HTTP_HEADER_ARGS} #{CURL_BODY_ARG} -s --fail 'http://localhost:#{@port}#{path}' 2>&1"
         response = `#{cmd}`
         raise "Bad request to #{cmd.inspect} Response:\n#{ response.inspect }" unless $?.success?
       end
@@ -102,7 +118,7 @@ namespace :perf do
       @app = Rack::MockRequest.new(DERAILED_APP)
 
       def call_app
-        response = @app.get(PATH_TO_HIT, RACK_HTTP_HEADERS)
+        response = @app.request(REQUEST_METHOD, PATH_TO_HIT, RACK_ENV_HASH)
         raise "Bad request: #{ response.body }" unless response.status == 200
         response
       end

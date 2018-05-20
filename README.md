@@ -438,6 +438,19 @@ $ HTTP_AUTHORIZATION="Basic YWRtaW46c2VjcmV0\n" \
   PATH_TO_HIT=/foo_secret bundle exec derailed exec perf:ips
 ```
 
+### Performing non-GET requests
+
+If the endpoint being tested is not a GET request, you can set the `REQUEST_METHOD` variable with the HTTP method you want (e.g. POST, PUT, PATCH, DELETE).
+
+To set the request body, you can use the `REQUEST_BODY`.
+
+```
+$ REQUEST_METHOD=POST \
+  REQUEST_BODY="user%5Bemail%5D=foo%40bar.com&user%password%5D=123456&user%password_confirmation%5D=123456" \
+  PATH_TO_HIT=/users \
+  bundle exec derailed exec perf:test
+```
+
 ### Using a real web server with `USE_SERVER`
 
 All tests are run without a webserver (directly using `Rack::Mock` by default), if you want to use a webserver set `USE_SERVER` to a Rack::Server compliant server, such as `webrick`.
