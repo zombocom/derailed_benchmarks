@@ -54,6 +54,7 @@ Dummy::Application.routes.draw do
 
   get "foo", to: "pages#index"
   get "foo_secret", to: "pages#secret"
+  post "users", to: "users#create"
 
   get "authenticated", to: "authenticated#index"
 
