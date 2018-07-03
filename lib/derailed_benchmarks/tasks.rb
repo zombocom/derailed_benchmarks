@@ -68,7 +68,7 @@ namespace :perf do
     puts "Endpoint: #{ PATH_TO_HIT.inspect }"
 
     HTTP_HEADER_PREFIX = "HTTP_".freeze
-    RACK_HTTP_HEADERS = ENV.select { |key| key.starts_with?(HTTP_HEADER_PREFIX) }
+    RACK_HTTP_HEADERS = ENV.select { |key| key.start_with?(HTTP_HEADER_PREFIX) }
 
     HTTP_HEADERS = RACK_HTTP_HEADERS.keys.inject({}) do |hash, rack_header_name|
       # e.g. "HTTP_ACCEPT_CHARSET" -> "Accept-Charset"
