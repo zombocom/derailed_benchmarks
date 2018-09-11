@@ -118,7 +118,7 @@ namespace :perf do
     require 'benchmark'
 
     Benchmark.bm { |x|
-      x.report("#{TEST_COUNT} requests") {
+      x.report("#{TEST_COUNT} derailed requests") {
         TEST_COUNT.times {
           call_app
         }
