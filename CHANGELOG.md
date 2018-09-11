@@ -1,5 +1,11 @@
 # A Log of Changes!
 
+## [1.3.5]
+
+- Output of `test` now emits the word "derailed" for easier grepping.
+- Fix "already initialized constant" warning
+
+
 ## [1.3.4]
 
 - Allow for "warming up tasks" via WARM_COUNT env var #119
