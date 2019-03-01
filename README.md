@@ -412,6 +412,13 @@ Warming up app: 5000 times
 # ...
 ```
 
+### Increasing the ips warmup or test time `IPS_WARMUP` `IPS_TIME`
+
+When you are measuring the performance of an endpoint that is particularly slow, you may want to let the application "warm up" for longer than the default 2 seconds. To allow for this you can specify `IPS_WARMUP` and the Benchmark.ips will be configured with that warm up time.
+
+Further, if the default of 5 seconds is not enough time to perform enough iterations to eliminate noise, you can specify `IPS_TIME` and the application will be tested for that number of seconds.
+
+
 ### Hitting a different endpoint with `PATH_TO_HIT`
 
 By default tasks will hit your homepage `/`. If you want to hit a different url use `PATH_TO_HIT` for example if you wanted to go to `users/new` you can execute:

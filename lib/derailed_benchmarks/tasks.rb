@@ -207,7 +207,11 @@ namespace :perf do
   task :ips => [:setup] do
     require 'benchmark/ips'
 
+    IPS_TIME  = (ENV['IPS_TIME'] || 5).to_i
+    IPS_WARMUP  = (ENV['IPS_WARMUP'] || 2).to_i
+
     Benchmark.ips do |x|
+      x.config(time: IPS_TIME, warmup: IPS_WARMUP)
       x.report("ips") { call_app }
     end
   end
