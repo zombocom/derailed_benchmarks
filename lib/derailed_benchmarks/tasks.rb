@@ -96,14 +96,23 @@ namespace :perf do
       def call_app(path = File.join("/", PATH_TO_HIT))
         cmd = "curl #{CURL_HTTP_HEADER_ARGS} 'http://localhost:#{@port}#{path}' -s --fail 2>&1"
         response = `#{cmd}`
-        raise "Bad request to #{cmd.inspect} Response:\n#{ response.inspect }" unless $?.success?
+        unless $?.success?
+          STDERR.puts "Couldn't call app."
+          STDERR.puts "Bad request to #{cmd.inspect} \n\n***RESPONSE***:\n\n#{ response.inspect }"
+          exit(1)
+        end
       end
     else
       @app = Rack::MockRequest.new(DERAILED_APP)
 
       def call_app
         response = @app.get(PATH_TO_HIT, RACK_HTTP_HEADERS)
-        raise "Bad request: #{ response.body }" unless response.status == 200
+        if response.status != 200
+          STDERR.puts "Couldn't call app. Bad request to #{PATH_TO_HIT}! Resulted in #{response.status} status."
+          STDERR.puts "\n\n***RESPONSE BODY***\n\n"
+          STDERR.puts response.body
+          exit(1)
+        end
         response
       end
     end
