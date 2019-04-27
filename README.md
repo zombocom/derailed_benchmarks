@@ -5,6 +5,7 @@ A series of things you can use to benchmark a Rails or Ruby app.
 ![](http://media.giphy.com/media/lfbxexWy71b6U/giphy.gif)
 
 [![Build Status](https://travis-ci.org/schneems/derailed_benchmarks.svg)](https://travis-ci.org/schneems/derailed_benchmarks)
+[![Help Contribute to Open Source](https://www.codetriage.com/schneems/derailed_benchmarks/badges/users.svg)](https://www.codetriage.com/schneems/derailed_benchmarks)
 
 ## Compatibility/Requirements
 
@@ -318,7 +319,7 @@ TOP: 54.1836 MiB
 
 You can use `CUT_OFF=0.3` to only show files that have above a certain memory useage, this can be used to help eliminate noise.
 
-If your application code is exremely large at boot consider using `$ derailed exec perf:objects` to debug low level object creation.
+If your application code is extremely large at boot consider using `$ derailed exec perf:objects` to debug low level object creation.
 
 ## My app is Slow
 
@@ -399,6 +400,16 @@ For tasks that are run a number of times you can set the number using `TEST_COUN
 
 ```
 $ TEST_COUNT=100_000 bundle exec derailed exec perf:test
+```
+
+### Warming up your app before measuring with `WARM_COUNT`
+
+When you are measuring the long term performance of an application, especially if you're using jit you may want to let the application "warm up" without measuring this time. To allow for this you can specify `WARM_COUNT` and the application will be called that number of times before any measurements are taken.
+
+```
+$ WARM_COUNT=5_000 bundle exec derailed exec perf:test
+Warming up app: 5000 times
+# ...
 ```
 
 ### Hitting a different endpoint with `PATH_TO_HIT`

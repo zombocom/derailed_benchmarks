@@ -17,7 +17,7 @@ class TasksTest < ActiveSupport::TestCase
     env_string = env.map {|key, value| "#{key.shellescape}=#{value.to_s.shellescape}" }.join(" ")
     cmd        = "env #{env_string} bundle exec rake -f perf.rake #{cmd} --trace"
     puts "Running: #{cmd}"
-    result = `cd #{rails_app_path} && #{cmd}`
+    result = `cd '#{rails_app_path}' && #{cmd}`
     if assert_success
       assert $?.success?, "Expected '#{cmd}' to return a success status.\nOutput: #{result}"
     end
@@ -49,6 +49,11 @@ class TasksTest < ActiveSupport::TestCase
   test 'TEST_COUNT' do
     result = rake "perf:test", env: { "TEST_COUNT" => 1 }
     assert_match "1 requests", result
+  end
+
+  test 'WARM_COUNT' do
+    result = rake "perf:test", env: { "WARM_COUNT" => 1 }
+    assert_match "Warming up app:", result
   end
 
   test 'PATH_TO_HIT' do

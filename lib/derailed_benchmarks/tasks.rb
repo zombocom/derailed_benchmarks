@@ -13,7 +13,7 @@ namespace :perf do
     puts "Booting: #{Rails.env}"
 
     %W{ . lib test config }.each do |file|
-      $LOAD_PATH << file
+      $LOAD_PATH << File.expand_path(file)
     end
 
     require 'application'
@@ -62,12 +62,13 @@ namespace :perf do
       Rake::Task["perf:rack_load"].invoke
     end
 
+    WARM_COUNT  = (ENV['WARM_COUNT'] || 0).to_i
     TEST_COUNT  = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
     PATH_TO_HIT = ENV["PATH_TO_HIT"] || ENV['ENDPOINT'] || "/"
     puts "Endpoint: #{ PATH_TO_HIT.inspect }"
 
     HTTP_HEADER_PREFIX = "HTTP_".freeze
-    RACK_HTTP_HEADERS = ENV.select { |key| key.starts_with?(HTTP_HEADER_PREFIX) }
+    RACK_HTTP_HEADERS = ENV.select { |key| key.start_with?(HTTP_HEADER_PREFIX) }
 
     HTTP_HEADERS = RACK_HTTP_HEADERS.keys.inject({}) do |hash, rack_header_name|
       # e.g. "HTTP_ACCEPT_CHARSET" -> "Accept-Charset"
@@ -82,7 +83,7 @@ namespace :perf do
     require 'rack/test'
     require 'rack/file'
 
-    DERAILED_APP = DerailedBenchmarks.add_auth(DERAILED_APP)
+    DERAILED_APP = DerailedBenchmarks.add_auth(Object.class_eval { remove_const(:DERAILED_APP) })
     if server = ENV["USE_SERVER"]
       @port = (3000..3900).to_a.sample
       puts "Port: #{ @port.inspect }"
@@ -95,16 +96,29 @@ namespace :perf do
       def call_app(path = File.join("/", PATH_TO_HIT))
         cmd = "curl #{CURL_HTTP_HEADER_ARGS} 'http://localhost:#{@port}#{path}' -s --fail 2>&1"
         response = `#{cmd}`
-        raise "Bad request to #{cmd.inspect} Response:\n#{ response.inspect }" unless $?.success?
+        unless $?.success?
+          STDERR.puts "Couldn't call app."
+          STDERR.puts "Bad request to #{cmd.inspect} \n\n***RESPONSE***:\n\n#{ response.inspect }"
+          exit(1)
+        end
       end
     else
       @app = Rack::MockRequest.new(DERAILED_APP)
 
       def call_app
         response = @app.get(PATH_TO_HIT, RACK_HTTP_HEADERS)
-        raise "Bad request: #{ response.body }" unless response.status == 200
+        if response.status != 200
+          STDERR.puts "Couldn't call app. Bad request to #{PATH_TO_HIT}! Resulted in #{response.status} status."
+          STDERR.puts "\n\n***RESPONSE BODY***\n\n"
+          STDERR.puts response.body
+          exit(1)
+        end
         response
       end
+    end
+    if WARM_COUNT > 0
+      puts "Warming up app: #{WARM_COUNT} times"
+      WARM_COUNT.times { call_app }
     end
   end
 
@@ -113,7 +127,7 @@ namespace :perf do
     require 'benchmark'
 
     Benchmark.bm { |x|
-      x.report("#{TEST_COUNT} requests") {
+      x.report("#{TEST_COUNT} derailed requests") {
         TEST_COUNT.times {
           call_app
         }
