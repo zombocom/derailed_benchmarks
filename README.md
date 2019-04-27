@@ -383,6 +383,8 @@ $ bundle exec derailed exec perf:stackprof_warmup
 
 This will create a series of traces. A single one with suffix `.cold` for the initial request, and an `ENV[TEST_COUNT]` number of traces with suffix `.warm` for the following ones. The application is not reloaded between those requests, so any initialised caches will remain that way. The boot process for the application is not included in any of the files.
 
+Different endpoints for testing can be selected using the `PATH_TO_HIT` variable.
+
 In order to find out the execution paths unique to the initial request, you can subtract the traces from `.warm` files from those in the `.cold` file. Alternatively to automate some processing you can use scripts from [rails_cold_spots](https://github.com/viraptor/rails_cold_spots).
 
 ## Is this perf change faster?
