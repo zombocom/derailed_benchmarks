@@ -365,6 +365,26 @@ $ bundle exec derailed exec perf:stackprof
 
 From here you can dig into individual methods.
 
+## My first request is slow
+
+There are three interesting timeframes for a newly started application:
+
+- boot time
+- the first request
+- the following requests
+
+The first request may be much slower (100 times or more) than the following requests. In a typical rails applications this may happen due to: database schema discovery, cold caches, uncached fragments, etc. On top of that any custom caching on the app level which is not warmed up during boot will add to the slowdown.
+
+To find out exactly what is executed additionally in the first request, you can use:
+
+```
+$ bundle exec derailed exec perf:stackprof_warmup
+```
+
+This will create a series of traces. A single one with suffix `.cold` for the initial request, and an `ENV[TEST_COUNT]` number of traces with suffix `.warm` for the following ones. The application is not reloaded between those requests, so any initialised caches will remain that way. The boot process for the application is not included in any of the files.
+
+In order to find out the execution paths unique to the initial request, you can subtract the traces from `.warm` files from those in the `.cold` file. Alternatively to automate some processing you can use scripts from [rails_cold_spots](https://github.com/viraptor/rails_cold_spots).
+
 ## Is this perf change faster?
 
 Micro benchmarks might tell you at the code level how much faster something is, but what about the overall application speed. If you're trying to figure out how effective a performance change is to your application, it is useful to compare it to your existing app performance. To help you with that you can use:
