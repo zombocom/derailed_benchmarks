@@ -60,7 +60,12 @@ TOP_REQUIRE = DerailedBenchmarks::RequireTree.new("TOP")
 REQUIRE_STACK.push(TOP_REQUIRE)
 
 Kernel.define_singleton_method(:require) do |file|
-  measure_memory_impact(file) { |file| original_require(file) }
+  measure_memory_impact(file) do |file|
+    # "source_annotation_extractor" is deprecated in Rails 6
+    # if we don't skip the library it leads to a crash
+    next if file == "rails/source_annotation_extractor" && Rails.version >= '6.0'
+    original_require(file)
+  end
 end
 
 # Don't forget to assign a cost to the top level
