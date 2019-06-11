@@ -48,7 +48,7 @@ class TasksTest < ActiveSupport::TestCase
 
   test 'TEST_COUNT' do
     result = rake "perf:test", env: { "TEST_COUNT" => 1 }
-    assert_match "1 requests", result
+    assert_match "1 derailed requests", result
   end
 
   test 'WARM_COUNT' do
