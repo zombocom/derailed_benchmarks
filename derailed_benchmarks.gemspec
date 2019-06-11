@@ -30,7 +30,7 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency "capybara",  "~> 2"
   gem.add_development_dependency "m"
-  gem.add_development_dependency "rails",     "> 3", "< 6"
+  gem.add_development_dependency "rails",     "> 3", "<= 6"
   gem.add_development_dependency "devise",    "> 3", "< 5"
   gem.add_development_dependency "appraisal", "2.2.0"
 end

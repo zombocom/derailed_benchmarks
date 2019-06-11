@@ -1,36 +1,17 @@
 language: ruby
 rvm:
-  - 2.2
-  - 2.3
-  - 2.4.0
+  - 2.5.5
+  - 2.6.3
   - ruby-head
+
 gemfile:
-  - gemfiles/rails_3_2.gemfile
-  - gemfiles/rails_4_0.gemfile
-  - gemfiles/rails_4_1.gemfile
-  - gemfiles/rails_4_2.gemfile
-  - gemfiles/rails_5_0.gemfile
   - gemfiles/rails_5_1.gemfile
+  - gemfiles/rails_5_1.gemfile
+  - gemfiles/rails_6_0.gemfile
 
 before_install:
   - gem install bundler
 
 matrix:
-  # Ruby 2.4 doesn't work with devise + rails 3/4, so just skip the builds to
-  # avoid travis runs we expect to fail.  This is due to the Integer/Fixnum
-  # change if I am not mistaken.
-  exclude:
-  - rvm: 2.4.0
-    gemfile: gemfiles/rails_3_2.gemfile
-  - rvm: 2.4.0
-    gemfile: gemfiles/rails_4_0.gemfile
-  - rvm: 2.4.0
-    gemfile: gemfiles/rails_4_1.gemfile
-  - rvm: ruby-head
-    gemfile: gemfiles/rails_3_2.gemfile
-  - rvm: ruby-head
-    gemfile: gemfiles/rails_4_0.gemfile
-  - rvm: ruby-head
-    gemfile: gemfiles/rails_4_1.gemfile
   allow_failures:
     - rvm: ruby-head
