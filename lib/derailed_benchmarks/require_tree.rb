@@ -5,7 +5,7 @@ module DerailedBenchmarks
     REQUIRED_BY = {}
 
     attr_reader   :name
-    attr_accessor :cost
+    attr_writer   :cost
     attr_accessor :parent
 
     def initialize(name)
