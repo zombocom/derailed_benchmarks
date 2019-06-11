@@ -12,7 +12,7 @@ class TasksTest < ActiveSupport::TestCase
   end
 
   def rake(cmd, options = {})
-    assert_success = options[:assert_success] || true
+    assert_success = options.key?(:assert_success) ? options[:assert_success] : true
     env             = options[:env]           || {}
     env_string = env.map {|key, value| "#{key.shellescape}=#{value.to_s.shellescape}" }.join(" ")
     cmd        = "env #{env_string} bundle exec rake -f perf.rake #{cmd} --trace"
