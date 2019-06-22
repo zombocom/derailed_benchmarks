@@ -99,6 +99,12 @@ namespace :perf do
         unless $?.success?
           STDERR.puts "Couldn't call app."
           STDERR.puts "Bad request to #{cmd.inspect} \n\n***RESPONSE***:\n\n#{ response.inspect }"
+
+          FileUtils.mkdir_p("tmp")
+          File.open("tmp/fail.html", "w+") {|f| f.write response.body }
+
+          `open #{File.expand_path("tmp/fail.html")}` if ENV["DERAILED_DEBUG"]
+
           exit(1)
         end
       end
@@ -111,6 +117,12 @@ namespace :perf do
           STDERR.puts "Couldn't call app. Bad request to #{PATH_TO_HIT}! Resulted in #{response.status} status."
           STDERR.puts "\n\n***RESPONSE BODY***\n\n"
           STDERR.puts response.body
+
+          FileUtils.mkdir_p("tmp")
+          File.open("tmp/fail.html", "w+") {|f| f.write response.body }
+
+          `open #{File.expand_path("tmp/fail.html")}` if ENV["DERAILED_DEBUG"]
+
           exit(1)
         end
         response
@@ -208,8 +220,7 @@ namespace :perf do
   end
 
   task :ram_over_time do
-    Kernel.warn("The ram_over_time task is deprecated. Use mem_over_time")
-    Rake::Task["perf:ram_over_time"].invoke
+    raise "Use mem_over_time"
   end
 
   desc "iterations per second"

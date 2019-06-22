@@ -19,13 +19,14 @@ module Kernel
     Kernel.require(file)
   end
 
-  # This breaks things, not sure how to fix
-  # def require_relative(file)
-  #   Kernel.require_relative(file)
-  # end
+  def require_relative(file)
+    # Kernel.require_relative(file)
+    require File.expand_path("../#{file}", caller_locations(1, 1)[0].absolute_path)
+  end
+
   class << self
     alias :original_require          :require
-    # alias :original_require_relative :require_relative
+    alias :original_require_relative :require_relative
   end
 
   # The core extension we use to measure require time of all requires
@@ -63,7 +64,12 @@ TOP_REQUIRE = DerailedBenchmarks::RequireTree.new("TOP")
 REQUIRE_STACK.push(TOP_REQUIRE)
 
 Kernel.define_singleton_method(:require) do |file|
-  measure_memory_impact(file) { |file| original_require(file) }
+  measure_memory_impact(file) do |file|
+    # "source_annotation_extractor" is deprecated in Rails 6
+    # # if we don't skip the library it leads to a crash
+    # next if file == "rails/source_annotation_extractor" && Rails.version >= '6.0'
+    original_require(file)
+  end
 end
 
 # Don't forget to assign a cost to the top level

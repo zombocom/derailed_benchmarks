@@ -22,8 +22,9 @@ class KernelRequireTest < ActiveSupport::TestCase
   test "core extension profiles useage" do
     require fixtures_dir("require/parent_one.rb")
     parent    = assert_node_in_parent("parent_one.rb", TOP_REQUIRE)
-    child_one = assert_node_in_parent("child_one.rb", parent)
+    assert_node_in_parent("child_one.rb", parent)
     child_two = assert_node_in_parent("child_two.rb", parent)
-    rse_child = assert_node_in_parent("raise_child.rb", child_two)
+    assert_node_in_parent("relative_child", parent)
+    assert_node_in_parent("raise_child.rb", child_two)
   end
 end

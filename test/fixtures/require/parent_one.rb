@@ -4,3 +4,4 @@ class ParentOne
 end
 require File.expand_path('../child_one.rb', __FILE__)
 require File.expand_path('../child_two.rb', __FILE__)
+require_relative 'relative_child'
