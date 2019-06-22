@@ -9,6 +9,9 @@ ENV['CUT_OFF'] ||= "0.3"
 # Monkey patch kernel to ensure that all `require` calls call the same
 # method
 module Kernel
+
+  private
+
   alias :original_require :require
   REQUIRE_STACK = []
 
