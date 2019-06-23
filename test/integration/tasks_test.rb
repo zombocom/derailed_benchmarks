@@ -25,6 +25,15 @@ class TasksTest < ActiveSupport::TestCase
     result
   end
 
+  test 'library_branches' do
+    skip unless ENV['USING_RAILS_GIT']
+
+    puts `cd #{rails_app_path} && echo $BUNDLE_GEMFILE`
+
+    env = { "TEST_COUNT" => 2, "BRANCHES_TO_TEST" => "74e38da8106bfd435132653e09acbe5118cfe8a0,a2a515d9de4ef0ddf4d78b05fcb0b838d2e1b5e3"}
+    rake "perf:library_branches", { env: env }
+  end
+
   test 'hitting authenticated devise apps' do
     env = { "PATH_TO_HIT" => "authenticated", "USE_AUTH" => "true", "TEST_COUNT" => "2" }
     result = rake 'perf:test', env: env

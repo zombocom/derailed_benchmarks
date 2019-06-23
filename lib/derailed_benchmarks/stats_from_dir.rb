@@ -4,13 +4,13 @@ require 'statistics'
 module DerailedBenchmarks
   # A class used to read several benchmark files
   # it will parse each file, then sort by average
-  # time of benchmarks. It can be used to find 
+  # time of benchmarks. It can be used to find
   # the fastest and slowest examples and give information
   # about them such as what the percent difference is
   # and if the results are statistically significant
   #
   # Example:
-  # 
+  #
   #   stats = StatsFromDir.new("path/to/dir")
   #   stats.fastest.average # => 10.5
   #   stats.slowest.average # => 11.0
@@ -42,9 +42,9 @@ module DerailedBenchmarks
 
     def students_t_test(series_1=fastest.values, series_2=slowest.values)
       StatisticalTest::TTest.perform(
-        alpha = 0.05, 
-        :two_tail, 
-        series_1, 
+        alpha = 0.05,
+        :two_tail,
+        series_1,
         series_2
       )
     end
@@ -85,7 +85,7 @@ module DerailedBenchmarks
         io.puts "👎 " * 40
       end
       io.puts
-      io.puts "Test #{fastest.name.inspect} is faster than #{slowest.name.inspect} by" 
+      io.puts "Test #{fastest.name.inspect} is faster than #{slowest.name.inspect} by"
       io.puts "  #{x_faster}x faster or #{percent_faster}\% faster"
       io.puts ""
       io.puts "P-value: #{p_value}"

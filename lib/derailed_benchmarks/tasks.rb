@@ -1,6 +1,55 @@
 require_relative 'load_tasks'
 
 namespace :perf do
+  desc "runs the same test against two different branches for statistical comparison"
+  task :library_branches do
+    TEST_COUNT = (ENV["TEST_COUNT"] ||= "100").to_i
+
+    raise "test count must be at least 2, is set to #{TEST_COUNT}" if TEST_COUNT < 2
+    script = ENV["DERAILED_SCRIPT"] || "bundle exec derailed exec perf:test"
+    branch_names = ENV.fetch("BRANCHES_TO_TEST").split(",")
+
+    if ENV["DERAILED_PATH_TO_LIBRARY"]
+      library_dir = ENV["DERAILED_PATH_TO_LIBRARY"]
+    else
+      library_dir = DerailedBenchmarks.rails_path_on_disk
+    end
+
+    raise "Must be a path with a .git directory '#{library_dir}'" unless File.exist?(File.join(library_dir, ".git"))
+
+    current_library_branch = ""
+    Dir.chdir(library_dir) { current_library_branch = run!('git describe --contains --all HEAD').chomp }
+
+    puts Time.now.strftime('%Y-%m-%d-%H-%M-%s-%N')
+    out_dir = Pathname.new("tmp/library_branches/#{Time.now.strftime('%Y%m%d%h%M%s%N')}")
+    out_dir.mkpath
+
+    branches_to_test = branch_names.each_with_object({}) {|elem, hash| hash[elem] = out_dir + "#{elem.gsub('/', ':')}.bench.txt" }
+
+    # Make sure the branch exists and the script runs on it
+    branches_to_test.each do |branch, file|
+      Dir.chdir(library_dir) { run!("git checkout '#{branch}'") }
+      run!("#{script}")
+    end
+
+    TEST_COUNT.times do |i|
+      puts "#{i.next}/#{TEST_COUNT}"
+      branches_to_test.each do |branch, file|
+        Dir.chdir(library_dir) { run!("git checkout '#{branch}'") }
+        run!(" #{script} 2>&1 | tail -n 1 >> '#{file}'")
+      end
+    end
+
+    DerailedBenchmarks::StatsFromDir.new(out_dir).banner
+  ensure
+    if library_dir && current_library_branch
+      puts "Resetting git dir of #{library_dir.inspect} to #{current_library_branch.inspect}"
+      Dir.chdir(library_dir) do
+        run!("git checkout '#{current_library_branch}'")
+      end
+    end
+  end
+
   desc "hits the url TEST_COUNT times"
   task :test => [:setup] do
     require 'benchmark'
@@ -164,5 +213,11 @@ namespace :perf do
     puts "Run `$ heapy --help` for more options"
     puts ""
     puts "Also try uploading #{file_name.inspect} to http://tenderlove.github.io/heap-analyzer/"
+  end
+
+  def run!(cmd)
+    out = `#{cmd}`
+    raise "Error while running #{cmd.inspect}: #{out}" unless $?.success?
+    out
   end
 end

@@ -13,6 +13,21 @@ module DerailedBenchmarks
     attr_accessor :auth
   end
 
+  def self.rails_path_on_disk
+    require 'rails/version'
+    rails_version_file = Rails.method(:version).source_location[0]
+    path = Pathname.new(rails_version_file).expand_path.parent.parent
+
+    while path != Pathname.new("/")
+      basename = path.expand_path.basename.to_s
+
+      break if basename.start_with?("rails") && basename != "railties"
+      path = path.parent
+    end
+    raise "Could not find rails folder on a folder in #{rails_version_file}"  if path == Pathname.new("/")
+    path.expand_path
+  end
+
   def self.add_auth(app)
     if use_auth = ENV['USE_AUTH']
       puts "Auth: #{use_auth}"
