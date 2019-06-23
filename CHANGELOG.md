@@ -1,10 +1,15 @@
 # A Log of Changes!
 
+## 1.3.6
+
+- `require_relative` is now measured [commit](https://github.com/schneems/derailed_benchmarks/commit/af11bcc46a4fa24f79e4897a51034927a56e077e)
+- Fix bug preventing a specific Rails 6 file from being loaded (https://github.com/schneems/derailed_benchmarks/pull/134)
+- `exit(1)` is called instead of raise (https://github.com/schneems/derailed_benchmarks/pull/127)
+
 ## [1.3.5]
 
 - Output of `test` now emits the word "derailed" for easier grepping.
 - Fix "already initialized constant" warning
-
 
 ## [1.3.4]
 
