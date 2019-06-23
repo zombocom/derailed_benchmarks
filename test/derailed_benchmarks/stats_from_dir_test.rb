@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class StatsFromDirTest < ActiveSupport::TestCase
-  test "default_cost" do
+  test "that it works" do
     dir = fixtures_dir("stats/significant")
     stats = DerailedBenchmarks::StatsFromDir.new(dir)
 
