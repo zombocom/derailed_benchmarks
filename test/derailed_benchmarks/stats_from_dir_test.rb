@@ -16,7 +16,8 @@ class StatsFromDirTest < ActiveSupport::TestCase
     assert_equal "1.0062", stats.x_faster
     assert_equal "0.6131", stats.percent_faster
 
-    assert_equal 3.733653842080382e-05, stats.p_value
+    assert 3.6e-05 < stats.p_value
+    assert 3.8e-05 > stats.p_value
     assert_equal true, stats.significant?
 
     expected = <<-EOM
