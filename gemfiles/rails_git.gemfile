@@ -2,9 +2,9 @@
 
 source "https://rubygems.org"
 
-gem "rails", github: "rails/rails", ref: "74e38da8106bfd435132653e09acbe5118cfe8a0"
+gem "rails", github: "rails/rails", ref: "3054e1d584e7eca110c69a1f8423f2e0866abbf9"
 
-gem 'devise', github: "plataformatec/devise", ref: "81cb5b00f46cc24e6f41d6f1841ecaf442013898"
+gem 'devise', github: "plataformatec/devise"
 
 group :development, :test do
   gem "sqlite3", platform: [:ruby, :mswin, :mingw]

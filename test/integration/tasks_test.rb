@@ -30,7 +30,7 @@ class TasksTest < ActiveSupport::TestCase
 
     puts `cd #{rails_app_path} && echo $BUNDLE_GEMFILE`
 
-    env = { "TEST_COUNT" => 2, "BRANCHES_TO_TEST" => "74e38da8106bfd435132653e09acbe5118cfe8a0,a2a515d9de4ef0ddf4d78b05fcb0b838d2e1b5e3"}
+    env = { "TEST_COUNT" => 2, "BRANCHES_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
     rake "perf:library_branches", { env: env }
   end
 
