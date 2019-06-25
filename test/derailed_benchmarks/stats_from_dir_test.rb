@@ -20,11 +20,16 @@ class StatsFromDirTest < ActiveSupport::TestCase
     assert 3.8e-05 > stats.p_value
     assert_equal true, stats.significant?
 
+    # Test fixture for banner
+    def stats.p_value
+      "0.000037"
+    end
+
     expected = <<-EOM
 Test "winner" is faster than "loser" by
   1.0062x faster or 0.6131% faster
 
-P-value: 3.733653842080382e-05
+P-value: 0.000037
 Is signifigant? (P-value < 0.05): true
 EOM
 
