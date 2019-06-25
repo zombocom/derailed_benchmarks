@@ -3,9 +3,9 @@ require_relative 'load_tasks'
 namespace :perf do
   desc "runs the same test against two different branches for statistical comparison"
   task :library_branches do
-    TEST_COUNT = (ENV["TEST_COUNT"] ||= "100").to_i
+    DERAILED_SCRIPT_COUNT = (ENV["DERAILED_SCRIPT_COUNT"] ||= "100").to_i
 
-    raise "test count must be at least 2, is set to #{TEST_COUNT}" if TEST_COUNT < 2
+    raise "test count must be at least 2, is set to #{DERAILED_SCRIPT_COUNT}" if DERAILED_SCRIPT_COUNT < 2
     script = ENV["DERAILED_SCRIPT"] || "bundle exec derailed exec perf:test"
     branch_names = ENV.fetch("BRANCHES_TO_TEST").split(",")
 
@@ -32,8 +32,8 @@ namespace :perf do
       run!("#{script}")
     end
 
-    TEST_COUNT.times do |i|
-      puts "#{i.next}/#{TEST_COUNT}"
+    DERAILED_SCRIPT_COUNT.times do |i|
+      puts "#{i.next}/#{DERAILED_SCRIPT_COUNT}"
       branches_to_test.each do |branch, file|
         Dir.chdir(library_dir) { run!("git checkout '#{branch}'") }
         run!(" #{script} 2>&1 | tail -n 1 >> '#{file}'")
