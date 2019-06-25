@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 unless File.respond_to? :realpath
   class File #:nodoc:

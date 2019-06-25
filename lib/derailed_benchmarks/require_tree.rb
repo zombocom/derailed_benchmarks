@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Tree structure used to store and sort require memory costs
 # RequireTree.new('get_process_mem')
 module DerailedBenchmarks
@@ -38,7 +40,7 @@ module DerailedBenchmarks
     end
 
     def to_string
-      str = "#{name}: #{cost.round(4)} MiB"
+      str = +"#{name}: #{cost.round(4)} MiB"
       if parent && REQUIRED_BY[self.name.to_s]
         names = REQUIRED_BY[self.name.to_s].uniq - [parent.name.to_s]
         if names.any?

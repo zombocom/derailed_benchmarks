@@ -1,4 +1,4 @@
 class ChildOne
-  @retained = ""
+  @retained = +""
   50_000.times.map { @retained << "A" }
 end
