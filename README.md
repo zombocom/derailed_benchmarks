@@ -388,11 +388,53 @@ $ bundle exec derailed exec perf:test
 
 But I wouldn't, benchmark-ips is a better measure.
 
+## I made a patch to to Rails how can I tell if it made my Rails app faster and test for statistical significance
+
+When you're trying to submit a performance patch to rails/rails then they'll likely ask you for a benchmark. While you can sometimes provide a microbenchmark, a real world full stack request/response test is the gold standard.
+
+That's what this section is about. You'll need a rails app, ideally one you can open source (see [example apps](http://codetriage.com/example_app) if you need inspiration for extracting your private code into something external).
+
+Then you'll need to fork rails and make a branch. Then point your rails app to your branch in your gemfile
+
+```
+gem 'rails', github: "<github username>/rails", branch: "<your branch name>"
+```
+
+Now you can specify two different commits to test against. Derailed will cycle betwen them, hitting each with 1000 requests. It will record the time it takes to do this 100 times. It uses the different times from the different runs to generate a [student's T test]() which will tell you if the outcome is likely the result of your change or if it's statistical noise. This is important, because moving the needle on the request/response cycle is very difficult, and a performance improvement of 1.01x or 1% faster can be of value, but you have to make sure such a small change isn't the result of noise.
+
+To run your test:
+
+```
+$ BRANCHES_TO_TEST="7b4d80cb373e,13d6aa3a7b70" bundle exec derailed exec perf:library_branches
+```
+
+> Use a comma to seperate your branch names
+
+Derailed will automatically find where you've installed Rails and switch between the branches for you between the tests.
+
+These tests take a along time to run so the output is stored on disk incase you want to see them in the future, they're at `tmp/library_branches/<timestamp>` and labeled with the same names as your branches.
+
+Before running tests you should close all programs on your laptop, turn on a program to prevent your laptop from going to sleep (or increase your sleep timer). Make sure it's plugged into a power outlet and  go grab a cup of coffee. If you do anything on your laptop while this test is running you risk the chance of skewing your results.
+
+When the test is done it will output which commit "won" and by how much:
+
+```
+Test "7b4d80cb373e" is faster than "13d6aa3a7b70" by
+  1.0062x faster or 0.6131% faster
+
+P-value: 3.733653842080382e-05
+Is signifigant? (P-value < 0.05): true
+```
+
+You can provide this to the Rails team along with the example app you used to benchmark (so they can independently verify if needed).
+
+Generally performance patches have to be weighted in terms of how much they help versus how large/difficult/gnarly the patch is. If the above example was a really tiny patch and it was in a common component, then half a percent might be a justafiable increase. If it was a huge re-write then it's likely going to be closed. In general I tend to not submit patches unless I'm seeing `>= 1%` performance increases.
+
+You can use this to test changes in other libraries that aren't rails, you just have to tell it the path to the library you want to test against with the `DERAILED_PATH_TO_LIBRARY` env var.
 
 ## Environment Variables
 
 All the tasks accept configuration in the form of environment variables.
-
 
 ### Increasing or decreasing test count `TEST_COUNT`
 

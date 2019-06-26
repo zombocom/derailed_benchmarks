@@ -1,136 +1,52 @@
+require_relative 'load_tasks'
+
 namespace :perf do
-  task :rails_load do
-    ENV["RAILS_ENV"] ||= "production"
-    ENV['RACK_ENV']  = ENV["RAILS_ENV"]
-    ENV["DISABLE_SPRING"] = "true"
+  desc "runs the same test against two different branches for statistical comparison"
+  task :library_branches do
+    DERAILED_SCRIPT_COUNT = (ENV["DERAILED_SCRIPT_COUNT"] ||= "100").to_i
 
-    ENV["SECRET_KEY_BASE"] ||= "foofoofoo"
+    raise "test count must be at least 2, is set to #{DERAILED_SCRIPT_COUNT}" if DERAILED_SCRIPT_COUNT < 2
+    script = ENV["DERAILED_SCRIPT"] || "bundle exec derailed exec perf:test"
+    branch_names = ENV.fetch("BRANCHES_TO_TEST").split(",")
 
-    ENV['LOG_LEVEL'] ||= "FATAL"
-
-    require 'rails'
-
-    puts "Booting: #{Rails.env}"
-
-    %W{ . lib test config }.each do |file|
-      $LOAD_PATH << File.expand_path(file)
-    end
-
-    require 'application'
-
-    Rails.env = ENV["RAILS_ENV"]
-
-    DERAILED_APP = Rails.application
-
-    if DERAILED_APP.respond_to?(:initialized?)
-      DERAILED_APP.initialize! unless DERAILED_APP.initialized?
+    if ENV["DERAILED_PATH_TO_LIBRARY"]
+      library_dir = ENV["DERAILED_PATH_TO_LIBRARY"]
     else
-      DERAILED_APP.initialize! unless DERAILED_APP.instance_variable_get(:@initialized)
+      library_dir = DerailedBenchmarks.rails_path_on_disk
     end
 
-    if  ENV["DERAILED_SKIP_ACTIVE_RECORD"] && defined? ActiveRecord
-      if defined? ActiveRecord::Tasks::DatabaseTasks
-        ActiveRecord::Tasks::DatabaseTasks.create_current
-      else # Rails 3.2
-        raise "No valid database for #{ENV['RAILS_ENV']}, please create one" unless ActiveRecord::Base.connection.active?.inspect
-      end
+    raise "Must be a path with a .git directory '#{library_dir}'" unless File.exist?(File.join(library_dir, ".git"))
 
-      ActiveRecord::Migrator.migrations_paths = DERAILED_APP.paths['db/migrate'].to_a
-      ActiveRecord::Migration.verbose         = true
-      ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
+    current_library_branch = ""
+    Dir.chdir(library_dir) { current_library_branch = run!('git describe --contains --all HEAD').chomp }
+
+    puts Time.now.strftime('%Y-%m-%d-%H-%M-%s-%N')
+    out_dir = Pathname.new("tmp/library_branches/#{Time.now.strftime('%Y%m%d%h%M%s%N')}")
+    out_dir.mkpath
+
+    branches_to_test = branch_names.each_with_object({}) {|elem, hash| hash[elem] = out_dir + "#{elem.gsub('/', ':')}.bench.txt" }
+
+    # Make sure the branch exists and the script runs on it
+    branches_to_test.each do |branch, file|
+      Dir.chdir(library_dir) { run!("git checkout '#{branch}'") }
+      run!("#{script}")
     end
 
-    DERAILED_APP.config.consider_all_requests_local = true
-  end
-
-  task :rack_load do
-    puts "You're not using Rails"
-    puts "You need to tell derailed how to boot your app"
-    puts "In your perf.rake add:"
-    puts
-    puts "namespace :perf do"
-    puts "  task :rack_load do"
-    puts "    # DERAILED_APP = your code here"
-    puts "  end"
-    puts "end"
-  end
-
-  task :setup do
-    if DerailedBenchmarks.gem_is_bundled?("railties")
-      Rake::Task["perf:rails_load"].invoke
-    else
-      Rake::Task["perf:rack_load"].invoke
-    end
-
-    WARM_COUNT  = (ENV['WARM_COUNT'] || 0).to_i
-    TEST_COUNT  = (ENV['TEST_COUNT'] || ENV['CNT'] || 1_000).to_i
-    PATH_TO_HIT = ENV["PATH_TO_HIT"] || ENV['ENDPOINT'] || "/"
-    puts "Endpoint: #{ PATH_TO_HIT.inspect }"
-
-    HTTP_HEADER_PREFIX = "HTTP_".freeze
-    RACK_HTTP_HEADERS = ENV.select { |key| key.start_with?(HTTP_HEADER_PREFIX) }
-
-    HTTP_HEADERS = RACK_HTTP_HEADERS.keys.inject({}) do |hash, rack_header_name|
-      # e.g. "HTTP_ACCEPT_CHARSET" -> "Accept-Charset"
-      header_name = rack_header_name[HTTP_HEADER_PREFIX.size..-1].split("_").map(&:downcase).map(&:capitalize).join("-")
-      hash[header_name] = RACK_HTTP_HEADERS[rack_header_name]
-      hash
-    end
-    puts "HTTP headers: #{HTTP_HEADERS}" unless HTTP_HEADERS.empty?
-
-    CURL_HTTP_HEADER_ARGS = HTTP_HEADERS.map { |http_header_name, value| "-H \"#{http_header_name}: #{value}\"" }.join(" ")
-
-    require 'rack/test'
-    require 'rack/file'
-
-    DERAILED_APP = DerailedBenchmarks.add_auth(Object.class_eval { remove_const(:DERAILED_APP) })
-    if server = ENV["USE_SERVER"]
-      @port = (3000..3900).to_a.sample
-      puts "Port: #{ @port.inspect }"
-      puts "Server: #{ server.inspect }"
-      thread = Thread.new do
-        Rack::Server.start(app: DERAILED_APP, :Port => @port, environment: "none", server: server)
-      end
-      sleep 1
-
-      def call_app(path = File.join("/", PATH_TO_HIT))
-        cmd = "curl #{CURL_HTTP_HEADER_ARGS} 'http://localhost:#{@port}#{path}' -s --fail 2>&1"
-        response = `#{cmd}`
-        unless $?.success?
-          STDERR.puts "Couldn't call app."
-          STDERR.puts "Bad request to #{cmd.inspect} \n\n***RESPONSE***:\n\n#{ response.inspect }"
-
-          FileUtils.mkdir_p("tmp")
-          File.open("tmp/fail.html", "w+") {|f| f.write response.body }
-
-          `open #{File.expand_path("tmp/fail.html")}` if ENV["DERAILED_DEBUG"]
-
-          exit(1)
-        end
-      end
-    else
-      @app = Rack::MockRequest.new(DERAILED_APP)
-
-      def call_app
-        response = @app.get(PATH_TO_HIT, RACK_HTTP_HEADERS)
-        if response.status != 200
-          STDERR.puts "Couldn't call app. Bad request to #{PATH_TO_HIT}! Resulted in #{response.status} status."
-          STDERR.puts "\n\n***RESPONSE BODY***\n\n"
-          STDERR.puts response.body
-
-          FileUtils.mkdir_p("tmp")
-          File.open("tmp/fail.html", "w+") {|f| f.write response.body }
-
-          `open #{File.expand_path("tmp/fail.html")}` if ENV["DERAILED_DEBUG"]
-
-          exit(1)
-        end
-        response
+    DERAILED_SCRIPT_COUNT.times do |i|
+      puts "#{i.next}/#{DERAILED_SCRIPT_COUNT}"
+      branches_to_test.each do |branch, file|
+        Dir.chdir(library_dir) { run!("git checkout '#{branch}'") }
+        run!(" #{script} 2>&1 | tail -n 1 >> '#{file}'")
       end
     end
-    if WARM_COUNT > 0
-      puts "Warming up app: #{WARM_COUNT} times"
-      WARM_COUNT.times { call_app }
+
+    DerailedBenchmarks::StatsFromDir.new(out_dir).banner
+  ensure
+    if library_dir && current_library_branch
+      puts "Resetting git dir of #{library_dir.inspect} to #{current_library_branch.inspect}"
+      Dir.chdir(library_dir) do
+        run!("git checkout '#{current_library_branch}'")
+      end
     end
   end
 
@@ -297,5 +213,11 @@ namespace :perf do
     puts "Run `$ heapy --help` for more options"
     puts ""
     puts "Also try uploading #{file_name.inspect} to http://tenderlove.github.io/heap-analyzer/"
+  end
+
+  def run!(cmd)
+    out = `#{cmd}`
+    raise "Error while running #{cmd.inspect}: #{out}" unless $?.success?
+    out
   end
 end
