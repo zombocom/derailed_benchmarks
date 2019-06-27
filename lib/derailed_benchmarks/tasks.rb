@@ -2,13 +2,14 @@ require_relative 'load_tasks'
 
 namespace :perf do
   desc "runs the same test against two different branches for statistical comparison"
-  task :library_branches do
+  task :library do
     DERAILED_SCRIPT_COUNT = (ENV["DERAILED_SCRIPT_COUNT"] ||= "100").to_i
 
     raise "test count must be at least 2, is set to #{DERAILED_SCRIPT_COUNT}" if DERAILED_SCRIPT_COUNT < 2
     script = ENV["DERAILED_SCRIPT"] || "bundle exec derailed exec perf:test"
-    branch_names = ENV.fetch("BRANCHES_TO_TEST").split(",")
+    branch_names = ENV.fetch("SHAS_TO_TEST").split(",")
 
+    # $ SHAS_TO_TEST="7b4d80cb373e,13d6aa3a7b70" bundle exec derailed exec perf:library
     if ENV["DERAILED_PATH_TO_LIBRARY"]
       library_dir = ENV["DERAILED_PATH_TO_LIBRARY"]
     else
@@ -36,7 +37,6 @@ namespace :perf do
       }
       run!("#{script}")
     end
-    puts branch_info.inspect
 
     DERAILED_SCRIPT_COUNT.times do |i|
       puts "#{i.next}/#{DERAILED_SCRIPT_COUNT}"

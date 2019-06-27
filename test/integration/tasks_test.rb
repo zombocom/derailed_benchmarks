@@ -30,8 +30,8 @@ class TasksTest < ActiveSupport::TestCase
   test 'library_branches' do
     skip unless ENV['USING_RAILS_GIT']
 
-    env = { "TEST_COUNT" => 10, "DERAILED_SCRIPT_COUNT" => 2, "BRANCHES_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
-    rake "perf:library_branches", { env: env }
+    env = { "TEST_COUNT" => 10, "DERAILED_SCRIPT_COUNT" => 2, "SHAS_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
+    rake "perf:library", { env: env }
   end
 
   test 'hitting authenticated devise apps' do

@@ -62,7 +62,6 @@ EOM
     actual = StringIO.new
     stats.banner(actual)
 
-    puts actual.string
     assert_match expected, actual.string
   end
 
@@ -94,7 +93,6 @@ EOM
     actual = StringIO.new
     stats.banner(actual)
 
-    puts actual.string
     assert_match expected, actual.string
   end
 end
