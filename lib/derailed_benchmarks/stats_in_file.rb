@@ -11,16 +11,18 @@ module DerailedBenchmarks
   #    9.590142   0.831269  10.457801 ( 10.0)
   #    9.836019   0.837319  10.728024 ( 11.0)
   #
-  #  x = StatsForFile.new("muhfile.bench.txt")
+  #  x = StatsForFile.new(name: "muhcommit", file: "muhfile.bench.txt", desc: "I made it faster", time: Time.now)
   #  x.values  #=> [11.437769, 11.792425]
   #  x.average # => 10.5
   #  x.name    # => "muhfile"
   class StatsForFile
-    attr_reader :name, :values
+    attr_reader :name, :values, :desc, :time
 
-    def initialize(file)
-      @name = file.split("/").last.gsub(/\.bench\.txt$/, "").force_encoding("UTF-8")
+    def initialize(file:, name:, desc:, time: )
+      @name = name
       @file = Pathname.new(file)
+      @desc = desc
+      @time = time
       @values = []
       load_file!
 

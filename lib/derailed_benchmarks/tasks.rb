@@ -2,13 +2,14 @@ require_relative 'load_tasks'
 
 namespace :perf do
   desc "runs the same test against two different branches for statistical comparison"
-  task :library_branches do
+  task :library do
     DERAILED_SCRIPT_COUNT = (ENV["DERAILED_SCRIPT_COUNT"] ||= "100").to_i
 
     raise "test count must be at least 2, is set to #{DERAILED_SCRIPT_COUNT}" if DERAILED_SCRIPT_COUNT < 2
     script = ENV["DERAILED_SCRIPT"] || "bundle exec derailed exec perf:test"
-    branch_names = ENV.fetch("BRANCHES_TO_TEST").split(",")
+    branch_names = ENV.fetch("SHAS_TO_TEST").split(",")
 
+    # $ SHAS_TO_TEST="7b4d80cb373e,13d6aa3a7b70" bundle exec derailed exec perf:library
     if ENV["DERAILED_PATH_TO_LIBRARY"]
       library_dir = ENV["DERAILED_PATH_TO_LIBRARY"]
     else
@@ -20,15 +21,20 @@ namespace :perf do
     current_library_branch = ""
     Dir.chdir(library_dir) { current_library_branch = run!('git describe --contains --all HEAD').chomp }
 
-    puts Time.now.strftime('%Y-%m-%d-%H-%M-%s-%N')
-    out_dir = Pathname.new("tmp/library_branches/#{Time.now.strftime('%Y%m%d%h%M%s%N')}")
+    out_dir = Pathname.new("tmp/library_branches/#{Time.now.strftime('%Y-%m-%d-%H-%M-%s-%N')}")
     out_dir.mkpath
 
     branches_to_test = branch_names.each_with_object({}) {|elem, hash| hash[elem] = out_dir + "#{elem.gsub('/', ':')}.bench.txt" }
+    branch_info = {}
 
-    # Make sure the branch exists and the script runs on it
     branches_to_test.each do |branch, file|
-      Dir.chdir(library_dir) { run!("git checkout '#{branch}'") }
+      Dir.chdir(library_dir) {
+        run!("git checkout '#{branch}'")
+        description = run!("git log --oneline --format=%B -n 1 HEAD | head -n 1").strip
+        time_stamp  = run!("git log -n 1 --pretty=format:%ci").strip # https://stackoverflow.com/a/25921837/147390
+        name        = run!("git rev-parse --short HEAD").strip
+        branch_info[name] = { desc: description, time: DateTime.parse(time_stamp), file: file }
+      }
       run!("#{script}")
     end
 
@@ -40,7 +46,7 @@ namespace :perf do
       end
     end
 
-    DerailedBenchmarks::StatsFromDir.new(out_dir).banner
+    DerailedBenchmarks::StatsFromDir.new(branch_info).banner
   ensure
     if library_dir && current_library_branch
       puts "Resetting git dir of #{library_dir.inspect} to #{current_library_branch.inspect}"
