@@ -13,50 +13,50 @@ module DerailedBenchmarks
   #
   # Example:
   #
-  #   stats = StatsFromDir.new("path/to/dir")
-  #   stats.fastest.average # => 10.5
-  #   stats.slowest.average # => 11.0
+  #   branch_info = {}
+  #   branch_info["loser"]  = { desc: "Old commit", time: Time.now, file: dir.join("loser.bench.txt"), name: "loser" }
+  #   branch_info["winner"] = { desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner.bench.txt"), name: "winner" }
+  #   stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
+  #
+  #   stats.newest.average  # => 10.5
+  #   stats.oldest.average  # => 11.0
   #   stats.significant?    # => true
   #   stats.x_faster        # => "1.0476"
   class StatsFromDir
     FORMAT = "%0.4f"
-    attr_reader :stats
+    attr_reader :stats, :oldest, :newest
 
-    def initialize(dir)
-      @dir = dir
+    def initialize(hash)
       @file_hash = {}
       @files = []
 
-      dir = File.expand_path(dir)
-
-      Dir.entries(dir).each do |entry|
-        file_name = File.join(dir, entry)
-        next if File.directory?(file_name)
-
-        @files << StatsForFile.new(file_name)
+      hash.each do |branch, info_hash|
+        file = info_hash.fetch(:file)
+        desc = info_hash.fetch(:desc)
+        time = info_hash.fetch(:time)
+        @files << StatsForFile.new(file: file, desc: desc, time: time, name: branch)
       end
 
       raise "No files found in '#{dir}'" if @files.empty?
 
       @files.sort_by! { |f| f.average }
+      @fastest = @files.first
+      @slowest = @files.last
+
+      @files.sort_by! { |f| f.time }
+      @oldest = @files.first
+      @newest = @files.last
+
       @stats = students_t_test
     end
 
-    def students_t_test(series_1=fastest.values, series_2=slowest.values)
+    def students_t_test(series_1=oldest.values, series_2=newest.values)
       StatisticalTest::TTest.perform(
         alpha = 0.05,
         :two_tail,
         series_1,
         series_2
       )
-    end
-
-    def fastest
-      @files.first
-    end
-
-    def slowest
-      @files.last
     end
 
     def significant?
@@ -68,30 +68,37 @@ module DerailedBenchmarks
     end
 
     def x_faster
-      faster = fastest.average
-      slower = slowest.average
-
-      FORMAT % (slower/faster).to_f
+      FORMAT % (oldest.average/newest.average).to_f
     end
 
     def percent_faster
-      faster = fastest.average
-      slower = slowest.average
-      FORMAT % (((slower - faster) / slower).to_f  * 100)
+      FORMAT % (((oldest.average - newest.average) / oldest.average).to_f  * 100)
     end
 
+    def change_direction
+      newest.average < oldest.average ? "FASTER" : "SLOWER"
+    end
+
+    # [winner] (10.5) "I am the new commit"
+    #   1.0062x or 0.6131% FASTER than
+    # [loser] (11.0) "Old commit"
     def banner(io = Kernel)
+      io.puts
       if significant?
-        io.puts "❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️"
+        io.puts "❤️ ❤️ ❤️  (Statistically Significant) ❤️ ❤️ ❤️"
       else
-        io.puts "👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎"
+        io.puts "👎👎👎(NOT Statistically Significant) 👎👎👎"
       end
       io.puts
-      io.puts "Test #{fastest.name.inspect} is faster than #{slowest.name.inspect} by"
-      io.puts "  #{x_faster}x faster or #{percent_faster}\% faster"
-      io.puts ""
+      io.puts "[#{newest.name}] #{newest.desc.inspect} - (#{newest.average} seconds)"
+      io.puts "  #{change_direction} by:"
+      io.puts "    #{x_faster}x [older/newer]"
+      io.puts "    #{percent_faster}\% [(older - newer) / older * 100]"
+      io.puts "[#{oldest.name}] #{oldest.desc.inspect} - (#{oldest.average} seconds)"
+      io.puts
       io.puts "P-value: #{p_value}"
-      io.puts "Is signifigant? (P-value < 0.05): #{significant?}"
+      io.puts "Is significant? (P-value < 0.05): #{significant?}"
+      io.puts
     end
   end
 end
