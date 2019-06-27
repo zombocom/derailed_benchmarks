@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::Base
   if respond_to?(:before_filter) && !respond_to?(:before_action)
     class << self

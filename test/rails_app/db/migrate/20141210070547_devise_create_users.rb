@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 inherited_class = Rails.version < "5" ? ActiveRecord::Migration : ActiveRecord::Migration[4.2]
 class DeviseCreateUsers < inherited_class
   def change

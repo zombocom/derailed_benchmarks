@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bigdecimal'
 require 'statistics'
 
@@ -80,9 +82,9 @@ module DerailedBenchmarks
 
     def banner(io = Kernel)
       if significant?
-        io.puts "❤️ " * 40
+        io.puts "❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️ ❤️"
       else
-        io.puts "👎 " * 40
+        io.puts "👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎 👎"
       end
       io.puts
       io.puts "Test #{fastest.name.inspect} is faster than #{slowest.name.inspect} by"

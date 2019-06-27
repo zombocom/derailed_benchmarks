@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DerailedBenchmarks
   class AuthHelpers
     # Devise helper for authenticating requests

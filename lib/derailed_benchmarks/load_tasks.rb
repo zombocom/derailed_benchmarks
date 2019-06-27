@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :perf do
   task :rails_load do
     ENV["RAILS_ENV"] ||= "production"

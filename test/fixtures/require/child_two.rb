@@ -1,5 +1,5 @@
 class ChildTwo
-  @retained = ""
+  @retained = +""
   200_000.times.map { @retained << "A" }
 end
 
