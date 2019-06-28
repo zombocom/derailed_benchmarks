@@ -7,7 +7,6 @@ namespace :perf do
 
     raise "test count must be at least 2, is set to #{DERAILED_SCRIPT_COUNT}" if DERAILED_SCRIPT_COUNT < 2
     script = ENV["DERAILED_SCRIPT"] || "bundle exec derailed exec perf:test"
-    branch_names = ENV.fetch("SHAS_TO_TEST").split(",")
 
     # $ SHAS_TO_TEST="7b4d80cb373e,13d6aa3a7b70" bundle exec derailed exec perf:library
     if ENV["DERAILED_PATH_TO_LIBRARY"]
@@ -17,6 +16,13 @@ namespace :perf do
     end
 
     raise "Must be a path with a .git directory '#{library_dir}'" unless File.exist?(File.join(library_dir, ".git"))
+
+    if ENV["SHAS_TO_TEST"]
+      branch_names = ENV.fetch("SHAS_TO_TEST").split(",")
+    else
+      branch_names = []
+      Dir.chdir(library_dir) { branch_names = run!('git log --format="%H" -n 2').chomp.split($INPUT_RECORD_SEPARATOR) }
+    end
 
     current_library_branch = ""
     Dir.chdir(library_dir) { current_library_branch = run!('git describe --contains --all HEAD').chomp }
