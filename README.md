@@ -408,7 +408,7 @@ To run your test:
 $ SHAS_TO_TEST="7b4d80cb373e,13d6aa3a7b70" bundle exec derailed exec perf:library
 ```
 
-> Use a comma to seperate your branch names
+> Use a comma to seperate your branch names with the `SHAS_TO_TEST` env var, or omit the env var to use the last 2 git commits
 
 Derailed will automatically find where you've installed Rails and switch between the branches for you between the tests.
 
