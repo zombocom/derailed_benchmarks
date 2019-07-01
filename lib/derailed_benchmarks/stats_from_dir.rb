@@ -27,7 +27,6 @@ module DerailedBenchmarks
     attr_reader :stats, :oldest, :newest
 
     def initialize(hash)
-      @file_hash = {}
       @files = []
 
       hash.each do |branch, info_hash|
@@ -36,18 +35,15 @@ module DerailedBenchmarks
         time = info_hash.fetch(:time)
         @files << StatsForFile.new(file: file, desc: desc, time: time, name: branch)
       end
-
-      raise "No files found in '#{dir}'" if @files.empty?
-
-      @files.sort_by! { |f| f.average }
-      @fastest = @files.first
-      @slowest = @files.last
-
       @files.sort_by! { |f| f.time }
       @oldest = @files.first
       @newest = @files.last
+    end
 
+    def call
+      @files.each(&:call)
       @stats = students_t_test
+      self
     end
 
     def students_t_test(series_1=oldest.values, series_2=newest.values)
@@ -79,9 +75,6 @@ module DerailedBenchmarks
       newest.average < oldest.average ? "FASTER" : "SLOWER"
     end
 
-    # [winner] (10.5) "I am the new commit"
-    #   1.0062x or 0.6131% FASTER than
-    # [loser] (11.0) "Old commit"
     def banner(io = Kernel)
       io.puts
       if significant?
@@ -96,6 +89,8 @@ module DerailedBenchmarks
       io.puts "    #{percent_faster}\% [(older - newer) / older * 100]"
       io.puts "[#{oldest.name}] #{oldest.desc.inspect} - (#{oldest.average} seconds)"
       io.puts
+      io.puts "Iterations per sample: #{ENV["TEST_COUNT"]}"
+      io.puts "Samples: #{newest.values.length}"
       io.puts "P-value: #{p_value}"
       io.puts "Is significant? (P-value < 0.05): #{significant?}"
       io.puts

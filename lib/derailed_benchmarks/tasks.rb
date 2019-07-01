@@ -3,12 +3,12 @@ require_relative 'load_tasks'
 namespace :perf do
   desc "runs the same test against two different branches for statistical comparison"
   task :library do
-    DERAILED_SCRIPT_COUNT = (ENV["DERAILED_SCRIPT_COUNT"] ||= "100").to_i
+    DERAILED_SCRIPT_COUNT = (ENV["DERAILED_SCRIPT_COUNT"] ||= "200").to_i
+    ENV["TEST_COUNT"] ||= "200"
 
     raise "test count must be at least 2, is set to #{DERAILED_SCRIPT_COUNT}" if DERAILED_SCRIPT_COUNT < 2
     script = ENV["DERAILED_SCRIPT"] || "bundle exec derailed exec perf:test"
 
-    # $ SHAS_TO_TEST="7b4d80cb373e,13d6aa3a7b70" bundle exec derailed exec perf:library
     if ENV["DERAILED_PATH_TO_LIBRARY"]
       library_dir = ENV["DERAILED_PATH_TO_LIBRARY"]
     else
@@ -17,11 +17,19 @@ namespace :perf do
 
     raise "Must be a path with a .git directory '#{library_dir}'" unless File.exist?(File.join(library_dir, ".git"))
 
-    if ENV["SHAS_TO_TEST"]
-      branch_names = ENV.fetch("SHAS_TO_TEST").split(",")
-    else
-      branch_names = []
-      Dir.chdir(library_dir) { branch_names = run!('git log --format="%H" -n 2').chomp.split($INPUT_RECORD_SEPARATOR) }
+    # Use either the explicit SHAs when present or grab last two SHAs from commit history
+    # if only one SHA is given, then use it and the last SHA from commit history
+    branch_names = []
+    branch_names = ENV.fetch("SHAS_TO_TEST").split(",") if ENV["SHAS_TO_TEST"]
+    if branch_names.length < 2
+      Dir.chdir(library_dir) do
+        branches = run!('git log --format="%H" -n 2').chomp.split($INPUT_RECORD_SEPARATOR)
+        if branch_names.empty?
+          branch_names = branches
+        else
+          branch_names << branches.shift
+        end
+      end
     end
 
     current_library_branch = ""
@@ -34,25 +42,31 @@ namespace :perf do
     branch_info = {}
 
     branches_to_test.each do |branch, file|
-      Dir.chdir(library_dir) {
+      Dir.chdir(library_dir) do
         run!("git checkout '#{branch}'")
         description = run!("git log --oneline --format=%B -n 1 HEAD | head -n 1").strip
         time_stamp  = run!("git log -n 1 --pretty=format:%ci").strip # https://stackoverflow.com/a/25921837/147390
         name        = run!("git rev-parse --short HEAD").strip
         branch_info[name] = { desc: description, time: DateTime.parse(time_stamp), file: file }
-      }
+      end
       run!("#{script}")
     end
 
+    stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
+    ENV["DERAILED_STOP_VALID_COUNT"] ||= "10"
+    stop_valid_count = Integer(ENV["DERAILED_STOP_VALID_COUNT"])
+
+    times_significant = 0
     DERAILED_SCRIPT_COUNT.times do |i|
-      puts "#{i.next}/#{DERAILED_SCRIPT_COUNT}"
+      puts "Sample: #{i.next}/#{DERAILED_SCRIPT_COUNT} iterations per sample: #{ENV['TEST_COUNT']}"
       branches_to_test.each do |branch, file|
         Dir.chdir(library_dir) { run!("git checkout '#{branch}'") }
         run!(" #{script} 2>&1 | tail -n 1 >> '#{file}'")
       end
+      times_significant += 1 if i >= 2 && stats.call.significant?
+      break if stop_valid_count != 0 && times_significant == stop_valid_count
     end
 
-    DerailedBenchmarks::StatsFromDir.new(branch_info).banner
   ensure
     if library_dir && current_library_branch
       puts "Resetting git dir of #{library_dir.inspect} to #{current_library_branch.inspect}"
@@ -60,6 +74,8 @@ namespace :perf do
         run!("git checkout '#{current_library_branch}'")
       end
     end
+
+    stats.call.banner if stats
   end
 
   desc "hits the url TEST_COUNT times"
