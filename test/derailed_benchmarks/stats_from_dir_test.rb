@@ -8,7 +8,7 @@ class StatsFromDirTest < ActiveSupport::TestCase
     branch_info = {}
     branch_info["loser"]  = { desc: "Old commit", time: Time.now, file: dir.join("loser.bench.txt"), name: "loser" }
     branch_info["winner"] = { desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner.bench.txt"), name: "winner" }
-    stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
+    stats = DerailedBenchmarks::StatsFromDir.new(branch_info).call
 
     newest = stats.newest
     oldest = stats.oldest
@@ -31,7 +31,7 @@ class StatsFromDirTest < ActiveSupport::TestCase
     branch_info = {}
     branch_info["loser"]  = { desc: "Old commit", time: Time.now, file: dir.join("loser.bench.txt"), name: "loser" }
     branch_info["winner"] = { desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner.bench.txt"), name: "winner" }
-    stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
+    stats = DerailedBenchmarks::StatsFromDir.new(branch_info).call
     newest = stats.newest
     oldest = stats.oldest
 
@@ -54,9 +54,6 @@ class StatsFromDirTest < ActiveSupport::TestCase
     1.0476x [older/newer]
     4.5455% [(older - newer) / older * 100]
 [loser] "Old commit" - (11.0 seconds)
-
-P-value: 0.000037
-Is significant? (P-value < 0.05): true
 EOM
 
     actual = StringIO.new
@@ -70,7 +67,7 @@ EOM
     branch_info = {}
     branch_info["loser"]  = { desc: "I am the new commit", time: Time.now, file: dir.join("loser.bench.txt"), name: "loser" }
     branch_info["winner"] = { desc: "Old commit", time: Time.now - 10, file: dir.join("winner.bench.txt"), name: "winner" }
-    stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
+    stats = DerailedBenchmarks::StatsFromDir.new(branch_info).call
     newest = stats.newest
     oldest = stats.oldest
 
