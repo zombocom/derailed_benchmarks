@@ -18,12 +18,16 @@ module DerailedBenchmarks
   class StatsForFile
     attr_reader :name, :values, :desc, :time
 
-    def initialize(file:, name:, desc:, time: )
-      @name = name
+    def initialize(file:, name:, desc: "", time: )
       @file = Pathname.new(file)
+      FileUtils.touch(@file)
+
+      @name = name
       @desc = desc
       @time = time
-      @values = []
+    end
+
+    def call
       load_file!
 
       @average = values.inject(:+) / values.length
@@ -33,13 +37,14 @@ module DerailedBenchmarks
       @average.to_f
     end
 
-    def load_file!
+    private def load_file!
+      @values = []
       @file.each_line do |line|
         line.match(/\( +(\d+\.\d+)\)/)
         begin
           values << BigDecimal($1)
         rescue => e
-          raise e, "Problem with file #{file_name.inspect}:\n#{file_contents}\n#{e.message}"
+          raise e, "Problem with file #{@file.inspect}:\n#{@file.read}\n#{e.message}"
         end
       end
       values.freeze

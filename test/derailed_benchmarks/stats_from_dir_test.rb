@@ -95,4 +95,10 @@ EOM
 
     assert_match expected, actual.string
   end
+
+  test "stats from samples with slightly different sizes" do
+    stats = DerailedBenchmarks::StatsFromDir.new({})
+    out = stats.students_t_test([100,101,102], [1,3])
+    assert out[:alternative]
+  end
 end

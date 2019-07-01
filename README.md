@@ -400,21 +400,29 @@ Then you'll need to fork rails and make a branch. Then point your rails app to y
 gem 'rails', github: "<github username>/rails", branch: "<your branch name>"
 ```
 
-Now you can specify two different commits to test against. Derailed will cycle betwen them, hitting each with 1000 requests. It will record the time it takes to do this 100 times. It uses the different times from the different runs to generate a [student's T test]() which will tell you if the outcome is likely the result of your change or if it's statistical noise. This is important, because moving the needle on the request/response cycle is very difficult, and a performance improvement of 1.01x or 1% faster can be of value, but you have to make sure such a small change isn't the result of noise.
+or point it at your local copy:
+
+```
+gem 'rails', path: "<path/to/your/local/copy/rails>"
+```
 
 To run your test:
+
+```
+$ bundle exec derailed exec perf:library
+```
+
+This will automatically test the two latest commits of Rails (or the library you've specified). If you would like to compare against different SHAs you can manually specify them:
 
 ```
 $ SHAS_TO_TEST="7b4d80cb373e,13d6aa3a7b70" bundle exec derailed exec perf:library
 ```
 
-> Use a comma to seperate your branch names with the `SHAS_TO_TEST` env var, or omit the env var to use the last 2 git commits
+Use a comma to seperate your branch names with the `SHAS_TO_TEST` env var, or omit the env var to use the last 2 git commits.
 
-Derailed will automatically find where you've installed Rails and switch between the branches for you between the tests.
+If you only include one SHA, then derailed will grab the latest commit and compare it to that SHA.
 
-These tests take a along time to run so the output is stored on disk incase you want to see them in the future, they're at `tmp/library_branches/<timestamp>` and labeled with the same names as your branches.
-
-Before running tests you should close all programs on your laptop, turn on a program to prevent your laptop from going to sleep (or increase your sleep timer). Make sure it's plugged into a power outlet and  go grab a cup of coffee. If you do anything on your laptop while this test is running you risk the chance of skewing your results.
+These tests might take a along time to run so the output is stored on disk incase you want to see them in the future, they're at `tmp/library_branches/<timestamp>` and labeled with the same names as your commits.
 
 When the test is done it will output which commit "won" and by how much:
 
@@ -436,6 +444,10 @@ You can provide this to the Rails team along with the example app you used to be
 Generally performance patches have to be weighted in terms of how much they help versus how large/difficult/gnarly the patch is. If the above example was a really tiny patch and it was in a common component, then half a percent might be a justafiable increase. If it was a huge re-write then it's likely going to be closed. In general I tend to not submit patches unless I'm seeing `>= 1%` performance increases.
 
 You can use this to test changes in other libraries that aren't rails, you just have to tell it the path to the library you want to test against with the `DERAILED_PATH_TO_LIBRARY` env var.
+
+> To get the best results before running tests you should close all programs on your laptop, turn on a program to prevent your laptop from going to sleep (or increase your sleep timer). Make sure it's plugged into a power outlet and  go grab a cup of coffee. If you do anything on your laptop while this test is running you risk the chance of skewing your results.
+
+By default derailed will stop once statistical signficance has been detected, you can tune this behavior by setting `DERAILED_STOP_VALID_COUNT` env var. Setting this to a positive number, will increase the number of iterations required that are detected to be statistically significant. For example setting it to 100 might result in 120 runs if it takes 20 runs to detect significance. Generally the more runs you have, the more accurate your averages will be. You can disable this all together by setting `DERAILED_STOP_VALID_COUNT=0` wich will force derailed to run all iterations.
 
 ## Environment Variables
 
