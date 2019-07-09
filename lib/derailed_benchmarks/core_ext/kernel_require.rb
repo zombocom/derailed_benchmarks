@@ -22,10 +22,11 @@ module Kernel
   end
 
   def require_relative(file)
-    root = Pathname.new(caller_locations(1, 1)[0].absolute_path).realpath.dirname
-    path = Pathname.new(file)
-    path = Pathname.new(File.expand_path(file, root)) if path.relative?
-    require path.to_s
+    if Pathname.new(file).absolute?
+      require file
+    else
+      require File.expand_path("../#{file}", caller_locations(1, 1)[0].absolute_path)
+    end
   end
 
   class << self
