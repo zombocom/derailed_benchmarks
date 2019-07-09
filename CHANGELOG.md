@@ -1,5 +1,10 @@
 # A Log of Changes!
 
+## 1.4.0
+
+- Fix bug with `require_relative` [#142](https://github.com/schneems/derailed_benchmarks/pull/142)
+- Introduce `perf:library` to profile patches to libraries (like Rails) [#135](https://github.com/schneems/derailed_benchmarks/pull/135), [#139](https://github.com/schneems/derailed_benchmarks/pull/139), [#140](https://github.com/schneems/derailed_benchmarks/pull/140), [#141](https://github.com/schneems/derailed_benchmarks/pull/141)
+
 ## 1.3.6
 
 - `require_relative` is now measured [commit](https://github.com/schneems/derailed_benchmarks/commit/af11bcc46a4fa24f79e4897a51034927a56e077e)
