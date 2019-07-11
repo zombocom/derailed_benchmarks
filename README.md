@@ -317,7 +317,7 @@ TOP: 54.1836 MiB
     action_view/base: 0.4336 MiB
 ```
 
-You can use `CUT_OFF=0.3` to only show files that have above a certain memory useage, this can be used to help eliminate noise.
+You can use `CUT_OFF=0.3` to only show files that have above a certain memory usage, this can be used to help eliminate noise.
 
 If your application code is extremely large at boot consider using `$ derailed exec perf:objects` to debug low level object creation.
 
@@ -447,7 +447,7 @@ You can use this to test changes in other libraries that aren't rails, you just 
 
 > To get the best results before running tests you should close all programs on your laptop, turn on a program to prevent your laptop from going to sleep (or increase your sleep timer). Make sure it's plugged into a power outlet and  go grab a cup of coffee. If you do anything on your laptop while this test is running you risk the chance of skewing your results.
 
-By default derailed will stop once statistical signficance has been detected, you can tune this behavior by setting `DERAILED_STOP_VALID_COUNT` env var. Setting this to a positive number, will increase the number of iterations required that are detected to be statistically significant. For example setting it to 100 might result in 120 runs if it takes 20 runs to detect significance. Generally the more runs you have, the more accurate your averages will be. You can disable this all together by setting `DERAILED_STOP_VALID_COUNT=0` wich will force derailed to run all iterations.
+By default derailed will stop once statistical signficance has been detected, you can tune this behavior by setting `DERAILED_STOP_VALID_COUNT` env var. Setting this to a positive number, will increase the number of iterations required that are detected to be statistically significant. For example setting it to 100 might result in 120 runs if it takes 20 runs to detect significance. Generally the more runs you have, the more accurate your averages will be. You can disable this all together by setting `DERAILED_STOP_VALID_COUNT=0` which will force derailed to run all iterations.
 
 ## Environment Variables
 
