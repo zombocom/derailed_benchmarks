@@ -388,6 +388,15 @@ $ bundle exec derailed exec perf:test
 
 But I wouldn't, benchmark-ips is a better measure.
 
+### Configuring `benchmark-ips`
+
+The `benchmark-ips` gem allows for a number of test run customizations, and `derailed_benchmarks` exposes a few of them via environment variables.
+
+- `IPS_WARMUP`: number of seconds spent warming up the app, defaullt is `2`
+- `IPS_TIME`: number of seconds to run ips benchmark for after warm up, defaullt is `5`
+- `IPS_SUITE`: custom suite to use to run test
+- `IPS_ITERATIONS`: number of times to run the test, displaying that last result, defaullt is `1`
+
 ## I made a patch to to Rails how can I tell if it made my Rails app faster and test for statistical significance
 
 When you're trying to submit a performance patch to rails/rails then they'll likely ask you for a benchmark. While you can sometimes provide a microbenchmark, a real world full stack request/response test is the gold standard.
