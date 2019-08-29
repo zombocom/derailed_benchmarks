@@ -172,6 +172,11 @@ namespace :perf do
     require 'benchmark/ips'
 
     Benchmark.ips do |x|
+      x.warmup = Float(ENV["IPS_WARMUP"] || 2)
+      x.time = Float(ENV["IPS_TIME"] || 5)
+      x.suite = ENV["IPS_SUITE"] if ENV["IPS_SUITE"]
+      x.iterations = Integer(ENV["IPS_ITERATIONS"] || 1)
+
       x.report("ips") { call_app }
     end
   end

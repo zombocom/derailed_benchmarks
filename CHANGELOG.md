@@ -1,5 +1,7 @@
 # A Log of Changes!
 
+- Allow configuration of `perf:ips` benchmark.
+
 ## 1.4.0
 
 - Fix bug with `require_relative` [#142](https://github.com/schneems/derailed_benchmarks/pull/142)
