@@ -1,9 +1,8 @@
 # A Log of Changes!
 
-- Allow configuration of `perf:ips` benchmark.
-
 ## 1.4.0
 
+- Allow configuration of `perf:ips` benchmark.
 - Fix bug with `require_relative` [#142](https://github.com/schneems/derailed_benchmarks/pull/142)
 - Introduce `perf:library` to profile patches to libraries (like Rails) [#135](https://github.com/schneems/derailed_benchmarks/pull/135), [#139](https://github.com/schneems/derailed_benchmarks/pull/139), [#140](https://github.com/schneems/derailed_benchmarks/pull/140), [#141](https://github.com/schneems/derailed_benchmarks/pull/141)
 
