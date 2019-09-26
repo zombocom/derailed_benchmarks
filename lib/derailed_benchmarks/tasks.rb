@@ -53,7 +53,7 @@ namespace :perf do
     end
 
     stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
-    ENV["DERAILED_STOP_VALID_COUNT"] ||= "10"
+    ENV["DERAILED_STOP_VALID_COUNT"] ||= "50"
     stop_valid_count = Integer(ENV["DERAILED_STOP_VALID_COUNT"])
 
     times_significant = 0
