@@ -18,8 +18,8 @@ class StatsFromDirTest < ActiveSupport::TestCase
     assert_equal "winner", newest.name
     assert_equal "loser", oldest.name
 
-    assert 3.6e-05 < stats.p_value
-    assert 3.8e-05 > stats.p_value
+    assert_in_delta 0.26, stats.d_max, 0.01
+    assert_in_delta 0.1730818382602285, stats.d_critical, 0.00001
     assert_equal true, stats.significant?
 
     assert_equal "1.0062", stats.x_faster
@@ -36,8 +36,12 @@ class StatsFromDirTest < ActiveSupport::TestCase
     oldest = stats.oldest
 
     # Test fixture for banner
-    def stats.p_value
-      "0.000037"
+    def stats.d_max
+      "0.037"
+    end
+
+    def stats.d_critical
+      "0.001"
     end
 
     def newest.average
@@ -95,7 +99,7 @@ EOM
 
   test "stats from samples with slightly different sizes" do
     stats = DerailedBenchmarks::StatsFromDir.new({})
-    out = stats.students_t_test([100,101,102], [1,3])
+    out = stats.students_t_test([100,101,102, 100, 101, 99], [1,3, 3, 2])
     assert out[:alternative]
   end
 end
