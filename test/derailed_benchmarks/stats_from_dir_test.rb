@@ -99,7 +99,7 @@ EOM
 
   test "stats from samples with slightly different sizes" do
     stats = DerailedBenchmarks::StatsFromDir.new({})
-    out = stats.students_t_test([100,101,102, 100, 101, 99], [1,3, 3, 2])
+    out = stats.statistical_test([100,101,102, 100, 101, 99], [1,3, 3, 2])
     assert out[:alternative]
   end
 end

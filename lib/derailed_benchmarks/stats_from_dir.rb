@@ -42,11 +42,11 @@ module DerailedBenchmarks
 
     def call
       @files.each(&:call)
-      @stats = students_t_test
+      @stats = statistical_test
       self
     end
 
-    def students_t_test(series_1=oldest.values, series_2=newest.values)
+    def statistical_test(series_1=oldest.values, series_2=newest.values)
       StatisticalTest::KSTest.two_samples(
         group_one: series_1,
         group_two: series_2
