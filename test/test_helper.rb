@@ -31,7 +31,7 @@ Capybara.default_selector = :css
 require_relative "rails_app/config/environment"
 
 # https://github.com/plataformatec/devise/blob/master/test/orm/active_record.rb
-migrate_path = File.expand_path("../rails_app/db/migrate", __dir__)
+migrate_path = File.expand_path("../rails_app/db/migrate", __FILE__)
 if Rails.version.start_with? '6'
   ActiveRecord::MigrationContext.new(migrate_path, ActiveRecord::SchemaMigration).migrate
 elsif Rails.version.start_with? '5.2'
@@ -39,6 +39,8 @@ elsif Rails.version.start_with? '5.2'
 else
   ActiveRecord::Migrator.migrate(migrate_path)
 end
+
+ActiveRecord::Migration.maintain_test_schema!
 
 # Load support files
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
