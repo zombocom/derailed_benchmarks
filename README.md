@@ -443,9 +443,6 @@ When the test is done it will output which commit "won" and by how much:
     1.0870x [older/newer]
     8.0026% [(older - newer) / older * 100]
 [13d6aa3a7b] "Merge pull request #36284 from kamipo/fix_eager_loading_with_string_joins" - (11.9255485 seconds)
-
-P-value: 4.635595463712749e-05
-Is significant? (P-value < 0.05): true
 ```
 
 You can provide this to the Rails team along with the example app you used to benchmark (so they can independently verify if needed).
