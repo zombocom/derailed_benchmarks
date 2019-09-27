@@ -42,16 +42,14 @@ module DerailedBenchmarks
 
     def call
       @files.each(&:call)
-      @stats = students_t_test
+      @stats = statistical_test
       self
     end
 
-    def students_t_test(series_1=oldest.values, series_2=newest.values)
-      StatisticalTest::TTest.perform(
-        alpha = 0.05,
-        :two_tail,
-        series_1,
-        series_2
+    def statistical_test(series_1=oldest.values, series_2=newest.values)
+      StatisticalTest::KSTest.two_samples(
+        group_one: series_1,
+        group_two: series_2
       )
     end
 
@@ -59,8 +57,12 @@ module DerailedBenchmarks
       @stats[:alternative]
     end
 
-    def p_value
-      @stats[:p_value].to_f
+    def d_max
+      @stats[:d_max].to_f
+    end
+
+    def d_critical
+      @stats[:d_critical].to_f
     end
 
     def x_faster
@@ -91,8 +93,11 @@ module DerailedBenchmarks
       io.puts
       io.puts "Iterations per sample: #{ENV["TEST_COUNT"]}"
       io.puts "Samples: #{newest.values.length}"
-      io.puts "P-value: #{p_value}"
-      io.puts "Is significant? (P-value < 0.05): #{significant?}"
+      io.puts
+      io.puts "Test type: Kolmogorov Smirnov"
+      io.puts "Is significant? (max > critical): #{significant?}"
+      io.puts "D critical: #{d_critical}"
+      io.puts "D max: #{d_max}"
       io.puts
     end
   end
