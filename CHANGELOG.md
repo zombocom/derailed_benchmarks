@@ -1,5 +1,7 @@
 # A Log of Changes!
 
+## 1.4.1
+
 - Rake dependency now allows for Rake 13 (https://github.com/schneems/derailed_benchmarks/pull/151)
 
 ## 1.4.0
