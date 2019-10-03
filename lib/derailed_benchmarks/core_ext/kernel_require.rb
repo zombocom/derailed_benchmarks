@@ -77,6 +77,14 @@ Kernel.define_singleton_method(:require) do |file|
   end
 end
 
+class Object
+  private
+
+  def require(path)
+    Kernel.require(path)
+  end
+end
+
 # Don't forget to assign a cost to the top level
 cost_before_requiring_anything = GetProcessMem.new.mb
 TOP_REQUIRE.cost = cost_before_requiring_anything
