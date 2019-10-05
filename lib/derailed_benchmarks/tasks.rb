@@ -23,10 +23,13 @@ namespace :perf do
     branch_names = ENV.fetch("SHAS_TO_TEST").split(",") if ENV["SHAS_TO_TEST"]
     if branch_names.length < 2
       Dir.chdir(library_dir) do
-        branches = run!('git log --format="%H" -n 2').chomp.split($INPUT_RECORD_SEPARATOR)
+        run!("git checkout '#{branch_names.first}'") unless branch_names.empty?
+
+        branches = run!('git log --format="%H" -n 2').chomp.split($/)
         if branch_names.empty?
           branch_names = branches
         else
+          branches.shift
           branch_names << branches.shift
         end
       end
