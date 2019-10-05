@@ -65,9 +65,7 @@ namespace :perf do
     puts
     puts
 
-    branch_info.each do |short_sha, hash|
-      puts "Testing: #{short_sha}: #{hash[:desc]}"
-    end
+    raise "SHAs to test must be different" if branch_info.length == 1
 
     stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
     ENV["DERAILED_STOP_VALID_COUNT"] ||= "50"
@@ -86,7 +84,7 @@ namespace :perf do
 
   ensure
     if library_dir && current_library_branch
-      puts "Resetting git dir of #{library_dir.inspect} to #{current_library_branch.inspect}"
+      puts "Resetting git dir of '#{library_dir.to_s}' to #{current_library_branch.inspect}"
       Dir.chdir(library_dir) do
         run!("git checkout '#{current_library_branch}'")
       end
