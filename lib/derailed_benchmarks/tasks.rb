@@ -23,10 +23,13 @@ namespace :perf do
     branch_names = ENV.fetch("SHAS_TO_TEST").split(",") if ENV["SHAS_TO_TEST"]
     if branch_names.length < 2
       Dir.chdir(library_dir) do
-        branches = run!('git log --format="%H" -n 2').chomp.split($INPUT_RECORD_SEPARATOR)
+        run!("git checkout '#{branch_names.first}'") unless branch_names.empty?
+
+        branches = run!('git log --format="%H" -n 2').chomp.split($/)
         if branch_names.empty?
           branch_names = branches
         else
+          branches.shift
           branch_names << branches.shift
         end
       end
@@ -40,17 +43,32 @@ namespace :perf do
 
     branches_to_test = branch_names.each_with_object({}) {|elem, hash| hash[elem] = out_dir + "#{elem.gsub('/', ':')}.bench.txt" }
     branch_info = {}
+    branch_to_sha = {}
 
     branches_to_test.each do |branch, file|
       Dir.chdir(library_dir) do
         run!("git checkout '#{branch}'")
         description = run!("git log --oneline --format=%B -n 1 HEAD | head -n 1").strip
         time_stamp  = run!("git log -n 1 --pretty=format:%ci").strip # https://stackoverflow.com/a/25921837/147390
-        name        = run!("git rev-parse --short HEAD").strip
-        branch_info[name] = { desc: description, time: DateTime.parse(time_stamp), file: file }
+        short_sha   = run!("git rev-parse --short HEAD").strip
+        branch_to_sha[branch] = short_sha
+
+        branch_info[short_sha] = { desc: description, time: DateTime.parse(time_stamp), file: file }
       end
       run!("#{script}")
     end
+
+    puts
+    puts
+    branches_to_test.each.with_index do |(branch, _), i|
+      short_sha = branch_to_sha[branch]
+      desc      = branch_info[short_sha][:desc]
+      puts "Testing #{i + 1}: #{short_sha}: #{desc}"
+    end
+    puts
+    puts
+
+    raise "SHAs to test must be different" if branch_info.length == 1
 
     stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
     ENV["DERAILED_STOP_VALID_COUNT"] ||= "50"
@@ -69,7 +87,7 @@ namespace :perf do
 
   ensure
     if library_dir && current_library_branch
-      puts "Resetting git dir of #{library_dir.inspect} to #{current_library_branch.inspect}"
+      puts "Resetting git dir of '#{library_dir.to_s}' to #{current_library_branch.inspect}"
       Dir.chdir(library_dir) do
         run!("git checkout '#{current_library_branch}'")
       end
