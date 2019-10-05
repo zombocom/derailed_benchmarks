@@ -40,16 +40,33 @@ namespace :perf do
 
     branches_to_test = branch_names.each_with_object({}) {|elem, hash| hash[elem] = out_dir + "#{elem.gsub('/', ':')}.bench.txt" }
     branch_info = {}
+    branch_to_sha = {}
 
     branches_to_test.each do |branch, file|
       Dir.chdir(library_dir) do
         run!("git checkout '#{branch}'")
         description = run!("git log --oneline --format=%B -n 1 HEAD | head -n 1").strip
         time_stamp  = run!("git log -n 1 --pretty=format:%ci").strip # https://stackoverflow.com/a/25921837/147390
-        name        = run!("git rev-parse --short HEAD").strip
-        branch_info[name] = { desc: description, time: DateTime.parse(time_stamp), file: file }
+        short_sha   = run!("git rev-parse --short HEAD").strip
+        branch_to_sha[branch] = short_sha
+
+        branch_info[short_sha] = { desc: description, time: DateTime.parse(time_stamp), file: file }
       end
       run!("#{script}")
+    end
+
+    puts
+    puts
+    branches_to_test.each.with_index do |(branch, _), i|
+      short_sha = branch_to_sha[branch]
+      desc      = branch_info[short_sha][:desc]
+      puts "Testing #{i + 1}: #{short_sha}: #{desc}"
+    end
+    puts
+    puts
+
+    branch_info.each do |short_sha, hash|
+      puts "Testing: #{short_sha}: #{hash[:desc]}"
     end
 
     stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
