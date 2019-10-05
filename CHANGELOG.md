@@ -1,5 +1,7 @@
 # A Log of Changes!
 
+- Fix case in perf:library where the same SHA could be tested against itself (https://github.com/schneems/derailed_benchmarks/pull/153)
+
 ## 1.4.1
 
 - Rake dependency now allows for Rake 13 (https://github.com/schneems/derailed_benchmarks/pull/151)
