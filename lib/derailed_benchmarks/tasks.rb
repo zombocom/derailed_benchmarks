@@ -85,7 +85,7 @@ namespace :perf do
       break if stop_valid_count != 0 && times_significant == stop_valid_count
     end
 
-  ensure
+  
     if library_dir && current_library_branch
       puts "Resetting git dir of '#{library_dir.to_s}' to #{current_library_branch.inspect}"
       Dir.chdir(library_dir) do
@@ -95,6 +95,7 @@ namespace :perf do
 
     stats.call.banner if stats
   end
+  
 
   desc "hits the url TEST_COUNT times"
   task :test => [:setup] do
