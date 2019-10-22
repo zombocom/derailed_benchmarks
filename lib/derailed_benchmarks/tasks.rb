@@ -96,7 +96,7 @@ namespace :perf do
 
       stats.call.banner if stats
     end
-  end
+   end
   
 
   desc "hits the url TEST_COUNT times"
