@@ -70,7 +70,6 @@ namespace :perf do
       puts
 
       raise "SHAs to test must be different" if branch_info.length == 1
-    ensure:
       stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
       ENV["DERAILED_STOP_VALID_COUNT"] ||= "50"
       stop_valid_count = Integer(ENV["DERAILED_STOP_VALID_COUNT"])
@@ -86,7 +85,7 @@ namespace :perf do
         break if stop_valid_count != 0 && times_significant == stop_valid_count
       end
 
-    
+    ensure
       if library_dir && current_library_branch
         puts "Resetting git dir of '#{library_dir.to_s}' to #{current_library_branch.inspect}"
         Dir.chdir(library_dir) do
