@@ -1,5 +1,9 @@
 # A Log of Changes!
 
+- Fixed syntax error that resulted in ensure end error inside tasks.rb
+
+## 1.4.2
+
 - Fix case in perf:library where the same SHA could be tested against itself (https://github.com/schneems/derailed_benchmarks/pull/153)
 
 ## 1.4.1
