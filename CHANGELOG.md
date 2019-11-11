@@ -1,9 +1,8 @@
-# A Log of Changes!
-
-- Fixed syntax error that resulted in ensure end error inside tasks.rb
+## master (unreleased)
 
 ## 1.4.2
 
+- Fixed syntax error that resulted in ensure end error inside tasks.rb for older rubies (https://github.com/schneems/derailed_benchmarks/pull/155)
 - Fix case in perf:library where the same SHA could be tested against itself (https://github.com/schneems/derailed_benchmarks/pull/153)
 
 ## 1.4.1
