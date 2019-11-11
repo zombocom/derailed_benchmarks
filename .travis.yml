@@ -3,7 +3,6 @@ rvm:
   - 2.4.9
   - 2.5.5
   - 2.6.3
-  - ruby-head
 
 gemfile:
   - gemfiles/rails_5_1.gemfile
@@ -16,4 +15,8 @@ before_install:
 
 matrix:
   allow_failures:
-    - rvm: ruby-head
+    # Rails 6 requires Ruby 2.5+
+    - rvm: 2.4.9
+      gemfile: gemfiles/rails_6_0.gemfile
+    - rvm: 2.4.9
+      gemfile: gemfiles/rails_git.gemfile
