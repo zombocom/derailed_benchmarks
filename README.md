@@ -415,13 +415,23 @@ or point it at your local copy:
 gem 'rails', path: "<path/to/your/local/copy/rails>"
 ```
 
-To run your test:
+To run your tests within the context of your current app/repo:
+
+```
+$ bundle exec derailed exec perf:app
+```
+
+This will automatically test the two latest commits of your library/current directory.
+
+If you'd like to test the Rails library instead, make sure that `ENV[DERAILED_PATH_TO_LIBRARY]` is unset.
 
 ```
 $ bundle exec derailed exec perf:library
 ```
 
-This will automatically test the two latest commits of Rails (or the library you've specified). If you would like to compare against different SHAs you can manually specify them:
+This will automatically test the two latest commits of Rails.
+
+If you would also like to compare against different SHAs you can manually specify them:
 
 ```
 $ SHAS_TO_TEST="7b4d80cb373e,13d6aa3a7b70" bundle exec derailed exec perf:library
