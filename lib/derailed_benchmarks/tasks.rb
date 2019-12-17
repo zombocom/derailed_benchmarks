@@ -93,11 +93,18 @@ namespace :perf do
         end
       end
 
-      puts "Log dir: out_dir.inspect"
-      stats.call.banner if stats
+      if stats
+        stats.call.banner
+
+        result_file = out_dir + "results.txt"
+        File.open(result_file, "w") do |f|
+          stats.banner(f)
+        end
+
+        puts "Output: #{result_file.to_s}"
+      end
     end
   end
-
 
   desc "hits the url TEST_COUNT times"
   task :test => [:setup] do
