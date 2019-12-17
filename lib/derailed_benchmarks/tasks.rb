@@ -96,7 +96,7 @@ namespace :perf do
       puts "Log dir: out_dir.inspect"
       stats.call.banner if stats
     end
-   end
+  end
 
 
   desc "hits the url TEST_COUNT times"
