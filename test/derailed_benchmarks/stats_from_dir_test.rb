@@ -22,8 +22,11 @@ class StatsFromDirTest < ActiveSupport::TestCase
     assert_in_delta 0.1730818382602285, stats.d_critical, 0.00001
     assert_equal true, stats.significant?
 
-    assert_equal "1.0062", stats.x_faster
-    assert_equal "0.6131", stats.percent_faster
+    format = DerailedBenchmarks::StatsFromDir::FORMAT
+    assert_equal "1.0062", format % stats.x_faster
+    assert_equal "0.6147", format % stats.percent_faster
+
+    assert_equal "11.3844", format % newest.median
  end
 
   test "banner faster" do
@@ -44,17 +47,17 @@ class StatsFromDirTest < ActiveSupport::TestCase
       "0.001"
     end
 
-    def newest.average
+    def newest.median
       10.5
     end
 
-    def oldest.average
+    def oldest.median
       11.0
     end
 
-    expected = <<-EOM
+    expected = <<~EOM
 [winner] "I am the new commit" - (10.5 seconds)
-  FASTER by:
+  FASTER 🚀🚀🚀 by:
     1.0476x [older/newer]
     4.5455% [(older - newer) / older * 100]
 [loser] "Old commit" - (11.0 seconds)
@@ -75,18 +78,18 @@ EOM
     newest = stats.newest
     oldest = stats.oldest
 
-    def oldest.average
+    def oldest.median
       10.5
     end
 
-    def newest.average
+    def newest.median
       11.0
     end
 
-    expected = <<-EOM
+    expected = <<~EOM
 [loser] "I am the new commit" - (11.0 seconds)
-  SLOWER by:
-    0.9545x [older/newer]
+  SLOWER 🐢🐢🐢 by:
+     0.9545x [older/newer]
     -4.7619% [(older - newer) / older * 100]
 [winner] "Old commit" - (10.5 seconds)
 EOM
