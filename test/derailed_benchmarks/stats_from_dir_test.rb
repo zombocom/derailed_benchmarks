@@ -27,7 +27,24 @@ class StatsFromDirTest < ActiveSupport::TestCase
     assert_equal "0.6147", format % stats.percent_faster
 
     assert_equal "11.3844", format % newest.median
- end
+  end
+
+  test "alignment" do
+    dir = fixtures_dir("stats/significant")
+    branch_info = {}
+    branch_info["loser"]  = { desc: "Old commit", time: Time.now, file: dir.join("loser.bench.txt"), name: "loser" }
+    branch_info["winner"] = { desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner.bench.txt"), name: "winner" }
+    stats = DerailedBenchmarks::StatsFromDir.new(branch_info).call
+    def stats.percent_faster
+      -0.1
+    end
+
+    def stats.x_faster
+      0.9922
+    end
+
+    assert_equal 1, stats.align.length
+  end
 
   test "banner faster" do
     dir = fixtures_dir("stats/significant")

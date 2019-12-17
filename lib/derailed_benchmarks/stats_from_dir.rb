@@ -86,7 +86,7 @@ module DerailedBenchmarks
     end
 
     def align
-      " " * (("%i" % percent_faster).length - ("%i" % x_faster).length)
+      " " * (percent_faster.to_s.index(".") - x_faster.to_s.index("."))
     end
 
     def banner(io = Kernel)
