@@ -39,7 +39,7 @@ namespace :perf do
       current_library_branch = ""
       Dir.chdir(library_dir) { current_library_branch = run!('git describe --contains --all HEAD').chomp }
 
-      out_dir = Pathname.new("tmp/library_branches/#{Time.now.strftime('%Y-%m-%d-%H-%M-%s-%N')}")
+      out_dir = Pathname.new("tmp/compare_branches/#{Time.now.strftime('%Y-%m-%d-%H-%M-%s-%N')}")
       out_dir.mkpath
 
       branches_to_test = branch_names.each_with_object({}) {|elem, hash| hash[elem] = out_dir + "#{elem.gsub('/', ':')}.bench.txt" }

@@ -431,7 +431,7 @@ Use a comma to seperate your branch names with the `SHAS_TO_TEST` env var, or om
 
 If you only include one SHA, then derailed will grab the latest commit and compare it to that SHA.
 
-These tests might take a along time to run so the output is stored on disk incase you want to see them in the future, they're at `tmp/library_branches/<timestamp>` and labeled with the same names as your commits.
+These tests might take a along time to run so the output is stored on disk incase you want to see them in the future, they're at `tmp/compare_branches/<timestamp>` and labeled with the same names as your commits.
 
 When the test is done it will output which commit "won" and by how much:
 
