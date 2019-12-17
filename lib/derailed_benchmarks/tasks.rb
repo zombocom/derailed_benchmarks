@@ -39,7 +39,7 @@ namespace :perf do
       current_library_branch = ""
       Dir.chdir(library_dir) { current_library_branch = run!('git describe --contains --all HEAD').chomp }
 
-      out_dir = Pathname.new("tmp/library_branches/#{Time.now.strftime('%Y-%m-%d-%H-%M-%s-%N')}")
+      out_dir = Pathname.new("tmp/compare_branches/#{Time.now.strftime('%Y-%m-%d-%H-%M-%s-%N')}")
       out_dir.mkpath
 
       branches_to_test = branch_names.each_with_object({}) {|elem, hash| hash[elem] = out_dir + "#{elem.gsub('/', ':')}.bench.txt" }
@@ -93,10 +93,18 @@ namespace :perf do
         end
       end
 
-      stats.call.banner if stats
+      if stats
+        stats.call.banner
+
+        result_file = out_dir + "results.txt"
+        File.open(result_file, "w") do |f|
+          stats.banner(f)
+        end
+
+        puts "Output: #{result_file.to_s}"
+      end
     end
-   end
-  
+  end
 
   desc "hits the url TEST_COUNT times"
   task :test => [:setup] do
