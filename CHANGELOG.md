@@ -1,5 +1,9 @@
 ## master (unreleased)
 
+## 1.4.3
+
+- perf:library now uses median instead of average (https://github.com/schneems/derailed_benchmarks/pull/160)
+
 ## 1.4.2
 
 - Fixed syntax error that resulted in ensure end error inside tasks.rb for older rubies (https://github.com/schneems/derailed_benchmarks/pull/155)

@@ -30,7 +30,12 @@ module DerailedBenchmarks
     def call
       load_file!
 
+      @median = (values[(values.length - 1) / 2] + values[values.length/ 2]) / 2.0
       @average = values.inject(:+) / values.length
+    end
+
+    def median
+      @median.to_f
     end
 
     def average
@@ -47,6 +52,8 @@ module DerailedBenchmarks
           raise e, "Problem with file #{@file.inspect}:\n#{@file.read}\n#{e.message}"
         end
       end
+
+      values.sort!
       values.freeze
     end
   end

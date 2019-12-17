@@ -66,15 +66,27 @@ module DerailedBenchmarks
     end
 
     def x_faster
-      FORMAT % (oldest.average/newest.average).to_f
+      (oldest.median/newest.median).to_f
+    end
+
+    def faster?
+      newest.median < oldest.median
     end
 
     def percent_faster
-      FORMAT % (((oldest.average - newest.average) / oldest.average).to_f  * 100)
+      (((oldest.median - newest.median) / oldest.median).to_f  * 100)
     end
 
     def change_direction
-      newest.average < oldest.average ? "FASTER" : "SLOWER"
+      if faster?
+        "FASTER 🚀🚀🚀"
+      else
+        "SLOWER 🐢🐢🐢"
+      end
+    end
+
+    def align
+      " " * (("%i" % percent_faster).length - ("%i" % x_faster).length)
     end
 
     def banner(io = Kernel)
@@ -85,11 +97,11 @@ module DerailedBenchmarks
         io.puts "👎👎👎(NOT Statistically Significant) 👎👎👎"
       end
       io.puts
-      io.puts "[#{newest.name}] #{newest.desc.inspect} - (#{newest.average} seconds)"
+      io.puts "[#{newest.name}] #{newest.desc.inspect} - (#{newest.median} seconds)"
       io.puts "  #{change_direction} by:"
-      io.puts "    #{x_faster}x [older/newer]"
-      io.puts "    #{percent_faster}\% [(older - newer) / older * 100]"
-      io.puts "[#{oldest.name}] #{oldest.desc.inspect} - (#{oldest.average} seconds)"
+      io.puts "    #{align}#{FORMAT % x_faster}x [older/newer]"
+      io.puts "    #{FORMAT % percent_faster}\% [(older - newer) / older * 100]"
+      io.puts "[#{oldest.name}] #{oldest.desc.inspect} - (#{oldest.median} seconds)"
       io.puts
       io.puts "Iterations per sample: #{ENV["TEST_COUNT"]}"
       io.puts "Samples: #{newest.values.length}"
