@@ -1,4 +1,6 @@
 ## master (unreleased)
+## 1.4.5
+- Added the `perf:app` command to compare commits within the same application.
 
 ## 1.4.4
 
