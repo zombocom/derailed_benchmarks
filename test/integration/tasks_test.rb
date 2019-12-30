@@ -13,6 +13,13 @@ class TasksTest < ActiveSupport::TestCase
     FileUtils.remove_entry_secure(rails_app_path('tmp'))
   end
 
+  def run!(cmd)
+    puts "Running: #{cmd}"
+    out = `#{cmd}`
+    raise "Could not run #{cmd}, output: #{out}" unless $?.success?
+    out
+  end
+
   def rake(cmd, options = {})
     assert_success = options.key?(:assert_success) ? options[:assert_success] : true
     env             = options[:env]           || {}
@@ -57,8 +64,9 @@ class TasksTest < ActiveSupport::TestCase
 
   test 'app' do
     skip unless ENV['USING_RAILS_GIT']
+    run!("cd #{rails_app_path} && git init . && git add . && git commit -m first && git commit --allow-empty -m second")
 
-    env = { "TEST_COUNT" => 10, "DERAILED_SCRIPT_COUNT" => 2, "SHAS_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
+    env = { "TEST_COUNT" => 10, "DERAILED_SCRIPT_COUNT" => 2 }
     puts rake "perf:app", { env: env }
   end
 
