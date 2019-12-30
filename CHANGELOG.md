@@ -1,5 +1,7 @@
 ## master (unreleased)
 
+- Change default, `perf:library` tests do not stop automatically any more (https://github.com/schneems/derailed_benchmarks/pull/164)
+
 ## 1.4.4
 
 - Fix alignment of deicmals in output (https://github.com/schneems/derailed_benchmarks/pull/161)
