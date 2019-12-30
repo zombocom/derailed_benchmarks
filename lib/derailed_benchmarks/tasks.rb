@@ -71,18 +71,20 @@ namespace :perf do
 
       raise "SHAs to test must be different" if branch_info.length == 1
       stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
-      ENV["DERAILED_STOP_VALID_COUNT"] ||= "50"
-      stop_valid_count = Integer(ENV["DERAILED_STOP_VALID_COUNT"])
+      puts "Env var no longer has any affect DERAILED_STOP_VALID_COUNT" if ENV["DERAILED_STOP_VALID_COUNT"]
 
-      times_significant = 0
       DERAILED_SCRIPT_COUNT.times do |i|
         puts "Sample: #{i.next}/#{DERAILED_SCRIPT_COUNT} iterations per sample: #{ENV['TEST_COUNT']}"
         branches_to_test.each do |branch, file|
           Dir.chdir(library_dir) { run!("git checkout '#{branch}'") }
           run!(" #{script} 2>&1 | tail -n 1 >> '#{file}'")
         end
-        times_significant += 1 if i >= 2 && stats.call.significant?
-        break if stop_valid_count != 0 && times_significant == stop_valid_count
+
+        if (i % 50).zero?
+          puts "Intermediate result"
+          stats.call.banner
+          puts "Continuing execution"
+        end
       end
 
     ensure
