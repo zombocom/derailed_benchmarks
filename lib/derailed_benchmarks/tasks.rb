@@ -80,7 +80,7 @@ namespace :perf do
           run!(" #{script} 2>&1 | tail -n 1 >> '#{file}'")
         end
 
-        if (i % 50).zero?
+        if (i % 50).zero? && !i.zero?
           puts "Intermediate result"
           stats.call.banner
           puts "Continuing execution"

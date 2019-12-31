@@ -1,5 +1,7 @@
 ## master (unreleased)
 
+- Fix minor output bug where `perf:library` outputs an intermediate result on the first run when there is no way the results are significant yet (https://github.com/schneems/derailed_benchmarks/pull/166)
+
 ## 1.5.0
 
 - Test `perf:library` results against 99% confidence interval in addition to 95% (https://github.com/schneems/derailed_benchmarks/pull/165)
