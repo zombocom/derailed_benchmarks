@@ -1,5 +1,7 @@
 ## master (unreleased)
 
+## 1.5.0
+
 - Test `perf:library` results against 99% confidence interval in addition to 95% (https://github.com/schneems/derailed_benchmarks/pull/165)
 - Change default, `perf:library` tests do not stop automatically any more (https://github.com/schneems/derailed_benchmarks/pull/164)
 
