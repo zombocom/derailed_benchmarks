@@ -42,14 +42,25 @@ module DerailedBenchmarks
 
     def call
       @files.each(&:call)
-      @stats = statistical_test
+
+      stats_95 = statistical_test(confidence: 95)
+
+      # If default check is good, see if we also pass a more rigorous test
+      # if so, then use the more rigourous test
+      if stats_95[:alternative]
+        stats_99 = statistical_test(confidence: 99)
+        @stats = stats_99 if stats_99[:alternative]
+      end
+      @stats ||= stats_95
+
       self
     end
 
-    def statistical_test(series_1=oldest.values, series_2=newest.values)
+    def statistical_test(series_1=oldest.values, series_2=newest.values, confidence: 95)
       StatisticalTest::KSTest.two_samples(
         group_one: series_1,
-        group_two: series_2
+        group_two: series_2,
+        alpha: (100 - confidence) / 100.0
       )
     end
 
@@ -107,6 +118,7 @@ module DerailedBenchmarks
       io.puts "Samples: #{newest.values.length}"
       io.puts
       io.puts "Test type: Kolmogorov Smirnov"
+      io.puts "Confidence level: #{@stats[:confidence_level] * 100} %"
       io.puts "Is significant? (max > critical): #{significant?}"
       io.puts "D critical: #{d_critical}"
       io.puts "D max: #{d_max}"

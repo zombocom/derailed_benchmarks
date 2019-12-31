@@ -19,7 +19,7 @@ class StatsFromDirTest < ActiveSupport::TestCase
     assert_equal "loser", oldest.name
 
     assert_in_delta 0.26, stats.d_max, 0.01
-    assert_in_delta 0.1730818382602285, stats.d_critical, 0.00001
+    assert_in_delta 0.2145966026289347, stats.d_critical, 0.00001
     assert_equal true, stats.significant?
 
     format = DerailedBenchmarks::StatsFromDir::FORMAT
