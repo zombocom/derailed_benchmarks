@@ -2,6 +2,8 @@
 
 require 'bigdecimal'
 require 'statistics'
+require 'unicode_plot'
+require 'stringio'
 
 module DerailedBenchmarks
   # A class used to read several benchmark files
@@ -100,7 +102,17 @@ module DerailedBenchmarks
       " " * (percent_faster.to_s.index(".") - x_faster.to_s.index("."))
     end
 
-    def banner(io = Kernel)
+    def histogram(io = $stdout)
+      [newest, oldest].each do |report|
+        plot = UnicodePlot.histogram(report.values, title: "\nHistogram - [#{report.name}] #{report.desc.inspect}")
+        plot.render(io)
+        io.puts
+      end
+
+      io.puts
+    end
+
+    def banner(io = $stdout)
       io.puts
       if significant?
         io.puts "❤️ ❤️ ❤️  (Statistically Significant) ❤️ ❤️ ❤️"
@@ -122,6 +134,9 @@ module DerailedBenchmarks
       io.puts "Is significant? (max > critical): #{significant?}"
       io.puts "D critical: #{d_critical}"
       io.puts "D max: #{d_max}"
+
+      histogram(io)
+
       io.puts
     end
   end

@@ -1,5 +1,6 @@
 ## master (unreleased)
 
+- Add histogram support to `perf:library` (https://github.com/schneems/derailed_benchmarks/pull/169)
 - Fix bug with `Kernel#require` patch when Zeitwerk is enabled (https://github.com/schneems/derailed_benchmarks/pull/170)
 
 ## 1.6.0
