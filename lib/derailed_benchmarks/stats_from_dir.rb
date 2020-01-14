@@ -106,7 +106,7 @@ module DerailedBenchmarks
       [newest, oldest].each do |report|
         plot = UnicodePlot.histogram(
           report.values,
-          title: "\nHistogram - [#{report.name}] #{report.desc.inspect}",
+          title: "\n#{' ' * 18 }Histogram - [#{report.name}] #{report.desc.inspect}",
           ylabel: "Time (seconds)",
           xlabel: "# of runs in range"
         )
