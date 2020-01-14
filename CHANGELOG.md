@@ -2,6 +2,8 @@
 ## 1.4.5
 - Added the `perf:app` command to compare commits within the same application.
 
+- Allow Rails < 7 and 1.0 <= Thor < 2 (https://github.com/schneems/derailed_benchmarks/pull/168)
+
 ## 1.5.0
 
 - Test `perf:library` results against 99% confidence interval in addition to 95% (https://github.com/schneems/derailed_benchmarks/pull/165)
