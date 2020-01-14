@@ -1,6 +1,12 @@
 require_relative 'load_tasks'
 
 namespace :perf do
+  desc "runs the performance test against two most recent commits of the current app"
+  task :app do
+    ENV["DERAILED_PATH_TO_LIBRARY"] = '.'
+    Rake::Task["perf:library"].invoke
+  end
+
   desc "runs the same test against two different branches for statistical comparison"
   task :library do
     begin
