@@ -104,7 +104,12 @@ module DerailedBenchmarks
 
     def histogram(io = $stdout)
       [newest, oldest].each do |report|
-        plot = UnicodePlot.histogram(report.values, title: "\nHistogram - [#{report.name}] #{report.desc.inspect}")
+        plot = UnicodePlot.histogram(
+          report.values,
+          title: "\nHistogram - [#{report.name}] #{report.desc.inspect}",
+          ylabel: "Time (seconds)",
+          xlabel: "# of runs in range"
+        )
         plot.render(io)
         io.puts
       end
