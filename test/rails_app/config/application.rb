@@ -13,6 +13,8 @@ require 'devise'
 
 module Dummy
   class Application < Rails::Application
+    config.load_defaults Rails.version.to_f
+
     config.action_mailer.default_url_options = { host: 'localhost:3000' }
 
     # Settings in config/environments/* take precedence over those specified here.
