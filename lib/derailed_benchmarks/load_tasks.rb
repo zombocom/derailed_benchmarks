@@ -30,7 +30,7 @@ namespace :perf do
       DERAILED_APP.initialize! unless DERAILED_APP.instance_variable_get(:@initialized)
     end
 
-    if  ENV["DERAILED_SKIP_ACTIVE_RECORD"] && defined? ActiveRecord
+    if !ENV["DERAILED_SKIP_ACTIVE_RECORD"] && defined? ActiveRecord
       if defined? ActiveRecord::Tasks::DatabaseTasks
         ActiveRecord::Tasks::DatabaseTasks.create_current
       else # Rails 3.2
@@ -39,7 +39,14 @@ namespace :perf do
 
       ActiveRecord::Migrator.migrations_paths = DERAILED_APP.paths['db/migrate'].to_a
       ActiveRecord::Migration.verbose         = true
-      ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
+
+      if Rails.version.start_with? '6'
+        ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths, ActiveRecord::SchemaMigration).migrate
+      elsif Rails.version.start_with? '5.2'
+        ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).migrate
+      else
+        ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
+      end
     end
 
     DERAILED_APP.config.consider_all_requests_local = true

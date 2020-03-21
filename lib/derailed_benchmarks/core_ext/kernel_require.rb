@@ -11,14 +11,20 @@ ENV['CUT_OFF'] ||= "0.3"
 # Monkey patch kernel to ensure that all `require` calls call the same
 # method
 module Kernel
-
-  private
-
-  alias :original_require :require
   REQUIRE_STACK = []
 
+  module_function
+
+  alias_method :original_require, :require
+  alias_method :original_require_relative, :require_relative
+
   def require(file)
-    Kernel.require(file)
+    measure_memory_impact(file) do |file|
+      # "source_annotation_extractor" is deprecated in Rails 6
+      # # if we don't skip the library it leads to a crash
+      # next if file == "rails/source_annotation_extractor" && Rails.version >= '6.0'
+      original_require(file)
+    end
   end
 
   def require_relative(file)
@@ -29,10 +35,7 @@ module Kernel
     end
   end
 
-  class << self
-    alias :original_require          :require
-    alias :original_require_relative :require_relative
-  end
+  private
 
   # The core extension we use to measure require time of all requires
   # When a file is required we create a tree node with its file name.
@@ -46,7 +49,7 @@ module Kernel
   # When a require returns we remove it from the require stack so we don't
   # accidentally push additional children nodes to it. We then store the
   # memory cost of the require in the tree node.
-  def self.measure_memory_impact(file, &block)
+  def measure_memory_impact(file, &block)
     mem    = GetProcessMem.new
     node   = DerailedBenchmarks::RequireTree.new(file)
 
@@ -67,15 +70,6 @@ end
 # Top level node that will store all require information for the entire app
 TOP_REQUIRE = DerailedBenchmarks::RequireTree.new("TOP")
 REQUIRE_STACK.push(TOP_REQUIRE)
-
-Kernel.define_singleton_method(:require) do |file|
-  measure_memory_impact(file) do |file|
-    # "source_annotation_extractor" is deprecated in Rails 6
-    # # if we don't skip the library it leads to a crash
-    # next if file == "rails/source_annotation_extractor" && Rails.version >= '6.0'
-    original_require(file)
-  end
-end
 
 class Object
   private
