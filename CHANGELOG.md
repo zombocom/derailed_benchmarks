@@ -1,6 +1,6 @@
 ## master (unreleased)
 
-- Fix bug with `Kernel#require` patch when Zeitwerk is enabled
+- Fix bug with `Kernel#require` patch when Zeitwerk is enabled (https://github.com/schneems/derailed_benchmarks/pull/170)
 
 ## 1.6.0
 
