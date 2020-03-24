@@ -31,6 +31,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "thor",            ">= 0.19", "< 2"
   gem.add_dependency "ruby-statistics", ">= 2.1"
   gem.add_dependency "unicode_plot",    ">= 0.0.4", "< 1.0.0"
+  gem.add_dependency "mini_histogram",    "~> 0"
 
   gem.add_development_dependency "capybara",  "~> 2"
   gem.add_development_dependency "m"

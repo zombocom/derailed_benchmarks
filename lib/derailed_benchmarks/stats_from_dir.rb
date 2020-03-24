@@ -4,6 +4,7 @@ require 'bigdecimal'
 require 'statistics'
 require 'unicode_plot'
 require 'stringio'
+require 'mini_histogram'
 
 module DerailedBenchmarks
   # A class used to read several benchmark files
@@ -103,11 +104,15 @@ module DerailedBenchmarks
     end
 
     def histogram(io = $stdout)
-      [newest, oldest].each do |report|
+      newest_histogram = MiniHistogram.new(newest.values)
+      oldest_histogram = MiniHistogram.new(oldest.values)
+      MiniHistogram.set_average_edges!(newest_histogram, oldest_histogram)
+
+      {newest => newest_histogram, oldest => oldest_histogram}.each do |report, histogram|
         plot = UnicodePlot.histogram(
-          report.values,
+          histogram,
           title: "\n#{' ' * 18 }Histogram - [#{report.name}] #{report.desc.inspect}",
-          ylabel: "Time (seconds)",
+          ylabel: "Time (s)",
           xlabel: "# of runs in range"
         )
         plot.render(io)

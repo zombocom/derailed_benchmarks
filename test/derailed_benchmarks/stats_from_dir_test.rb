@@ -36,7 +36,12 @@ class StatsFromDirTest < ActiveSupport::TestCase
     branch_info["winner"] = { desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner.bench.txt"), name: "winner" }
     stats = DerailedBenchmarks::StatsFromDir.new(branch_info).call
 
-    puts stats.call.banner
+    io = StringIO.new
+    stats.call.banner(io)
+    puts io.string
+
+    assert_match(/11\.2 , 11\.28/, io.string)
+    assert_match(/11\.8 , 11\.88/, io.string)
   end
 
 
