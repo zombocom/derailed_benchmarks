@@ -88,7 +88,8 @@ namespace :perf do
 
         if (i % 50).zero?
           puts "Intermediate result"
-          stats.call.banner
+          stats.call
+          stats.banner
           puts "Continuing execution"
         end
       end
@@ -102,7 +103,8 @@ namespace :perf do
       end
 
       if stats
-        stats.call.banner
+        stats.call
+        stats.banner
 
         result_file = out_dir + "results.txt"
         File.open(result_file, "w") do |f|

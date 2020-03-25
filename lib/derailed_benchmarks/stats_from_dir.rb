@@ -2,6 +2,9 @@
 
 require 'bigdecimal'
 require 'statistics'
+require 'unicode_plot'
+require 'stringio'
+require 'mini_histogram'
 
 module DerailedBenchmarks
   # A class used to read several benchmark files
@@ -100,7 +103,26 @@ module DerailedBenchmarks
       " " * (percent_faster.to_s.index(".") - x_faster.to_s.index("."))
     end
 
-    def banner(io = Kernel)
+    def histogram(io = $stdout)
+      newest_histogram = MiniHistogram.new(newest.values)
+      oldest_histogram = MiniHistogram.new(oldest.values)
+      MiniHistogram.set_average_edges!(newest_histogram, oldest_histogram)
+
+      {newest => newest_histogram, oldest => oldest_histogram}.each do |report, histogram|
+        plot = UnicodePlot.histogram(
+          histogram,
+          title: "\n#{' ' * 18 }Histogram - [#{report.name}] #{report.desc.inspect}",
+          ylabel: "Time (s)",
+          xlabel: "# of runs in range"
+        )
+        plot.render(io)
+        io.puts
+      end
+
+      io.puts
+    end
+
+    def banner(io = $stdout)
       io.puts
       if significant?
         io.puts "❤️ ❤️ ❤️  (Statistically Significant) ❤️ ❤️ ❤️"
@@ -122,6 +144,9 @@ module DerailedBenchmarks
       io.puts "Is significant? (max > critical): #{significant?}"
       io.puts "D critical: #{d_critical}"
       io.puts "D max: #{d_max}"
+
+      histogram(io)
+
       io.puts
     end
   end

@@ -29,6 +29,22 @@ class StatsFromDirTest < ActiveSupport::TestCase
     assert_equal "11.3844", format % newest.median
   end
 
+  test "histogram output" do
+    dir = fixtures_dir("stats/significant")
+    branch_info = {}
+    branch_info["loser"]  = { desc: "Old commit", time: Time.now, file: dir.join("loser.bench.txt"), name: "loser" }
+    branch_info["winner"] = { desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner.bench.txt"), name: "winner" }
+    stats = DerailedBenchmarks::StatsFromDir.new(branch_info).call
+
+    io = StringIO.new
+    stats.call.banner(io)
+    puts io.string
+
+    assert_match(/11\.2 , 11\.28/, io.string)
+    assert_match(/11\.8 , 11\.88/, io.string)
+  end
+
+
   test "alignment" do
     dir = fixtures_dir("stats/significant")
     branch_info = {}
