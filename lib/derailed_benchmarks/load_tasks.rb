@@ -110,7 +110,7 @@ namespace :perf do
           STDERR.puts "Bad request to #{cmd.inspect} \n\n***RESPONSE***:\n\n#{ response.inspect }"
 
           FileUtils.mkdir_p("tmp")
-          File.open("tmp/fail.html", "w+") {|f| f.write response.body }
+          File.open("tmp/fail.html", "w+") {|f| f.write response }
 
           `open #{File.expand_path("tmp/fail.html")}` if ENV["DERAILED_DEBUG"]
 
