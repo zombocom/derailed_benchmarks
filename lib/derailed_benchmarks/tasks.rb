@@ -23,91 +23,50 @@ namespace :perf do
       end
       library_dir = Pathname.new(library_dir)
 
-      raise "Must be a path with a .git directory '#{library_dir}'" if !library_dir.join(".git").exist?
+      out_dir = Pathname.new("tmp/compare_branches/#{Time.now.strftime('%Y-%m-%d-%H-%M-%s-%N')}")
+      out_dir.mkpath
 
-      # Use either the explicit SHAs when present or grab last two SHAs from commit history
-      # if only one SHA is given, then use it and the last SHA from commit history
-      branch_names = []
-      branch_names = ENV.fetch("SHAS_TO_TEST").split(",") if ENV["SHAS_TO_TEST"]
-      if branch_names.length < 2
-        Dir.chdir(library_dir) do
-          run!("git checkout '#{branch_names.first}'") unless branch_names.empty?
+      project = DerailedBenchmarks::GitSwitchProject.new(
+        path: library_dir,
+        sha_array: ENV.fetch("SHAS_TO_TEST", "").split(","),
+        log_dir: out_dir
+      )
+      stats = DerailedBenchmarks::StatsFromDir.new(project.commits)
 
-          branches = run!('git log --format="%H" -n 2').chomp.split($/)
-          if branch_names.empty?
-            branch_names = branches
-          else
-            branches.shift
-            branch_names << branches.shift
+      # Advertise branch names early to make sure people know what they're testing
+      puts
+      puts
+      project.commits.each_with_index do |commit, i|
+        puts "Testing #{i + 1}: #{commit.short_sha}: #{commit.description}"
+      end
+      puts
+      puts
+
+      run!("#{script}") # Run once without pipe to make sure the script works for better error message
+
+      project.restore_branch_on_return do
+        DERAILED_SCRIPT_COUNT.times do |i|
+          puts "Sample: #{i.next}/#{DERAILED_SCRIPT_COUNT} iterations per sample: #{ENV['TEST_COUNT']}"
+          project.commits.each do |commit|
+            commit.checkout!
+            run!(" #{script} 2>&1 | tail -n 1 >> '#{commit.log}'")
+          end
+
+          if (i % 50).zero?
+            puts "Intermediate result"
+            stats.call
+            stats.banner
+            puts "Continuing execution"
           end
         end
       end
 
-      current_library_branch = ""
-      Dir.chdir(library_dir) { current_library_branch = run!('git describe --contains --all HEAD').chomp }
-
-      out_dir = Pathname.new("tmp/compare_branches/#{Time.now.strftime('%Y-%m-%d-%H-%M-%s-%N')}")
-      out_dir.mkpath
-
-      branches_to_test = branch_names.each_with_object({}) {|elem, hash| hash[elem] = out_dir + "#{elem.gsub('/', ':')}.bench.txt" }
-      branch_info = {}
-      branch_to_sha = {}
-
-      branches_to_test.each do |branch, file|
-        Dir.chdir(library_dir) do
-          run!("git checkout '#{branch}'")
-          description = run!("git log --oneline --format=%B -n 1 HEAD | head -n 1").strip
-          time_stamp  = run!("git log -n 1 --pretty=format:%ci").strip # https://stackoverflow.com/a/25921837/147390
-          short_sha   = run!("git rev-parse --short HEAD").strip
-          branch_to_sha[branch] = short_sha
-
-          branch_info[short_sha] = { desc: description, time: DateTime.parse(time_stamp), file: file }
-        end
-        run!("#{script}")
-      end
-
-      puts
-      puts
-      branches_to_test.each.with_index do |(branch, _), i|
-        short_sha = branch_to_sha[branch]
-        desc      = branch_info[short_sha][:desc]
-        puts "Testing #{i + 1}: #{short_sha}: #{desc}"
-      end
-      puts
-      puts
-
-      raise "SHAs to test must be different" if branch_info.length == 1
-      stats = DerailedBenchmarks::StatsFromDir.new(branch_info)
-      puts "Env var no longer has any affect DERAILED_STOP_VALID_COUNT" if ENV["DERAILED_STOP_VALID_COUNT"]
-
-      DERAILED_SCRIPT_COUNT.times do |i|
-        puts "Sample: #{i.next}/#{DERAILED_SCRIPT_COUNT} iterations per sample: #{ENV['TEST_COUNT']}"
-        branches_to_test.each do |branch, file|
-          Dir.chdir(library_dir) { run!("git checkout '#{branch}'") }
-          run!(" #{script} 2>&1 | tail -n 1 >> '#{file}'")
-        end
-
-        if (i % 50).zero?
-          puts "Intermediate result"
-          stats.call
-          stats.banner
-          puts "Continuing execution"
-        end
-      end
-
     ensure
-      if library_dir && current_library_branch
-        puts "Resetting git dir of '#{library_dir.to_s}' to #{current_library_branch.inspect}"
-        Dir.chdir(library_dir) do
-          run!("git checkout '#{current_library_branch}'")
-        end
-      end
-
       if stats
         stats.call
         stats.banner
 
-        result_file = out_dir + "results.txt"
+        result_file = out_dir.join("results.txt")
         File.open(result_file, "w") do |f|
           stats.banner(f)
         end
