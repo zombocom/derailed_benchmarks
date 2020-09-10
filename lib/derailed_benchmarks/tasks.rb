@@ -17,12 +17,13 @@ namespace :perf do
       script = ENV["DERAILED_SCRIPT"] || "bundle exec derailed exec perf:test"
 
       if ENV["DERAILED_PATH_TO_LIBRARY"]
-        library_dir = ENV["DERAILED_PATH_TO_LIBRARY"]
+        library_dir = ENV["DERAILED_PATH_TO_LIBRARY"].chomp
       else
         library_dir = DerailedBenchmarks.rails_path_on_disk
       end
+      library_dir = Pathname.new(library_dir)
 
-      raise "Must be a path with a .git directory '#{library_dir}'" unless File.exist?(File.join(library_dir, ".git"))
+      raise "Must be a path with a .git directory '#{library_dir}'" if !library_dir.join(".git").exist?
 
       # Use either the explicit SHAs when present or grab last two SHAs from commit history
       # if only one SHA is given, then use it and the last SHA from commit history
