@@ -43,6 +43,8 @@ class TasksTest < ActiveSupport::TestCase
   end
 
   test 'rails perf:library from git' do
+    # BUNDLE_GEMFILE="$(pwd)/gemfiles/rails_git.gemfile" bundle exec m test/integration/tasks_test.rb:<linenumber>
+
     skip unless ENV['USING_RAILS_GIT']
 
     env = { "TEST_COUNT" => 10, "DERAILED_SCRIPT_COUNT" => 2, "SHAS_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
