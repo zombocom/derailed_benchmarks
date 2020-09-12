@@ -146,11 +146,11 @@ module DerailedBenchmarks
         io.puts "👎👎👎(NOT Statistically Significant) 👎👎👎"
       end
       io.puts
-      io.puts "[#{newest.name}] #{newest.desc.inspect} - (#{newest.median} seconds)"
+      io.puts "[#{newest.name}] #{newest.desc.inspect} (#{newest.median} seconds)"
       io.puts "  #{change_direction} by:"
       io.puts "    #{align}#{FORMAT % x_faster}x [older/newer]"
       io.puts "    #{FORMAT % percent_faster}\% [(older - newer) / older * 100]"
-      io.puts "[#{oldest.name}] #{oldest.desc.inspect} - (#{oldest.median} seconds)"
+      io.puts "[#{oldest.name}] #{oldest.desc.inspect} (#{oldest.median} seconds)"
       io.puts
       io.puts "Iterations per sample: #{ENV["TEST_COUNT"]}"
       io.puts "Samples: #{newest.values.length}"
