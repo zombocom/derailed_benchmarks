@@ -96,6 +96,10 @@ module DerailedBenchmarks
           @commits << GitCommit.new(path: @path, sha: sha, log_dir: log_dir)
         end
       end
+
+      if (duplicate = @commits.group_by(&:short_sha).detect {|(k, v)| v.length > 1})
+        raise "Duplicate SHA resolved #{duplicate[0].inspect}: #{duplicate[1].map {|c| "'#{c.sha}' => '#{c.short_sha}'"}.join(", ") } at #{@path}"
+      end
     end
 
     def current_branch_or_sha
