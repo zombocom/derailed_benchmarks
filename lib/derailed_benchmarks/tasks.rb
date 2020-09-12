@@ -42,14 +42,14 @@ namespace :perf do
       puts
       puts
 
-      run!("#{script}") # Run once without pipe to make sure the script works for better error message
-
       project.restore_branch_on_return do
         DERAILED_SCRIPT_COUNT.times do |i|
           puts "Sample: #{i.next}/#{DERAILED_SCRIPT_COUNT} iterations per sample: #{ENV['TEST_COUNT']}"
           project.commits.each do |commit|
             commit.checkout!
-            run!(" #{script} 2>&1 | tail -n 1 >> '#{commit.log}'")
+
+            output = run!("#{script} 2>&1")
+            commit.log.open("a") {|f| f.puts output.lines.last }
           end
 
           if (i % 50).zero?
