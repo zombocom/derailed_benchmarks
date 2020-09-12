@@ -3,6 +3,19 @@
 require 'test_helper'
 
 class StatsFromDirTest < ActiveSupport::TestCase
+  test "empty files" do
+    Dir.mktmpdir do |dir|
+      dir = Pathname.new(dir)
+      branch_info = {}
+      branch_info["loser"]  = { desc: "Old commit", time: Time.now, file: dir.join("loser"), name: "loser" }
+      branch_info["winner"] = { desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner"), name: "winner" }
+      stats = DerailedBenchmarks::StatsFromDir.new(branch_info).call
+      io = StringIO.new
+      stats.call.banner(io: io) # Doesn't error
+      assert_equal "", io.read
+    end
+  end
+
   test "that it works" do
     dir = fixtures_dir("stats/significant")
     branch_info = {}

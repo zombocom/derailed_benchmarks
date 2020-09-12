@@ -31,6 +31,7 @@ namespace :perf do
         sha_array: ENV.fetch("SHAS_TO_TEST", "").split(","),
         log_dir: out_dir
       )
+
       stats = DerailedBenchmarks::StatsFromDir.new(project.commits)
 
       # Advertise branch names early to make sure people know what they're testing
@@ -54,8 +55,7 @@ namespace :perf do
 
           if (i % 50).zero?
             puts "Intermediate result"
-            stats.call
-            stats.banner
+            stats.call.banner
             puts "Continuing execution"
           end
         end
@@ -63,8 +63,7 @@ namespace :perf do
 
     ensure
       if stats
-        stats.call
-        stats.banner
+        stats.call.banner
 
         result_file = out_dir.join("results.txt")
         File.open(result_file, "w") do |f|
