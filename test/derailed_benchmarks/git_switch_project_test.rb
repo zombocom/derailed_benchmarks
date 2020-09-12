@@ -72,6 +72,13 @@ class GitSwitchProjectTest < ActiveSupport::TestCase
       end
 
       assert_equal project.commits.first.short_sha, project.current_branch_or_sha
+
+
+      exception = assert_raise {
+        DerailedBenchmarks::GitSwitchProject.new(path: dir, sha_array: ["6e642963acec0ff64af51bd6fba8db3c4176ed6e", "mybranch"])
+      }
+
+      assert_includes(exception.message, 'Duplicate SHA resolved "6e64296"')
     end
   end
 end
