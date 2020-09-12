@@ -58,6 +58,8 @@ module DerailedBenchmarks
     def call
       @files.each(&:call)
 
+      return self if @files.detect(&:empty?)
+
       stats_95 = statistical_test(confidence: 95)
 
       # If default check is good, see if we also pass a more rigorous test
@@ -135,6 +137,8 @@ module DerailedBenchmarks
     end
 
     def banner(io = $stdout)
+      return if @files.detect(&:empty?)
+
       io.puts
       if significant?
         io.puts "❤️ ❤️ ❤️  (Statistically Significant) ❤️ ❤️ ❤️"
