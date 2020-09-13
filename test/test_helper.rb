@@ -63,3 +63,9 @@ end
 def rails_app_path(name = "")
   root_path("test/rails_app").join(name)
 end
+
+def run!(cmd)
+  output = `#{cmd}`
+  raise "Cmd #{cmd} failed:\n#{output}" unless $?.success?
+  output
+end

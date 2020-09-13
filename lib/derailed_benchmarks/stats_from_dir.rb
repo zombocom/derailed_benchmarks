@@ -29,14 +29,26 @@ module DerailedBenchmarks
     FORMAT = "%0.4f"
     attr_reader :stats, :oldest, :newest
 
-    def initialize(hash)
+    def initialize(input)
       @files = []
 
-      hash.each do |branch, info_hash|
-        file = info_hash.fetch(:file)
-        desc = info_hash.fetch(:desc)
-        time = info_hash.fetch(:time)
-        @files << StatsForFile.new(file: file, desc: desc, time: time, name: branch)
+      if input.is_a?(Hash)
+        hash = input
+        hash.each do |branch, info_hash|
+          file = info_hash.fetch(:file)
+          desc = info_hash.fetch(:desc)
+          time = info_hash.fetch(:time)
+          @files << StatsForFile.new(file: file, desc: desc, time: time, name: branch)
+        end
+      else
+        input.each do |commit|
+          @files << StatsForFile.new(
+            file: commit.file,
+            desc: commit.desc,
+            time: commit.time,
+            name: commit.sha
+          )
+        end
       end
       @files.sort_by! { |f| f.time }
       @oldest = @files.first
@@ -45,6 +57,8 @@ module DerailedBenchmarks
 
     def call
       @files.each(&:call)
+
+      return self if @files.detect(&:empty?)
 
       stats_95 = statistical_test(confidence: 95)
 
@@ -123,6 +137,8 @@ module DerailedBenchmarks
     end
 
     def banner(io = $stdout)
+      return if @files.detect(&:empty?)
+
       io.puts
       if significant?
         io.puts "❤️ ❤️ ❤️  (Statistically Significant) ❤️ ❤️ ❤️"
@@ -130,11 +146,11 @@ module DerailedBenchmarks
         io.puts "👎👎👎(NOT Statistically Significant) 👎👎👎"
       end
       io.puts
-      io.puts "[#{newest.name}] #{newest.desc.inspect} - (#{newest.median} seconds)"
+      io.puts "[#{newest.name}] #{newest.desc.inspect} (#{newest.median} seconds)"
       io.puts "  #{change_direction} by:"
       io.puts "    #{align}#{FORMAT % x_faster}x [older/newer]"
       io.puts "    #{FORMAT % percent_faster}\% [(older - newer) / older * 100]"
-      io.puts "[#{oldest.name}] #{oldest.desc.inspect} - (#{oldest.median} seconds)"
+      io.puts "[#{oldest.name}] #{oldest.desc.inspect} (#{oldest.median} seconds)"
       io.puts
       io.puts "Iterations per sample: #{ENV["TEST_COUNT"]}"
       io.puts "Samples: #{newest.values.length}"

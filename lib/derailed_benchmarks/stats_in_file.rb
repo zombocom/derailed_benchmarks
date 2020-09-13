@@ -29,9 +29,14 @@ module DerailedBenchmarks
 
     def call
       load_file!
+      return if values.empty?
 
       @median = (values[(values.length - 1) / 2] + values[values.length/ 2]) / 2.0
       @average = values.inject(:+) / values.length
+    end
+
+    def empty?
+      values.empty?
     end
 
     def median
