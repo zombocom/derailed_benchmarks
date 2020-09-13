@@ -28,7 +28,7 @@ namespace :perf do
 
       project = DerailedBenchmarks::GitSwitchProject.new(
         path: library_dir,
-        sha_array: ENV.fetch("SHAS_TO_TEST", "").split(","),
+        ref_array: ENV.fetch("SHAS_TO_TEST", "").split(","),
         log_dir: out_dir
       )
 
