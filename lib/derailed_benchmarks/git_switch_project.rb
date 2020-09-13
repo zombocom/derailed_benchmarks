@@ -1,4 +1,52 @@
 module DerailedBenchmarks
+  class InGitPath
+    attr_reader :path
+
+    def initialize(path)
+      @path = path
+    end
+
+    def description
+      run!("git log --oneline --format=%B -n 1 HEAD | head -n 1")
+    end
+
+    def short_sha
+      run!("git rev-parse --short HEAD")
+    end
+
+    def time_stamp_string
+      run!("git log -n 1 --pretty=format:%ci") # https://stackoverflow.com/a/25921837/147390
+    end
+
+    def branch
+      branch = run!("git rev-parse --abbrev-ref HEAD")
+      branch == "HEAD" ? nil : branch
+    end
+
+    def checkout!(ref)
+      run!("git checkout '#{ref}' 2>&1")
+    end
+
+    def time
+      DateTime.parse(time_stamp_string)
+    end
+
+    def run(cmd)
+      if Dir.pwd == path
+        out = `#{cmd}`.strip
+      else
+        out = `cd #{path} && #{cmd}`.strip
+      end
+      out
+    end
+
+    def run!(cmd)
+      out = run(cmd)
+      raise "Error while running #{cmd.inspect}: #{out}" unless $?.success?
+      out
+    end
+  end
+
   # Represents a specific commit in a git repo
   #
   # Can be used to get information from the commit or to check it out
@@ -10,19 +58,15 @@ module DerailedBenchmarks
     attr_reader :sha, :description, :time, :short_sha, :log
 
     def initialize(path: , sha: , log_dir: Pathname.new("/dev/null"))
+      @in_git_path = InGitPath.new(path)
       @sha = sha
-      @path = path
-      @meta = {}
-      @log = nil
+      @log = log_dir.join("#{file_safe_sha}.bench.txt")
 
-      Dir.chdir(@path) do
+      Dir.chdir(path) do
         checkout!
-        @description = run!("git log --oneline --format=%B -n 1 HEAD | head -n 1")
-        @short_sha   = run!("git rev-parse --short HEAD")
-        @log         = log_dir.join("#{file_safe_sha}.bench.txt")
-
-        time_stamp  = run!("git log -n 1 --pretty=format:%ci") # https://stackoverflow.com/a/25921837/147390
-        @time = DateTime.parse(time_stamp)
+        @description = @in_git_path.description
+        @short_sha = @in_git_path.short_sha
+        @time = @in_git_path.time
       end
     end
 
@@ -30,17 +74,11 @@ module DerailedBenchmarks
     alias :file :log
 
     def checkout!
-      run!("cd #{@path} && git checkout '#{sha}' 2>&1")
+      @in_git_path.checkout!(sha)
     end
 
     private def file_safe_sha
       sha.gsub('/', ':')
-    end
-
-    private def run!(cmd)
-      out = `#{cmd}`.strip
-      raise "Error while running #{cmd.inspect}: #{out}" unless $?.success?
-      out
     end
   end
 
@@ -86,6 +124,8 @@ module DerailedBenchmarks
     def initialize(path: , sha_array: [], io: STDOUT, log_dir: nil)
       @path = Pathname.new(path)
 
+      @in_git_path = InGitPath.new(@path.expand_path)
+
       raise "Must be a path with a .git directory '#{@path}'" if !@path.join(".git").exist?
       @io = io
       @commits = []
@@ -103,8 +143,9 @@ module DerailedBenchmarks
     end
 
     def current_branch_or_sha
-      out = run!("cd #{@path} && git rev-parse --abbrev-ref HEAD")
-      out == "HEAD" ? run!("cd #{@path} && git rev-parse --short HEAD") : out
+      branch_or_sha = @in_git_path.branch
+      branch_or_sha ||= @in_git_path.short_sha
+      branch_or_sha
     end
 
     def dirty?
@@ -113,11 +154,11 @@ module DerailedBenchmarks
 
     # https://stackoverflow.com/a/3879077/147390
     def clean?
-      `cd #{@path} && git diff-index --quiet HEAD --` && $?.success?
+      @in_git_path.run("git diff-index --quiet HEAD --") && $?.success?
     end
 
     private def status(pattern: "*.gemspec")
-      run!("cd #{@path} && git status #{pattern}")
+      @in_git_path.run("git status #{pattern}")
     end
 
     def restore_branch_on_return(quiet: false)
@@ -128,16 +169,17 @@ module DerailedBenchmarks
           @io.puts "Bundler modifies gemspec files on git install, this is normal"
           @io.puts "Original status:\n#{status}"
         end
-        run!("cd #{@path} && git stash")
+        @in_git_path.run!("git stash")
       end
       sha_ish = self.current_branch_or_sha
       yield
     ensure
       return unless sha_ish
       @io.puts "Resetting git dir of '#{@path.to_s}' to #{sha_ish.inspect}" unless quiet
-      run!("cd #{@path} && git checkout '#{sha_ish}' 2>&1")
+
+      @in_git_path.checkout!(sha_ish)
       if dirty_gemspec
-        out = run!("cd #{@path} && git stash pop 2>&1")
+        out = @in_git_path.run!("git stash pop 2>&1")
         @io.puts "Popping stash of '#{@path.to_s}':\n#{out}" unless quiet
       end
     end
@@ -152,17 +194,11 @@ module DerailedBenchmarks
     private def expand_shas(sha_array)
       return sha_array if sha_array.length >= 2
 
-      run!("cd #{@path} && git checkout '#{sha_array.first}' 2>&1") if sha_array.first
+      @in_git_path.checkout!(sha_array.first) if sha_array.first
 
-      branches_string = run!("cd #{@path} && git log --format='%H' -n 2")
+      branches_string = @in_git_path.run!("git log --format='%H' -n 2")
       sha_array = branches_string.split($/)
       return sha_array
-    end
-
-    private def run!(cmd)
-      out = `#{cmd}`.strip
-      raise "Error while running #{cmd.inspect}: #{out}" unless $?.success?
-      out
     end
   end
 end
