@@ -51,16 +51,16 @@ module DerailedBenchmarks
   #
   # Can be used to get information from the commit or to check it out
   #
-  # commit = GitCommit.new(path: "path/to/repo", sha: "6e642963acec0ff64af51bd6fba8db3c4176ed6e")
+  # commit = GitCommit.new(path: "path/to/repo", ref: "6e642963acec0ff64af51bd6fba8db3c4176ed6e")
   # commit.short_sha # => "6e64296"
   # commit.checkout! # Will check out the current commit at the repo in the path
   class GitCommit
-    attr_reader :sha, :description, :time, :short_sha, :log
+    attr_reader :ref, :description, :time, :short_sha, :log
 
-    def initialize(path: , sha: , log_dir: Pathname.new("/dev/null"))
+    def initialize(path: , ref: , log_dir: Pathname.new("/dev/null"))
       @in_git_path = InGitPath.new(path)
-      @sha = sha
-      @log = log_dir.join("#{file_safe_sha}.bench.txt")
+      @ref = ref
+      @log = log_dir.join("#{file_safe_ref}.bench.txt")
 
       Dir.chdir(path) do
         checkout!
@@ -74,11 +74,11 @@ module DerailedBenchmarks
     alias :file :log
 
     def checkout!
-      @in_git_path.checkout!(sha)
+      @in_git_path.checkout!(ref)
     end
 
-    private def file_safe_sha
-      sha.gsub('/', ':')
+    private def file_safe_ref
+      ref.gsub('/', ':')
     end
   end
 
@@ -97,12 +97,12 @@ module DerailedBenchmarks
   #
   #   project.commits.length # => 2
   #
-  # You can pass in explicit SHAs in an array:
+  # You can pass in explicit REFs in an array:
   #
-  #   sha_array = ["da748a59340be8b950e7bbbfb32077eb67d70c3c", "9b19275a592f148e2a53b87ead4ccd8c747539c9"]
-  #   project = GitSwitchProject.new(path: "tmp/default_ruby", sha_array: sha_array)
+  #   ref_array = ["da748a59340be8b950e7bbbfb32077eb67d70c3c", "9b19275a592f148e2a53b87ead4ccd8c747539c9"]
+  #   project = GitSwitchProject.new(path: "tmp/default_ruby", ref_array: ref_array)
   #
-  #   puts project.commits.map(&:sha) == sha_array # => true
+  #   puts project.commits.map(&:ref) == ref_array # => true
   #
   #
   # It knows the current branch or sha:
@@ -121,7 +121,7 @@ module DerailedBenchmarks
   class GitSwitchProject
     attr_reader :commits
 
-    def initialize(path: , sha_array: [], io: STDOUT, log_dir: nil)
+    def initialize(path: , ref_array: [], io: STDOUT, log_dir: nil)
       @path = Pathname.new(path)
 
       @in_git_path = InGitPath.new(@path.expand_path)
@@ -131,14 +131,14 @@ module DerailedBenchmarks
       @commits = []
       log_dir = Pathname(log_dir || "/dev/null")
 
-      expand_shas(sha_array).each do |sha|
+      expand_refs(ref_array).each do |ref|
         restore_branch_on_return(quiet: true) do
-          @commits << GitCommit.new(path: @path, sha: sha, log_dir: log_dir)
+          @commits << GitCommit.new(path: @path, ref: ref, log_dir: log_dir)
         end
       end
 
       if (duplicate = @commits.group_by(&:short_sha).detect {|(k, v)| v.length > 1})
-        raise "Duplicate SHA resolved #{duplicate[0].inspect}: #{duplicate[1].map {|c| "'#{c.sha}' => '#{c.short_sha}'"}.join(", ") } at #{@path}"
+        raise "Duplicate SHA resolved #{duplicate[0].inspect}: #{duplicate[1].map {|c| "'#{c.ref}' => '#{c.short_sha}'"}.join(", ") } at #{@path}"
       end
     end
 
@@ -171,34 +171,34 @@ module DerailedBenchmarks
         end
         @in_git_path.run!("git stash")
       end
-      sha_ish = self.current_branch_or_sha
+      branch_or_sha = self.current_branch_or_sha
       yield
     ensure
-      return unless sha_ish
-      @io.puts "Resetting git dir of '#{@path.to_s}' to #{sha_ish.inspect}" unless quiet
+      return unless branch_or_sha
+      @io.puts "Resetting git dir of '#{@path.to_s}' to #{branch_or_sha.inspect}" unless quiet
 
-      @in_git_path.checkout!(sha_ish)
+      @in_git_path.checkout!(branch_or_sha)
       if dirty_gemspec
         out = @in_git_path.run!("git stash pop 2>&1")
         @io.puts "Popping stash of '#{@path.to_s}':\n#{out}" unless quiet
       end
     end
 
-    # case sha_array.length
+    # case ref_array.length
     # when >= 2
     #   returns original array
     # when 1
-    #   returns the given sha plus the one before it
+    #   returns the given ref plus the one before it
     # when 0
-    #   returns the most recent 2 shas
-    private def expand_shas(sha_array)
-      return sha_array if sha_array.length >= 2
+    #   returns the most recent 2 refs
+    private def expand_refs(ref_array)
+      return ref_array if ref_array.length >= 2
 
-      @in_git_path.checkout!(sha_array.first) if sha_array.first
+      @in_git_path.checkout!(ref_array.first) if ref_array.first
 
       branches_string = @in_git_path.run!("git log --format='%H' -n 2")
-      sha_array = branches_string.split($/)
-      return sha_array
+      ref_array = branches_string.split($/)
+      return ref_array
     end
   end
 end

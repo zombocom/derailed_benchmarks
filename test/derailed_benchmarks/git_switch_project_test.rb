@@ -30,14 +30,14 @@ class GitSwitchProjectTest < ActiveSupport::TestCase
     end
   end
 
-  test "finds shas when none given" do
+  test "works on a git repo" do
     Dir.mktmpdir do |dir|
       run!("git clone https://github.com/sharpstone/default_ruby #{dir} 2>&1 && cd #{dir} && git checkout 6e642963acec0ff64af51bd6fba8db3c4176ed6e 2>&1 && git checkout -b mybranch 2>&1")
 
       # finds shas when none given
       project = DerailedBenchmarks::GitSwitchProject.new(path: dir)
 
-      assert_equal ["6e642963acec0ff64af51bd6fba8db3c4176ed6e", "da748a59340be8b950e7bbbfb32077eb67d70c3c"], project.commits.map(&:sha)
+      assert_equal ["6e642963acec0ff64af51bd6fba8db3c4176ed6e", "da748a59340be8b950e7bbbfb32077eb67d70c3c"], project.commits.map(&:ref)
       first_commit = project.commits.first
 
       assert_equal "CI test support", first_commit.description
@@ -48,15 +48,15 @@ class GitSwitchProjectTest < ActiveSupport::TestCase
       assert_equal "mybranch", project.current_branch_or_sha
 
       # Finds shas when 1 is given
-      project = DerailedBenchmarks::GitSwitchProject.new(path: dir, sha_array: ["da748a59340be8b950e7bbbfb32077eb67d70c3c"])
+      project = DerailedBenchmarks::GitSwitchProject.new(path: dir, ref_array: ["da748a59340be8b950e7bbbfb32077eb67d70c3c"])
 
-      assert_equal ["da748a59340be8b950e7bbbfb32077eb67d70c3c", "5c09f748957d2098182762004adee27d1ff83160"], project.commits.map(&:sha)
+      assert_equal ["da748a59340be8b950e7bbbfb32077eb67d70c3c", "5c09f748957d2098182762004adee27d1ff83160"], project.commits.map(&:ref)
 
 
-      # Returns correct shas if given
-      project = DerailedBenchmarks::GitSwitchProject.new(path: dir, sha_array: ["da748a59340be8b950e7bbbfb32077eb67d70c3c", "9b19275a592f148e2a53b87ead4ccd8c747539c9"])
+      # Returns correct refs if given
+      project = DerailedBenchmarks::GitSwitchProject.new(path: dir, ref_array: ["da748a59340be8b950e7bbbfb32077eb67d70c3c", "9b19275a592f148e2a53b87ead4ccd8c747539c9"])
 
-      assert_equal ["da748a59340be8b950e7bbbfb32077eb67d70c3c", "9b19275a592f148e2a53b87ead4ccd8c747539c9"], project.commits.map(&:sha)
+      assert_equal ["da748a59340be8b950e7bbbfb32077eb67d70c3c", "9b19275a592f148e2a53b87ead4ccd8c747539c9"], project.commits.map(&:ref)
 
       first_commit = project.commits.first
 
@@ -75,7 +75,7 @@ class GitSwitchProjectTest < ActiveSupport::TestCase
 
 
       exception = assert_raise {
-        DerailedBenchmarks::GitSwitchProject.new(path: dir, sha_array: ["6e642963acec0ff64af51bd6fba8db3c4176ed6e", "mybranch"])
+        DerailedBenchmarks::GitSwitchProject.new(path: dir, ref_array: ["6e642963acec0ff64af51bd6fba8db3c4176ed6e", "mybranch"])
       }
 
       assert_includes(exception.message, 'Duplicate SHA resolved "6e64296"')
