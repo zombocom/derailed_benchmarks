@@ -50,7 +50,6 @@ class TasksTest < ActiveSupport::TestCase
 
     env = { "TEST_COUNT" => 2, "DERAILED_SCRIPT_COUNT" => 2, "SHAS_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
     puts rake "perf:library", { env: env }
-
   end
 
   test "rails perf:library with bad script" do
@@ -62,7 +61,8 @@ class TasksTest < ActiveSupport::TestCase
       env = { "DERAILED_SCRIPT" => "nopenopenop", "TEST_COUNT" => 2, "DERAILED_SCRIPT_COUNT" => 2, "SHAS_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
       puts rake "perf:library", { env: env }
     }
-    assert_includes error.message, "nopenopenop: command not found"
+
+    assert error.message =~ /nopenopenop:( command)? not found/, "Expected #{error.message} to include /nopenopenop: (command)? not found/ but it did not"
   end
 
   test 'hitting authenticated devise apps' do
