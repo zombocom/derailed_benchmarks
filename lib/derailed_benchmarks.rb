@@ -43,7 +43,7 @@ end
 require 'derailed_benchmarks/require_tree'
 require 'derailed_benchmarks/auth_helper'
 
-require 'derailed_benchmarks/stats_in_file'
+require 'derailed_benchmarks/stats_for_file'
 require 'derailed_benchmarks/stats_from_dir'
 require 'derailed_benchmarks/git_switch_project'
 
