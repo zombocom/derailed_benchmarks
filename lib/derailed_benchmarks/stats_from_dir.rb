@@ -38,7 +38,8 @@ module DerailedBenchmarks
           file = info_hash.fetch(:file)
           desc = info_hash.fetch(:desc)
           time = info_hash.fetch(:time)
-          @files << StatsForFile.new(file: file, desc: desc, time: time, name: branch)
+          short_sha = info_hash["short_sha"]
+          @files << StatsForFile.new(file: file, desc: desc, time: time, name: branch, short_sha: short_sha)
         end
       else
         input.each do |commit|
@@ -46,7 +47,8 @@ module DerailedBenchmarks
             file: commit.file,
             desc: commit.desc,
             time: commit.time,
-            name: commit.sha
+            name: commit.ref,
+            short_sha: commit.short_sha
           )
         end
       end
@@ -125,7 +127,7 @@ module DerailedBenchmarks
       {newest => newest_histogram, oldest => oldest_histogram}.each do |report, histogram|
         plot = UnicodePlot.histogram(
           histogram,
-          title: "\n#{' ' * 18 }Histogram - [#{report.name}] #{report.desc.inspect}",
+          title: "\n#{' ' * 18 }Histogram - [#{report.short_sha || report.name}] #{report.desc.inspect}",
           ylabel: "Time (s)",
           xlabel: "# of runs in range"
         )
@@ -146,11 +148,11 @@ module DerailedBenchmarks
         io.puts "👎👎👎(NOT Statistically Significant) 👎👎👎"
       end
       io.puts
-      io.puts "[#{newest.name}] #{newest.desc.inspect} (#{newest.median} seconds)"
+      io.puts "[#{newest.short_sha || newest.name}] (#{FORMAT % newest.median} seconds) #{newest.desc.inspect} ref: #{newest.name.inspect}"
       io.puts "  #{change_direction} by:"
       io.puts "    #{align}#{FORMAT % x_faster}x [older/newer]"
       io.puts "    #{FORMAT % percent_faster}\% [(older - newer) / older * 100]"
-      io.puts "[#{oldest.name}] #{oldest.desc.inspect} (#{oldest.median} seconds)"
+      io.puts "[#{oldest.short_sha || oldest.name}] (#{FORMAT % oldest.median} seconds) #{oldest.desc.inspect} ref: #{oldest.name.inspect}"
       io.puts
       io.puts "Iterations per sample: #{ENV["TEST_COUNT"]}"
       io.puts "Samples: #{newest.values.length}"

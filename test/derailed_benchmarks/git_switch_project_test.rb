@@ -26,7 +26,7 @@ class GitSwitchProjectTest < ActiveSupport::TestCase
       end
 
       assert_includes io.string, "Bundler modifies gemspec files"
-      assert_includes io.string, "Popping stash"
+      assert_includes io.string, "Applying stash"
     end
   end
 
