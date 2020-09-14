@@ -51,7 +51,6 @@ class StatsFromDirTest < ActiveSupport::TestCase
 
     io = StringIO.new
     stats.call.banner(io)
-    puts io.string
 
     assert_match(/11\.2 , 11\.28/, io.string)
     assert_match(/11\.8 , 11\.88/, io.string)
@@ -77,10 +76,13 @@ class StatsFromDirTest < ActiveSupport::TestCase
 
   test "banner faster" do
     dir = fixtures_dir("stats/significant")
-    branch_info = {}
-    branch_info["loser"]  = { desc: "Old commit", time: Time.now, file: dir.join("loser.bench.txt"), name: "loser" }
-    branch_info["winner"] = { desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner.bench.txt"), name: "winner" }
-    stats = DerailedBenchmarks::StatsFromDir.new(branch_info).call
+    Branch_info = {}
+
+    require 'ostruct'
+    commits = []
+    commits << OpenStruct.new({ desc: "Old commit", time: Time.now, file: dir.join("loser.bench.txt"), ref: "loser", short_sha: "aaaaa" })
+    commits << OpenStruct.new({ desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner.bench.txt"), ref: "winner", short_sha: "bbbbb" })
+    stats = DerailedBenchmarks::StatsFromDir.new(commits).call
     newest = stats.newest
     oldest = stats.oldest
 
@@ -102,12 +104,12 @@ class StatsFromDirTest < ActiveSupport::TestCase
     end
 
     expected = <<~EOM
-[winner] "I am the new commit" - (10.5 seconds)
-  FASTER 🚀🚀🚀 by:
-    1.0476x [older/newer]
-    4.5455% [(older - newer) / older * 100]
-[loser] "Old commit" - (11.0 seconds)
-EOM
+      [bbbbb] (10.5000 seconds) "I am the new commit" ref: "winner"
+        FASTER 🚀🚀🚀 by:
+          1.0476x [older/newer]
+          4.5455% [(older - newer) / older * 100]
+      [aaaaa] (11.0000 seconds) "Old commit" ref: "loser"
+    EOM
 
     actual = StringIO.new
     stats.banner(actual)
@@ -133,12 +135,12 @@ EOM
     end
 
     expected = <<~EOM
-[loser] "I am the new commit" - (11.0 seconds)
-  SLOWER 🐢🐢🐢 by:
-     0.9545x [older/newer]
-    -4.7619% [(older - newer) / older * 100]
-[winner] "Old commit" - (10.5 seconds)
-EOM
+      [loser] (11.0000 seconds) "I am the new commit" ref: "loser"
+        SLOWER 🐢🐢🐢 by:
+           0.9545x [older/newer]
+          -4.7619% [(older - newer) / older * 100]
+      [winner] (10.5000 seconds) "Old commit" ref: "winner"
+    EOM
 
     actual = StringIO.new
     stats.banner(actual)

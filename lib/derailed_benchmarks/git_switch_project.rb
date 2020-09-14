@@ -1,4 +1,14 @@
 module DerailedBenchmarks
+  # A class for running commands in a git directory
+  #
+  # It's faster to check if we're already in that directory instead
+  # of having to `cd` into each time. https://twitter.com/schneems/status/1305196730170961920
+  #
+  # Example:
+  #
+  #   in_git_path = InGitPath.new(`bundle info heapy --path`.strip)
+  #   in_git_path.checkout!("f0f92b06156f2274021aa42f15326da041ee9009")
+  #   in_git_path.short_sha # => "f0f92b0"
   class InGitPath
     attr_reader :path
 
@@ -179,8 +189,8 @@ module DerailedBenchmarks
 
       @in_git_path.checkout!(branch_or_sha)
       if dirty_gemspec
-        out = @in_git_path.run!("git stash pop 2>&1")
-        @io.puts "Popping stash of '#{@path.to_s}':\n#{out}" unless quiet
+        out = @in_git_path.run!("git stash apply 2>&1")
+        @io.puts "Applying stash of '#{@path.to_s}':\n#{out}" unless quiet
       end
     end
 
