@@ -26,19 +26,43 @@ class TasksTest < ActiveSupport::TestCase
     env_string = env.map {|key, value| "#{key.shellescape}=#{value.to_s.shellescape}" }.join(" ")
     cmd        = "env #{env_string} bundle exec rake -f perf.rake #{cmd} --trace"
     puts "Running: #{cmd}"
-    result = Bundler.with_original_env { `cd '#{rails_app_path}' && #{cmd}` }
-    if assert_success
-      assert $?.success?, "Expected '#{cmd}' to return a success status.\nOutput: #{result}"
+    result = Bundler.with_original_env { `cd '#{rails_app_path}' && #{cmd} 2>&1` }
+    if assert_success && !$?.success?
+      puts result
+      raise "Expected '#{cmd}' to return a success status.\nOutput: #{result}"
     end
 
     result
   end
 
-  test 'library_branches' do
+  test 'non-rails library with branch specified' do
+    skip unless ENV['USING_RAILS_WICKED_BRANCH']
+
+    gem_path = run!("bundle info wicked --path")
+    env = { "TEST_COUNT" => 10, "DERAILED_SCRIPT_COUNT" => 2, "DERAILED_PATH_TO_LIBRARY" => gem_path}
+    puts rake "perf:library", { env: env }
+  end
+
+  test 'rails perf:library from git' do
+    # BUNDLE_GEMFILE="$(pwd)/gemfiles/rails_git.gemfile" bundle exec m test/integration/tasks_test.rb:<linenumber>
+
     skip unless ENV['USING_RAILS_GIT']
 
-    env = { "TEST_COUNT" => 10, "DERAILED_SCRIPT_COUNT" => 2, "SHAS_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
+    env = { "TEST_COUNT" => 2, "DERAILED_SCRIPT_COUNT" => 2, "SHAS_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
     puts rake "perf:library", { env: env }
+  end
+
+  test "rails perf:library with bad script" do
+    # BUNDLE_GEMFILE="$(pwd)/gemfiles/rails_git.gemfile" bundle exec m test/integration/tasks_test.rb:<linenumber>
+
+    skip unless ENV['USING_RAILS_GIT']
+
+    error = assert_raises {
+      env = { "DERAILED_SCRIPT" => "nopenopenop", "TEST_COUNT" => 2, "DERAILED_SCRIPT_COUNT" => 2, "SHAS_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
+      puts rake "perf:library", { env: env }
+    }
+
+    assert error.message =~ /nopenopenop:( command)? not found/, "Expected #{error.message} to include /nopenopenop: (command)? not found/ but it did not"
   end
 
   test 'hitting authenticated devise apps' do

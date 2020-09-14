@@ -29,14 +29,28 @@ module DerailedBenchmarks
     FORMAT = "%0.4f"
     attr_reader :stats, :oldest, :newest
 
-    def initialize(hash)
+    def initialize(input)
       @files = []
 
-      hash.each do |branch, info_hash|
-        file = info_hash.fetch(:file)
-        desc = info_hash.fetch(:desc)
-        time = info_hash.fetch(:time)
-        @files << StatsForFile.new(file: file, desc: desc, time: time, name: branch)
+      if input.is_a?(Hash)
+        hash = input
+        hash.each do |branch, info_hash|
+          file = info_hash.fetch(:file)
+          desc = info_hash.fetch(:desc)
+          time = info_hash.fetch(:time)
+          short_sha = info_hash["short_sha"]
+          @files << StatsForFile.new(file: file, desc: desc, time: time, name: branch, short_sha: short_sha)
+        end
+      else
+        input.each do |commit|
+          @files << StatsForFile.new(
+            file: commit.file,
+            desc: commit.desc,
+            time: commit.time,
+            name: commit.ref,
+            short_sha: commit.short_sha
+          )
+        end
       end
       @files.sort_by! { |f| f.time }
       @oldest = @files.first
@@ -45,6 +59,8 @@ module DerailedBenchmarks
 
     def call
       @files.each(&:call)
+
+      return self if @files.detect(&:empty?)
 
       stats_95 = statistical_test(confidence: 95)
 
@@ -111,7 +127,7 @@ module DerailedBenchmarks
       {newest => newest_histogram, oldest => oldest_histogram}.each do |report, histogram|
         plot = UnicodePlot.histogram(
           histogram,
-          title: "\n#{' ' * 18 }Histogram - [#{report.name}] #{report.desc.inspect}",
+          title: "\n#{' ' * 18 }Histogram - [#{report.short_sha || report.name}] #{report.desc.inspect}",
           ylabel: "Time (s)",
           xlabel: "# of runs in range"
         )
@@ -123,6 +139,8 @@ module DerailedBenchmarks
     end
 
     def banner(io = $stdout)
+      return if @files.detect(&:empty?)
+
       io.puts
       if significant?
         io.puts "❤️ ❤️ ❤️  (Statistically Significant) ❤️ ❤️ ❤️"
@@ -130,11 +148,11 @@ module DerailedBenchmarks
         io.puts "👎👎👎(NOT Statistically Significant) 👎👎👎"
       end
       io.puts
-      io.puts "[#{newest.name}] #{newest.desc.inspect} - (#{newest.median} seconds)"
+      io.puts "[#{newest.short_sha || newest.name}] (#{FORMAT % newest.median} seconds) #{newest.desc.inspect} ref: #{newest.name.inspect}"
       io.puts "  #{change_direction} by:"
       io.puts "    #{align}#{FORMAT % x_faster}x [older/newer]"
       io.puts "    #{FORMAT % percent_faster}\% [(older - newer) / older * 100]"
-      io.puts "[#{oldest.name}] #{oldest.desc.inspect} - (#{oldest.median} seconds)"
+      io.puts "[#{oldest.short_sha || oldest.name}] (#{FORMAT % oldest.median} seconds) #{oldest.desc.inspect} ref: #{oldest.name.inspect}"
       io.puts
       io.puts "Iterations per sample: #{ENV["TEST_COUNT"]}"
       io.puts "Samples: #{newest.values.length}"

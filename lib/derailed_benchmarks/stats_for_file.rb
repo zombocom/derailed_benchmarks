@@ -16,22 +16,28 @@ module DerailedBenchmarks
   #  x.average # => 10.5
   #  x.name    # => "muhfile"
   class StatsForFile
-    attr_reader :name, :values, :desc, :time
+    attr_reader :name, :values, :desc, :time, :short_sha
 
-    def initialize(file:, name:, desc: "", time: )
+    def initialize(file:, name:, desc: "", time: , short_sha: nil)
       @file = Pathname.new(file)
       FileUtils.touch(@file)
 
       @name = name
       @desc = desc
       @time = time
+      @short_sha = short_sha
     end
 
     def call
       load_file!
+      return if values.empty?
 
       @median = (values[(values.length - 1) / 2] + values[values.length/ 2]) / 2.0
       @average = values.inject(:+) / values.length
+    end
+
+    def empty?
+      values.empty?
     end
 
     def median
