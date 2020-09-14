@@ -45,7 +45,7 @@ require 'derailed_benchmarks/auth_helper'
 
 require 'derailed_benchmarks/stats_for_file'
 require 'derailed_benchmarks/stats_from_dir'
-require 'derailed_benchmarks/git_switch_project'
+require 'derailed_benchmarks/git/switch_project'
 
 if DerailedBenchmarks.gem_is_bundled?("devise")
   DerailedBenchmarks.auth = DerailedBenchmarks::AuthHelpers::Devise.new

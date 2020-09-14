@@ -28,7 +28,7 @@ namespace :perf do
 
       ref_string = ENV["SHAS_TO_TEST"] || ENV["REFS_TO_TEST"] || ""
 
-      project = DerailedBenchmarks::GitSwitchProject.new(
+      project = DerailedBenchmarks::Git::SwitchProject.new(
         path: library_dir,
         ref_array: ref_string.split(","),
         log_dir: out_dir
