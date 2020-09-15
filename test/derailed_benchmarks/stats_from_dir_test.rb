@@ -103,13 +103,13 @@ class StatsFromDirTest < ActiveSupport::TestCase
       11.0
     end
 
-    expected = <<~EOM
-      [bbbbb] (10.5000 seconds) "I am the new commit" ref: "winner"
-        FASTER 🚀🚀🚀 by:
-          1.0476x [older/newer]
-          4.5455% [(older - newer) / older * 100]
-      [aaaaa] (11.0000 seconds) "Old commit" ref: "loser"
-    EOM
+    expected = <<-EOM
+[bbbbb] (10.5000 seconds) "I am the new commit" ref: "winner"
+  FASTER 🚀🚀🚀 by:
+    1.0476x [older/newer]
+    4.5455% [(older - newer) / older * 100]
+[aaaaa] (11.0000 seconds) "Old commit" ref: "loser"
+EOM
 
     actual = StringIO.new
     stats.banner(actual)
@@ -134,13 +134,13 @@ class StatsFromDirTest < ActiveSupport::TestCase
       11.0
     end
 
-    expected = <<~EOM
-      [loser] (11.0000 seconds) "I am the new commit" ref: "loser"
-        SLOWER 🐢🐢🐢 by:
-           0.9545x [older/newer]
-          -4.7619% [(older - newer) / older * 100]
-      [winner] (10.5000 seconds) "Old commit" ref: "winner"
-    EOM
+    expected = <<-EOM
+[loser] (11.0000 seconds) "I am the new commit" ref: "loser"
+  SLOWER 🐢🐢🐢 by:
+     0.9545x [older/newer]
+    -4.7619% [(older - newer) / older * 100]
+[winner] (10.5000 seconds) "Old commit" ref: "winner"
+EOM
 
     actual = StringIO.new
     stats.banner(actual)
