@@ -2,9 +2,9 @@
 
 require 'bigdecimal'
 require 'statistics'
-require 'unicode_plot'
 require 'stringio'
 require 'mini_histogram'
+require 'mini_histogram/plot'
 
 module DerailedBenchmarks
   # A class used to read several benchmark files
@@ -125,12 +125,12 @@ module DerailedBenchmarks
       MiniHistogram.set_average_edges!(newest_histogram, oldest_histogram)
 
       {newest => newest_histogram, oldest => oldest_histogram}.each do |report, histogram|
-        plot = UnicodePlot.histogram(
-          histogram,
+        plot = histogram.plot(
           title: "\n#{' ' * 18 }Histogram - [#{report.short_sha || report.name}] #{report.desc.inspect}",
           ylabel: "Time (s)",
           xlabel: "# of runs in range"
         )
+
         plot.render(io)
         io.puts
       end
