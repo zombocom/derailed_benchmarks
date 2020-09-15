@@ -1,4 +1,6 @@
-## master (unreleased)
+## HEAD
+
+- Ruby 2.2 is now officialy supported and tested (https://github.com/schneems/derailed_benchmarks/pull/177)
 
 ## 1.7.0
 
