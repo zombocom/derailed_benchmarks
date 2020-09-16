@@ -6,6 +6,10 @@
 
 - Ruby 2.2 is now officialy supported and tested (https://github.com/schneems/derailed_benchmarks/pull/177)
 
+## [1.8.0] - unreleased
+
+- Correct logging of unsuccessful curl requests to file (https://github.com/schneems/derailed_benchmarks/pull/172)
+
 ## 1.7.0
 
 - Add histogram support to `perf:library` (https://github.com/schneems/derailed_benchmarks/pull/169)
