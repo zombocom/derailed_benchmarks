@@ -13,6 +13,16 @@ module DerailedBenchmarks
     def initialize(name)
       @name     = name
       @children = {}
+      @cost = 0
+    end
+
+    def self.reset!
+      REQUIRED_BY.clear
+      if defined?(Kernel::REQUIRE_STACK)
+        Kernel::REQUIRE_STACK.clear
+
+        Kernel::REQUIRE_STACK.push(TOP_REQUIRE)
+      end
     end
 
     def <<(tree)

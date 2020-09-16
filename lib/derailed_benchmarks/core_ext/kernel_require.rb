@@ -17,12 +17,16 @@ module Kernel
 
   alias_method :original_require, :require
   alias_method :original_require_relative, :require_relative
+  alias_method(:original_load, :load)
+
+  def load(file, wrap = false)
+    measure_memory_impact(file) do |file|
+      original_load(file)
+    end
+  end
 
   def require(file)
     measure_memory_impact(file) do |file|
-      # "source_annotation_extractor" is deprecated in Rails 6
-      # # if we don't skip the library it leads to a crash
-      # next if file == "rails/source_annotation_extractor" && Rails.version >= '6.0'
       original_require(file)
     end
   end
@@ -67,22 +71,29 @@ module Kernel
   end
 end
 
-# Top level node that will store all require information for the entire app
-TOP_REQUIRE = DerailedBenchmarks::RequireTree.new("TOP")
-REQUIRE_STACK.push(TOP_REQUIRE)
 
+# I honestly have no idea why this Object delegation is needed
+# I keep staring at bootsnap and it doesn't have to do this
+# is there a bug in their implementation they haven't caught or
+# am I doing something different?
 class Object
   private
+  def load(path, wrap = false)
+    Kernel.load(path, wrap)
+  end
 
   def require(path)
     Kernel.require(path)
   end
 end
 
-# Don't forget to assign a cost to the top level
-cost_before_requiring_anything = GetProcessMem.new.mb
-TOP_REQUIRE.cost = cost_before_requiring_anything
+# Top level node that will store all require information for the entire app
+TOP_REQUIRE = DerailedBenchmarks::RequireTree.new("TOP")
+REQUIRE_STACK.push(TOP_REQUIRE)
+TOP_REQUIRE.cost = GetProcessMem.new.mb
+
 def TOP_REQUIRE.print_sorted_children(*args)
   self.cost = GetProcessMem.new.mb - self.cost
   super
 end
+

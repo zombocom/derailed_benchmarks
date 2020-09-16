@@ -1,5 +1,7 @@
 ## HEAD
 
+- Derailed now tracks memory use from `load` in addition to `require` (https://github.com/schneems/derailed_benchmarks/pull/178)
+
 ## 1.8.0
 
 - Ruby 2.2 is now officialy supported and tested (https://github.com/schneems/derailed_benchmarks/pull/177)
