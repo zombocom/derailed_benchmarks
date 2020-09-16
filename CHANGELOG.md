@@ -1,14 +1,13 @@
 ## HEAD
 
+## 1.8.1
+
 - Derailed now tracks memory use from `load` in addition to `require` (https://github.com/schneems/derailed_benchmarks/pull/178)
+- Correct logging of unsuccessful curl requests to file (https://github.com/schneems/derailed_benchmarks/pull/172)
 
 ## 1.8.0
 
 - Ruby 2.2 is now officialy supported and tested (https://github.com/schneems/derailed_benchmarks/pull/177)
-
-## [1.8.0] - unreleased
-
-- Correct logging of unsuccessful curl requests to file (https://github.com/schneems/derailed_benchmarks/pull/172)
 
 ## 1.7.0
 
