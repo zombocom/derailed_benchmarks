@@ -3,7 +3,6 @@
 require 'test_helper'
 
 class KernelRequireTest < ActiveSupport::TestCase
-
   setup do
     require 'derailed_benchmarks/core_ext/kernel_require'
     GC.disable
@@ -19,6 +18,13 @@ class KernelRequireTest < ActiveSupport::TestCase
     assert node,                    "Expected:\n#{parent.children}\nto include:\n#{file.inspect}"
     assert node.cost < parent.cost, "Expected:\n#{node.inspect}\nto cost less than:\n#{parent.inspect}" unless parent == TOP_REQUIRE
     node
+  end
+
+  test "profiles autoload" do
+    require fixtures_dir("require/autoload_parent.rb")
+    parent = assert_node_in_parent("autoload_parent.rb", TOP_REQUIRE)
+
+    assert_node_in_parent("autoload_child.rb", parent)
   end
 
   test "core extension profiles useage" do
