@@ -20,6 +20,14 @@ class KernelRequireTest < ActiveSupport::TestCase
     node
   end
 
+  test "load" do
+    require fixtures_dir("require/load_parent.rb")
+
+    parent = assert_node_in_parent("load_parent.rb", TOP_REQUIRE)
+
+    assert_node_in_parent("load_child.rb", parent)
+  end
+
   test "profiles autoload" do
     require fixtures_dir("require/autoload_parent.rb")
     parent = assert_node_in_parent("autoload_parent.rb", TOP_REQUIRE)

@@ -51,7 +51,6 @@ class ActiveSupport::IntegrationCase
   end
 end
 
-
 def fixtures_dir(name = "")
   root_path("test/fixtures").join(name)
 end

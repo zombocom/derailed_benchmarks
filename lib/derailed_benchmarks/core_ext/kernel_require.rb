@@ -17,6 +17,13 @@ module Kernel
 
   alias_method :original_require, :require
   alias_method :original_require_relative, :require_relative
+  alias_method(:original_load, :load)
+
+  def load(file, wrap = false)
+    measure_memory_impact(file) do |file|
+      original_load(file)
+    end
+  end
 
   def require(file)
     measure_memory_impact(file) do |file|
@@ -68,8 +75,15 @@ end
 TOP_REQUIRE = DerailedBenchmarks::RequireTree.new("TOP")
 REQUIRE_STACK.push(TOP_REQUIRE)
 
+# I honestly have no idea why this Object delegation is needed
+# I keep staring at bootsnap and it doesn't have to do this
+# is there a bug in their implementation they haven't caught or
+# am I doing something different?
 class Object
   private
+  def load(path, wrap = false)
+    Kernel.load(path, wrap)
+  end
 
   def require(path)
     Kernel.require(path)
