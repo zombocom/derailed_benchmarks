@@ -13,6 +13,7 @@ module DerailedBenchmarks
     def initialize(name)
       @name     = name
       @children = {}
+      @cost = 0
     end
 
     def <<(tree)
