@@ -1,18 +1,20 @@
 language: ruby
 rvm:
-  - 2.5.5
-  - 2.6.3
-  - ruby-head
+  - 2.2.10
+  - 2.5.8
+  - 2.7.1
 
 gemfile:
   - gemfiles/rails_5_1.gemfile
-  - gemfiles/rails_5_2.gemfile
   - gemfiles/rails_6_0.gemfile
   - gemfiles/rails_git.gemfile
 
 before_install:
-  - gem install bundler
+  - gem install bundler -v 1.17.3
 
-matrix:
+jobs:
   allow_failures:
-    - rvm: ruby-head
+    - rvm: 2.2.10
+      gemfile: gemfiles/rails_6_0.gemfile
+    - rvm: 2.2.10
+      gemfile: gemfiles/rails_git.gemfile

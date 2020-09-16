@@ -1,5 +1,5 @@
 class ChildTwo
-  @retained = +""
+  @retained = String.new("")
   200_000.times.map { @retained << "A" }
 end
 

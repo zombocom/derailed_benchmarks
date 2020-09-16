@@ -10,7 +10,7 @@ A series of things you can use to benchmark a Rails or Ruby app.
 ## Compatibility/Requirements
 
 This gem has been tested and is known to work with Rails 3.2+ using Ruby
-2.1+. Some commands __may__ work on older versions of Ruby, but not all commands are supported.
+2.2+. Some commands __may__ work on older versions of Ruby, but not all commands are supported.
 
 For some benchmarks, not all, you'll need to verify you have a working version of curl on your OS:
 
