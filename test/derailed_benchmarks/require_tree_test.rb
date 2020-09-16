@@ -9,8 +9,7 @@ class RequireTree < ActiveSupport::TestCase
   end
 
   def teardown
-    DerailedBenchmarks::RequireTree.send(:remove_const, "REQUIRED_BY")
-    DerailedBenchmarks::RequireTree.const_set("REQUIRED_BY",  {})
+    DerailedBenchmarks::RequireTree.reset!
   end
 
   test "default_cost" do
