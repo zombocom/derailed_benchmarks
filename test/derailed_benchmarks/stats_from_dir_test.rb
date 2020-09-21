@@ -45,12 +45,14 @@ class StatsFromDirTest < ActiveSupport::TestCase
   test "histogram output" do
     dir = fixtures_dir("stats/significant")
     branch_info = {}
-    branch_info["loser"]  = { desc: "Old commit", time: Time.now, file: dir.join("loser.bench.txt"), name: "loser" }
-    branch_info["winner"] = { desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner.bench.txt"), name: "winner" }
+    branch_info["loser"]  = { desc: "Old commit", time: Time.now, file: dir.join("loser.bench.txt"), short_sha: "5594a2d" }
+    branch_info["winner"] = { desc: "I am the new commit", time: Time.now + 1, file: dir.join("winner.bench.txt"), short_sha: "f1ab117" }
     stats = DerailedBenchmarks::StatsFromDir.new(branch_info).call
 
     io = StringIO.new
     stats.call.banner(io)
+
+    puts io.string
 
     assert_match(/11\.2 , 11\.28/, io.string)
     assert_match(/11\.8 , 11\.88/, io.string)

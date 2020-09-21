@@ -1,5 +1,7 @@
 ## HEAD
 
+- Histograms are now printed side-by-side (https://github.com/schneems/derailed_benchmarks/pull/179)
+
 ## 1.8.1
 
 - Derailed now tracks memory use from `load` in addition to `require` (https://github.com/schneems/derailed_benchmarks/pull/178)

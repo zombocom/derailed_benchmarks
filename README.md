@@ -448,11 +448,37 @@ When the test is done it will output which commit "won" and by how much:
 ```
 ❤️ ❤️ ❤️  (Statistically Significant) ❤️ ❤️ ❤️
 
-[7b4d80cb37] "1.8x Faster Partial Caching - Faster Cache Keys" - (10.9711965 seconds)
-  FASTER by:
-    1.0870x [older/newer]
-    8.0026% [(older - newer) / older * 100]
-[13d6aa3a7b] "Merge pull request #36284 from kamipo/fix_eager_loading_with_string_joins" - (11.9255485 seconds)
+[f1ab117] (11.3844 seconds) "I am the new commit" ref: "winner"
+  FASTER 🚀🚀🚀 by:
+    1.0062x [older/newer]
+    0.6147% [(older - newer) / older * 100]
+[5594a2d] (11.4548 seconds) "Old commit" ref: "loser"
+
+Iterations per sample:
+Samples: 100
+
+Test type: Kolmogorov Smirnov
+Confidence level: 99.0 %
+Is significant? (max > critical): true
+D critical: 0.2145966026289347
+D max: 0.26
+
+Histograms (time ranges are in seconds):
+
+   [f1ab117] description:                                        [5594a2d] description:
+     "I am the new commit"                                         "Old commit"
+                  ┌                                        ┐                    ┌                                        ┐
+   [11.2 , 11.28) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 12                             [11.2 , 11.28) ┤▇▇▇▇ 3
+   [11.28, 11.36) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 22                 [11.28, 11.36) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 19
+   [11.35, 11.43) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 30       [11.35, 11.43) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 17
+   [11.43, 11.51) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 17                       [11.43, 11.51) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 25
+   [11.5 , 11.58) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 13                           [11.5 , 11.58) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 15
+   [11.58, 11.66) ┤▇▇▇▇▇▇▇ 6                                     [11.58, 11.66) ┤▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 13
+   [11.65, 11.73) ┤ 0                                            [11.65, 11.73) ┤▇▇▇▇ 3
+   [11.73, 11.81) ┤ 0                                            [11.73, 11.81) ┤▇▇▇▇ 3
+   [11.8 , 11.88) ┤ 0                                            [11.8 , 11.88) ┤▇▇▇ 2
+                  └                                        ┘                    └                                        ┘
+                             # of runs in range                                            # of runs in range
 ```
 
 You can provide this to the Rails team along with the example app you used to benchmark (so they can independently verify if needed).

@@ -38,7 +38,7 @@ module DerailedBenchmarks
           file = info_hash.fetch(:file)
           desc = info_hash.fetch(:desc)
           time = info_hash.fetch(:time)
-          short_sha = info_hash["short_sha"]
+          short_sha = info_hash[:short_sha]
           @files << StatsForFile.new(file: file, desc: desc, time: time, name: branch, short_sha: short_sha)
         end
       else
@@ -120,21 +120,22 @@ module DerailedBenchmarks
     end
 
     def histogram(io = $stdout)
-      newest_histogram = MiniHistogram.new(newest.values)
-      oldest_histogram = MiniHistogram.new(oldest.values)
-      MiniHistogram.set_average_edges!(newest_histogram, oldest_histogram)
-
-      {newest => newest_histogram, oldest => oldest_histogram}.each do |report, histogram|
-        plot = histogram.plot(
-          title: "\n#{' ' * 18 }Histogram - [#{report.short_sha || report.name}] #{report.desc.inspect}",
-          ylabel: "Time (s)",
+      dual_histogram = MiniHistogram.dual_plot do |a, b|
+        a.values = newest.values
+        a.options = {
+          title: "\n   [#{newest.short_sha || newest.name}] description:\n     #{newest.desc.inspect}",
           xlabel: "# of runs in range"
-        )
-
-        plot.render(io)
-        io.puts
+        }
+        b.values = oldest.values
+        b.options = {
+          title: "\n   [#{oldest.short_sha || oldest.name}] description:\n     #{oldest.desc.inspect}",
+          xlabel: "# of runs in range"
+        }
       end
 
+      io.puts
+      io.puts "Histograms (time ranges are in seconds):"
+      io.puts(dual_histogram)
       io.puts
     end
 
