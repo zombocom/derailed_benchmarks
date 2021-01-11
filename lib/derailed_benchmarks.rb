@@ -2,8 +2,9 @@
 
 require 'time'
 require 'bundler'
-
 require 'get_process_mem'
+
+require 'dead_end'
 
 module DerailedBenchmarks
   def self.gem_is_bundled?(name)
