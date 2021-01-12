@@ -1,5 +1,6 @@
 ## HEAD
 
+- Minimum ruby version is now 2.5 (https://github.com/schneems/derailed_benchmarks/pull/183)
 - Histograms are now printed side-by-side (https://github.com/schneems/derailed_benchmarks/pull/179)
 
 ## 1.8.1

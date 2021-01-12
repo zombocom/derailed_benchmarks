@@ -67,5 +67,8 @@ workflows:
       - test:
           matrix:
             parameters:
-              ruby_version: ["2.5"]
-              gemfile: ["rails_6_0.gemfile"]
+              ruby_version: ["2.5", "2.7", "3.0"]
+              gemfile: ["rails_5_2.gemfile", "rails_6_1.gemfile", "rails_git.gemfile"]
+            exclude:
+              - ruby_version: "3.0"
+                gemfile: rails_5_2.gemfile

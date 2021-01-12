@@ -48,7 +48,8 @@ class TasksTest < ActiveSupport::TestCase
 
     skip unless ENV['USING_RAILS_GIT']
 
-    env = { "TEST_COUNT" => 2, "DERAILED_SCRIPT_COUNT" => 2, "SHAS_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
+    env = { "TEST_COUNT" => 2, "DERAILED_SCRIPT_COUNT" => 2,
+            "SHAS_TO_TEST" => "acb6631cd99cdfe7db356773ef74cad7cbb570ed,12bb9d32f56883914abcd98fd72e3c68c444808d"}
     puts rake "perf:library", { env: env }
   end
 
@@ -58,7 +59,8 @@ class TasksTest < ActiveSupport::TestCase
     skip unless ENV['USING_RAILS_GIT']
 
     error = assert_raises {
-      env = { "DERAILED_SCRIPT" => "nopenopenop", "TEST_COUNT" => 2, "DERAILED_SCRIPT_COUNT" => 2, "SHAS_TO_TEST" => "3054e1d584e7eca110c69a1f8423f2e0866abbf9,80f989aecece1a2b1830e9c953e5887421b52d3c"}
+      env = { "DERAILED_SCRIPT" => "nopenopenop", "TEST_COUNT" => 2, "DERAILED_SCRIPT_COUNT" => 2,
+              "SHAS_TO_TEST" => "acb6631cd99cdfe7db356773ef74cad7cbb570ed,12bb9d32f56883914abcd98fd72e3c68c444808d"}
       puts rake "perf:library", { env: env }
     }
 

@@ -20,7 +20,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.required_ruby_version = ">= 2.2.0"
+  gem.required_ruby_version = ">= 2.5.0"
 
   gem.add_dependency "heapy",           "~> 0"
   gem.add_dependency "memory_profiler", ">= 0", "< 2"
@@ -32,9 +32,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency "ruby-statistics", ">= 2.1"
   gem.add_dependency "mini_histogram",    ">= 0.3.0"
 
+  gem.add_development_dependency "webrick",  ">= 0"
   gem.add_development_dependency "capybara",  "~> 2"
   gem.add_development_dependency "m"
   gem.add_development_dependency "rails",     "> 3", "<= 7"
   gem.add_development_dependency "devise",    "> 3", "< 6"
-  gem.add_development_dependency "appraisal", "2.2.0"
 end

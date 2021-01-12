@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-# $ BUNDLE_GEMFILE="$(pwd)/gemfiles/rails_git.gemfile" bundle exec m test/integration/tasks_test.rb:30
+# $ BUNDLE_GEMFILE="$(pwd)/gemfiles/rails_git.gemfile" bundle exec m test/integration/tasks_test.rb:50
 
 source "https://rubygems.org"
 
-gem "rails", github: "rails/rails", ref: "3054e1d584e7eca110c69a1f8423f2e0866abbf9"
+gem "rails", github: "rails/rails", ref: "12bb9d32f56883914abcd98fd72e3c68c444808d"
 
 gem 'devise', github: "plataformatec/devise"
 
