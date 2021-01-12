@@ -1,0 +1,72 @@
+version: 2.1
+orbs:
+  ruby: circleci/ruby@1.1.2
+references:
+  run_tests: &run_tests
+    run:
+      name: Run test suite
+      command: bundle exec rake test
+  # Needed because tests execute raw git commands
+  set_git_config: &set_git_config
+    run:
+      name: Set Git config
+      command: git config --global user.email "you@example.com"; git config --global user.name "Your Name"
+  restore: &restore
+    restore_cache:
+      keys:
+        - v1_bundler_deps-{{ .Environment.CIRCLE_JOB }}
+  save: &save
+    save_cache:
+      paths:
+        - ./vendor/bundle
+      key: v1_bundler_deps-{{ .Environment.CIRCLE_JOB }} # CIRCLE_JOB e.g. "ruby-2.5"
+  bundle: &bundle
+    run:
+      name: install dependencies
+      command: |
+        echo 'export BUNDLE_JOBS=4' >> $BASH_ENV
+        echo 'export BUNDLE_RETRY=3' >> $BASH_ENV
+        echo "export BUNDLE_PATH=$(pwd)/vendor/bundle" >> $BASH_ENV
+        source $BASH_ENV
+
+        bundle install
+        bundle update
+        bundle clean
+  mysteps: &mysteps
+    steps:
+      - checkout
+      - <<: *set_git_config
+      - <<: *restore
+      - <<: *bundle
+      - <<: *run_tests
+      - <<: *save
+
+jobs:
+  "ruby-2-5":
+    docker:
+      - image: circleci/ruby:2.5
+    environment:
+      BUNDLE_GEMFILE: "$(CIRCLE_WORKING_DIRECTORY)/gemfiles/rails_6_0.gemfile"
+    <<: *mysteps
+
+  "ruby-2-6":
+    docker:
+      - image: circleci/ruby:2.6
+    environment:
+      BUNDLE_GEMFILE: "$(CIRCLE_WORKING_DIRECTORY)/gemfiles/rails_6_0.gemfile"
+    <<: *mysteps
+
+  "ruby-2-7":
+    docker:
+      - image: circleci/ruby:2.7
+    environment:
+      - BUNDLE_GEMFILE: "$(CIRCLE_WORKING_DIRECTORY)/gemfiles/rails_6_0.gemfile"
+    <<: *mysteps
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "ruby-2-5"
+      - "ruby-2-6"
+      - "ruby-2-7"
