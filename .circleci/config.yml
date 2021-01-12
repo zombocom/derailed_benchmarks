@@ -24,9 +24,10 @@ references:
     run:
       name: install dependencies
       command: |
-        echo 'export BUNDLE_JOBS=4' >> $BASH_ENV
-        echo 'export BUNDLE_RETRY=3' >> $BASH_ENV
+        echo "export BUNDLE_JOBS=4" >> $BASH_ENV
+        echo "export BUNDLE_RETRY=3" >> $BASH_ENV
         echo "export BUNDLE_PATH=$(pwd)/vendor/bundle" >> $BASH_ENV
+        echo "export BUNDLE_GEMFILE=$(pwd)/gemfiles/$GEMFILE_NAME" >> $BASH_ENV
         source $BASH_ENV
 
         bundle install
@@ -42,31 +43,29 @@ references:
       - <<: *save
 
 jobs:
-  "ruby-2-5":
+  test:
+    parameters:
+      ruby_version:
+        type: string
+      gemfile:
+        type: string
     docker:
-      - image: circleci/ruby:2.5
+      - image: "circleci/ruby:<< parameters.ruby_version >>"
     environment:
-      BUNDLE_GEMFILE: "$(CIRCLE_WORKING_DIRECTORY)/gemfiles/rails_6_0.gemfile"
-    <<: *mysteps
-
-  "ruby-2-6":
-    docker:
-      - image: circleci/ruby:2.6
-    environment:
-      BUNDLE_GEMFILE: "$(CIRCLE_WORKING_DIRECTORY)/gemfiles/rails_6_0.gemfile"
-    <<: *mysteps
-
-  "ruby-2-7":
-    docker:
-      - image: circleci/ruby:2.7
-    environment:
-      - BUNDLE_GEMFILE: "$(CIRCLE_WORKING_DIRECTORY)/gemfiles/rails_6_0.gemfile"
-    <<: *mysteps
+      GEMFILE_NAME: "rails_6_0.gemfile"
+    steps:
+      - checkout
+      - <<: *set_git_config
+      - <<: *restore
+      - <<: *bundle
+      - <<: *run_tests
+      - <<: *save
 
 workflows:
-  version: 2
-  build:
+  all-tests:
     jobs:
-      - "ruby-2-5"
-      - "ruby-2-6"
-      - "ruby-2-7"
+      - test:
+          matrix:
+            parameters:
+              ruby_version: ["2.5"]
+              gemfile: ["rails_6_0.gemfile"]
