@@ -52,7 +52,7 @@ jobs:
     docker:
       - image: "circleci/ruby:<< parameters.ruby_version >>"
     environment:
-      GEMFILE_NAME: "rails_6_0.gemfile"
+      GEMFILE_NAME: <<parameters.gemfile>>
     steps:
       - checkout
       - <<: *set_git_config
