@@ -1,5 +1,7 @@
 ## HEAD
 
+## 2.0.0
+
 - Syntax errors easier to debug with `dead_end` gem (https://github.com/schneems/derailed_benchmarks/pull/182)
 - Minimum ruby version is now 2.5 (https://github.com/schneems/derailed_benchmarks/pull/183)
 - Histograms are now printed side-by-side (https://github.com/schneems/derailed_benchmarks/pull/179)
