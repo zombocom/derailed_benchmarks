@@ -14,12 +14,12 @@ references:
   restore: &restore
     restore_cache:
       keys:
-        - v1_bundler_deps-{{ .Environment.CIRCLE_JOB }}
+        - v2_bundler_deps-{{ .Environment.CIRCLE_JOB }}
   save: &save
     save_cache:
       paths:
         - ./vendor/bundle
-      key: v1_bundler_deps-{{ .Environment.CIRCLE_JOB }} # CIRCLE_JOB e.g. "ruby-2.5"
+      key: v2_bundler_deps-{{ .Environment.CIRCLE_JOB }} # CIRCLE_JOB e.g. "ruby-2.5"
   bundle: &bundle
     run:
       name: install dependencies
@@ -50,7 +50,7 @@ jobs:
       gemfile:
         type: string
     docker:
-      - image: "ruby:<< parameters.ruby_version >>"
+      - image: "cimg/ruby:<< parameters.ruby_version >>"
     environment:
       GEMFILE_NAME: <<parameters.gemfile>>
     steps:
