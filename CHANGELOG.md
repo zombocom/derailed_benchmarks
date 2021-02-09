@@ -1,5 +1,9 @@
 ## HEAD
 
+## 2.0.1
+
+- `rack-test` dependency added (https://github.com/schneems/derailed_benchmarks/pull/187)
+
 ## 2.0.0
 
 - Syntax errors easier to debug with `dead_end` gem (https://github.com/schneems/derailed_benchmarks/pull/182)
