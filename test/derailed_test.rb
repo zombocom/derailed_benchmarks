@@ -11,4 +11,19 @@ class DerailedBenchmarksTest < ActiveSupport::TestCase
     assert DerailedBenchmarks.gem_is_bundled?("rack")
     refute DerailedBenchmarks.gem_is_bundled?("wicked")
   end
+
+  test "readme contains correct output" do
+    readme_path = File.join(__dir__, "..", "README.md")
+    lines = File.foreach(readme_path)
+    lineno = 1
+    expected = lines.lazy.drop_while { |line|
+      lineno += 1
+      line != "$ bundle exec derailed exec --help\n"
+    }.drop(1).take_while { |line| line != "```\n" }.force.join
+    assert_equal(
+      expected,
+      `bundle exec derailed exec --help`,
+      "Please update README.md:#{lineno}"
+    )
+  end
 end

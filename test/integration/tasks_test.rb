@@ -153,6 +153,10 @@ class TasksTest < ActiveSupport::TestCase
   end
 
   test 'ips' do
-    rake "perf:mem_over_time"
+    rake "perf:ips"
+  end
+
+  test 'heap_diff' do
+    rake "perf:heap_diff", env: { "TEST_COUNT" => 5 }
   end
 end

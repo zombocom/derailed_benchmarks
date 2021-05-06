@@ -198,12 +198,17 @@ You can run commands against your app by running `$ derailed exec`. There are se
 ```
 $ bundle exec derailed exec --help
   $ derailed exec perf:allocated_objects  # outputs allocated object diff after app is called TEST_COUNT times
+  $ derailed exec perf:app  # runs the performance test against two most recent commits of the current app
   $ derailed exec perf:gc  # outputs GC::Profiler.report data while app is called TEST_COUNT times
+  $ derailed exec perf:heap  # heap analyzer
   $ derailed exec perf:ips  # iterations per second
+  $ derailed exec perf:library  # runs the same test against two different branches for statistical comparison
   $ derailed exec perf:mem  # show memory usage caused by invoking require per gem
-  $ derailed exec perf:objects  # profiles ruby allocation
   $ derailed exec perf:mem_over_time  # outputs memory usage over time
+  $ derailed exec perf:objects  # profiles ruby allocation
+  $ derailed exec perf:stackprof  # stackprof
   $ derailed exec perf:test  # hits the url TEST_COUNT times
+  $ derailed exec perf:heap_diff  # three heaps generation for comparison
 ```
 
 Instead of going over each command we'll look at common problems and which commands are best used to diagnose them. Later on we'll cover all of the environment variables you can use to configure derailed benchmarks in it's own section.
@@ -271,7 +276,7 @@ This is similar to `$ bundle exec derailed bundle:objects` however it includes o
 
 ## I want a Heap Dump
 
-If you're still struggling with runtime memory you can generate a heap dump that can later be analyzed using [heap_inspect](https://github.com/schneems/heapy).
+If you're still struggling with runtime memory you can generate a heap dump that can later be analyzed using [heapy](https://github.com/schneems/heapy).
 
 ```
 $ bundle exec derailed exec perf:heap
@@ -293,6 +298,40 @@ For more help on getting data from a heap dump see
 
 ```
 $ heapy --help
+```
+
+### I want more heap dumps
+
+When searching for a leak, you can use heap dumps for comparison to see what is
+retained. See [SamSaffron's slides](https://speakerdeck.com/samsaffron/why-ruby-2-dot-1-excites-me?slide=27)
+(or [a more recent inspired blog post](https://blog.skylight.io/hunting-for-leaks-in-ruby/))
+for a clear example. You can generate 3 dumps (one every `TEST_COUNT` calls) using the
+next command:
+
+```
+$ bundle exec derailed exec perf:heap
+Endpoint: "/"
+Running 1000 times
+Heap file generated: "tmp/2021-05-06T15:19:26+02:00-heap-0.ndjson"
+Running 1000 times
+Heap file generated: "tmp/2021-05-06T15:19:26+02:00-heap-1.ndjson"
+Running 1000 times
+Heap file generated: "tmp/2021-05-06T15:19:26+02:00-heap-2.ndjson"
+
+Diff
+====
+Retained STRING 90 objects of size 4790/91280 (in bytes) at: /Users/ulysse/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/rack-2.2.3/lib/rack/utils.rb:461
+Retained ICLASS 20 objects of size 800/91280 (in bytes) at: /Users/ulysse/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/sinatra-contrib-2.0.8.1/lib/sinatra/namespace.rb:198
+Retained DATA 20 objects of size 1360/91280 (in bytes) at: /Users/ulysse/.rbenv/versions/2.7.2/lib/ruby/2.7.0/monitor.rb:238
+Retained STRING 20 objects of size 800/91280 (in bytes) at: /Users/ulysse/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/rack-protection-2.0.8.1/lib/rack/protection/xss_header.rb:20
+Retained STRING 10 objects of size 880/91280 (in bytes) at: /Users/ulysse/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/newrelic_rpm-5.4.0.347/lib/new_relic/agent/transaction.rb:890
+Retained CLASS 10 objects of size 4640/91280 (in bytes) at: /Users/ulysse/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/sinatra-contrib-2.0.8.1/lib/sinatra/namespace.rb:198
+Retained IMEMO 10 objects of size 480/91280 (in bytes) at: /Users/ulysse/.rbenv/versions/2.7.2/lib/ruby/gems/2.7.0/gems/sinatra-2.0.8.1/lib/sinatra/base.rb:1017
+...
+
+Run `$ heapy --help` for more options
+
+Also read https://speakerdeck.com/samsaffron/why-ruby-2-dot-1-excites-me?slide=27 to understand better what you are reading.
 ```
 
 ### Memory Is large at boot.
