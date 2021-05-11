@@ -1,5 +1,7 @@
 ## HEAD
 
+## 2.1.0
+
 - Add `perf:heap_diff` tool (https://github.com/schneems/derailed_benchmarks/pull/193)
 
 ## 2.0.1
