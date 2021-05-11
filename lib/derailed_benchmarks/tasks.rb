@@ -247,6 +247,42 @@ namespace :perf do
     puts "Also try uploading #{file_name.inspect} to http://tenderlove.github.io/heap-analyzer/"
   end
 
+  desc "three heaps generation for comparison."
+  task :heap_diff => [:setup] do
+    require 'objspace'
+
+    launch_time = Time.now.iso8601
+    FileUtils.mkdir_p("tmp")
+    ObjectSpace.trace_object_allocations_start
+    3.times do |i|
+      file_name = "tmp/#{launch_time}-heap-#{i}.ndjson"
+      puts "Running #{ TEST_COUNT } times"
+      TEST_COUNT.times {
+        call_app
+      }
+      GC.start
+
+      puts "Heap file generated: #{ file_name.inspect }"
+      ObjectSpace.dump_all(output: File.open(file_name, 'w'))
+    end
+
+    require 'heapy'
+
+    puts ""
+    puts "Diff"
+    puts "===="
+    Heapy::Diff.new(
+      before: "tmp/#{launch_time}-heap-0.ndjson",
+      after: "tmp/#{launch_time}-heap-1.ndjson",
+      retained: "tmp/#{launch_time}-heap-2.ndjson"
+    ).call
+
+    puts ""
+    puts "Run `$ heapy --help` for more options"
+    puts ""
+    puts "Also read https://speakerdeck.com/samsaffron/why-ruby-2-dot-1-excites-me?slide=27 to understand better what you are reading."
+  end
+
   def run!(cmd)
     out = `#{cmd}`
     raise "Error while running #{cmd.inspect}: #{out}" unless $?.success?
