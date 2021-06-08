@@ -20,6 +20,9 @@ Bundler.setup
 require 'thor'
 
 class DerailedBenchmarkCLI < Thor
+  def self.exit_on_failure?
+    true
+  end
 
   desc "exec", "executes given derailed benchmark"
   def exec(task = nil)
