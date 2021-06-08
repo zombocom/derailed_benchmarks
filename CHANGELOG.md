@@ -1,5 +1,7 @@
 ## HEAD
 
+- Fix Thor's deprecation warning by implementing `exit_on_failure?` (https://github.com/schneems/derailed_benchmarks/pull/195)
+
 ## 2.1.0
 
 - Add `perf:heap_diff` tool (https://github.com/schneems/derailed_benchmarks/pull/193)
