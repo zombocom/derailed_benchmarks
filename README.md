@@ -303,13 +303,13 @@ $ heapy --help
 ### I want more heap dumps
 
 When searching for a leak, you can use heap dumps for comparison to see what is
-retained. See [SamSaffron's slides](https://speakerdeck.com/samsaffron/why-ruby-2-dot-1-excites-me?slide=27)
-(or [a more recent inspired blog post](https://blog.skylight.io/hunting-for-leaks-in-ruby/))
+retained. See [Analyzing memory heaps](https://medium.com/klaxit-techblog/tracking-a-ruby-memory-leak-in-2021-9eb56575f731#875b)
+(inspired from [SamSaffron's original idea](https://speakerdeck.com/samsaffron/why-ruby-2-dot-1-excites-me?slide=27))
 for a clear example. You can generate 3 dumps (one every `TEST_COUNT` calls) using the
 next command:
 
 ```
-$ bundle exec derailed exec perf:heap
+$ bundle exec derailed exec perf:heap_diff
 Endpoint: "/"
 Running 1000 times
 Heap file generated: "tmp/2021-05-06T15:19:26+02:00-heap-0.ndjson"
@@ -331,7 +331,7 @@ Retained IMEMO 10 objects of size 480/91280 (in bytes) at: /Users/ulysse/.rbenv/
 
 Run `$ heapy --help` for more options
 
-Also read https://speakerdeck.com/samsaffron/why-ruby-2-dot-1-excites-me?slide=27 to understand better what you are reading.
+Also read https://medium.com/klaxit-techblog/tracking-a-ruby-memory-leak-in-2021-9eb56575f731#875b to understand better what you are reading.
 ```
 
 ### Memory Is large at boot.

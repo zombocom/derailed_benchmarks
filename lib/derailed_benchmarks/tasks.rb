@@ -280,7 +280,7 @@ namespace :perf do
     puts ""
     puts "Run `$ heapy --help` for more options"
     puts ""
-    puts "Also read https://speakerdeck.com/samsaffron/why-ruby-2-dot-1-excites-me?slide=27 to understand better what you are reading."
+    puts "Also read https://medium.com/klaxit-techblog/tracking-a-ruby-memory-leak-in-2021-9eb56575f731#875b to understand better what you are reading."
   end
 
   def run!(cmd)
