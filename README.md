@@ -595,11 +595,13 @@ Note: this plugs in the given webserver directly into rack, it doesn't use any `
 
 ### Excluding ActiveRecord
 
-By default, derailed will load ActiveRecord if the gem is included as a dependency.  It is included by default, if you just include the `rails` gem.  If you are using a different ORM, you will either need to only include the `railties` gem, or set the `DERAILED_SKIP_ACTIVE_RECORD` flag.
+By default, derailed will load ActiveRecord if the gem is included as a dependency.  It is included by default, if you just include the `rails` gem.  If you are using a different ORM, you will either need to only include the `railties` gem, or set the `DERAILED_SKIP_ACTIVE_RECORD` environment variable.
 
 ```
 $ DERAILED_SKIP_ACTIVE_RECORD=true
 ```
+
+Alternatively, use the `DERAILED_SKIP_RAILS_REQUIRES` environment variable to have derailed not require any Rails gems. Your app will then need to require them as part of its boot sequence.
 
 ### Running in a different environment
 
