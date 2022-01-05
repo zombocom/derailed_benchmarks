@@ -40,9 +40,9 @@ namespace :perf do
       ActiveRecord::Migrator.migrations_paths = DERAILED_APP.paths['db/migrate'].to_a
       ActiveRecord::Migration.verbose         = true
 
-      if Rails.version.start_with? '6'
+      if Rails.version.start_with?('6.') || Rails.version.start_with?('7.')
         ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths, ActiveRecord::SchemaMigration).migrate
-      elsif Rails.version.start_with? '5.2'
+      elsif Rails.version.start_with?('5.2')
         ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).migrate
       else
         ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)
