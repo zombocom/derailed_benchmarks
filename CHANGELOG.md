@@ -1,5 +1,7 @@
 ## HEAD
 
+- Update the gemspec's homepage to the current repo URL
+
 ## 2.1.1
 
 - Fix Thor's deprecation warning by implementing `exit_on_failure?` (https://github.com/schneems/derailed_benchmarks/pull/195)
