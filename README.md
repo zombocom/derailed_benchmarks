@@ -4,7 +4,7 @@ A series of things you can use to benchmark a Rails or Ruby app.
 
 ![](http://media.giphy.com/media/lfbxexWy71b6U/giphy.gif)
 
-[![Build Status](https://travis-ci.org/schneems/derailed_benchmarks.svg)](https://travis-ci.org/schneems/derailed_benchmarks)
+[![CircleCI](https://circleci.com/gh/zombocom/derailed_benchmarks/tree/main.svg?style=svg)](https://circleci.com/gh/zombocom/derailed_benchmarks/tree/main)
 [![Help Contribute to Open Source](https://www.codetriage.com/schneems/derailed_benchmarks/badges/users.svg)](https://www.codetriage.com/schneems/derailed_benchmarks)
 
 ## Compatibility/Requirements
