@@ -1,6 +1,6 @@
 ## HEAD
 
-- Update the gemspec's homepage to the current repo URL
+- Update the gemspec's homepage to the current repo URL (https://github.com/zombocom/derailed_benchmarks/pull/212)
 
 ## 2.1.1
 
