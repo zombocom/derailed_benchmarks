@@ -12,7 +12,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["richard.schneeman+rubygems@gmail.com"]
   gem.description   = %q{ Go faster, off the Rails }
   gem.summary       = %q{ Benchmarks designed to performance test your ENTIRE site }
-  gem.homepage      = "https://github.com/schneems/derailed_benchmarks"
+  gem.homepage      = "https://github.com/zombocom/derailed_benchmarks"
   gem.license       = "MIT"
 
   gem.files         = `git ls-files`.split($/)
