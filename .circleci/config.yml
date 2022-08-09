@@ -14,12 +14,12 @@ references:
   restore: &restore
     restore_cache:
       keys:
-        - v1_bundler_deps-{{ .Environment.CIRCLE_JOB }}
+        - v1_bundler_deps-{{ .Environment.CIRCLE_JOB }}-{{ checksum "Gemfile.lock" }}
   save: &save
     save_cache:
       paths:
         - ./vendor/bundle
-      key: v1_bundler_deps-{{ .Environment.CIRCLE_JOB }} # CIRCLE_JOB e.g. "ruby-2.5"
+      key: v1_bundler_deps-{{ .Environment.CIRCLE_JOB }}-{{ checksum "Gemfile.lock" }} # CIRCLE_JOB e.g. "ruby-2.5"
   bundle: &bundle
     run:
       name: install dependencies
