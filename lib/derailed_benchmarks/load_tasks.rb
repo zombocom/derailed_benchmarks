@@ -42,7 +42,7 @@ namespace :perf do
 
       if Rails.version >= "6.0"
         ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths, ActiveRecord::SchemaMigration).migrate
-      elsif Rails.version.start_with?('5.2')
+      elsif Rails.version.start_with?("5.2")
         ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).migrate
       else
         ActiveRecord::Migrator.migrate(ActiveRecord::Migrator.migrations_paths, nil)

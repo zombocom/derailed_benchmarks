@@ -19,10 +19,11 @@ class DerailedBenchmarksTest < ActiveSupport::TestCase
     expected = lines.lazy.drop_while { |line|
       lineno += 1
       line != "$ bundle exec derailed exec --help\n"
-    }.drop(1).take_while { |line| line != "```\n" }.force.join
+    }.drop(1).take_while { |line| line != "```\n" }.force.join.split("\n").sort
+    actual = `bundle exec derailed exec --help`.split("\n").sort
     assert_equal(
       expected,
-      `bundle exec derailed exec --help`,
+      actual,
       "Please update README.md:#{lineno}"
     )
   end
