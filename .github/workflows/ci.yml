@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - '2.5.8'
+          - '2.7.2'
+          - '3.0.0'
+          - '3.1.2'
+          - 'head'
+        gemfile:
+          - gemfiles/rails_5_1.gemfile
+          - gemfiles/rails_5_2.gemfile
+          - gemfiles/rails_6_0.gemfile
+          - gemfiles/rails_6_1.gemfile
+          - gemfiles/rails_head.gemfile
+        exclude:
+          - ruby: "2.5.8"
+            gemfile: gemfiles/rails_head.gemfile
+          - ruby: "2.7.2"
+            gemfile: gemfiles/rails_head.gemfile
+          - ruby: "3.0.0"
+            gemfile: gemfiles/rails_5_1.gemfile
+          - ruby: "3.0.0"
+            gemfile: gemfiles/rails_5_2.gemfile
+          - ruby: "3.1.2"
+            gemfile: gemfiles/rails_5_1.gemfile
+          - ruby: "3.1.2"
+            gemfile: gemfiles/rails_5_2.gemfile
+          - ruby: "3.1.2"
+            gemfile: gemfiles/rails_6_0.gemfile
+          - ruby: "head"
+            gemfile: gemfiles/rails_5_1.gemfile
+          - ruby: "head"
+            gemfile: gemfiles/rails_5_2.gemfile
+          - ruby: "head"
+            gemfile: gemfiles/rails_6_0.gemfile
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Set Git config
+        run: |
+          git config --global user.email "user@example.com"
+          git config --global user.name "Github Action Bot"
+      - name: Run test
+        run: bundle exec rake test
