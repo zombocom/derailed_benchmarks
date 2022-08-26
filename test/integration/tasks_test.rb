@@ -49,7 +49,7 @@ class TasksTest < ActiveSupport::TestCase
     skip unless ENV['USING_RAILS_GIT']
 
     env = { "TEST_COUNT" => 2, "DERAILED_SCRIPT_COUNT" => 2,
-            "SHAS_TO_TEST" => "acb6631cd99cdfe7db356773ef74cad7cbb570ed,12bb9d32f56883914abcd98fd72e3c68c444808d"}
+            "SHAS_TO_TEST" => "fd9308a2925e862435859e1803e720e6eebe4bb6,aa85e897312396b5c6993d8092b9aff7faa93011"}
     puts rake "perf:library", { env: env }
   end
 
@@ -60,7 +60,7 @@ class TasksTest < ActiveSupport::TestCase
 
     error = assert_raises {
       env = { "DERAILED_SCRIPT" => "nopenopenop", "TEST_COUNT" => 2, "DERAILED_SCRIPT_COUNT" => 2,
-              "SHAS_TO_TEST" => "acb6631cd99cdfe7db356773ef74cad7cbb570ed,12bb9d32f56883914abcd98fd72e3c68c444808d"}
+              "SHAS_TO_TEST" => "fd9308a2925e862435859e1803e720e6eebe4bb6,aa85e897312396b5c6993d8092b9aff7faa93011"}
       puts rake "perf:library", { env: env }
     }
 
@@ -125,11 +125,13 @@ class TasksTest < ActiveSupport::TestCase
     }
     result = rake "perf:test", env: env
     assert_match 'Endpoint: "foo_secret"', result
-    assert_match 'HTTP headers: {"Authorization"=>"Basic YWRtaW46c2VjcmV0\n", "Cache-Control"=>"no-cache"}', result
+    assert_match /"Authorization"=>"Basic YWRtaW46c2VjcmV0\\n"/ , result
+    assert_match /"Cache-Control"=>"no-cache"/ , result
 
     env["USE_SERVER"] = "webrick"
     result = rake "perf:test", env: env
-    assert_match 'HTTP headers: {"Authorization"=>"Basic YWRtaW46c2VjcmV0\n", "Cache-Control"=>"no-cache"}', result
+    assert_match /"Authorization"=>"Basic YWRtaW46c2VjcmV0\\n"/ , result
+    assert_match /"Cache-Control"=>"no-cache"/ , result
   end
 
   test 'USE_SERVER' do
