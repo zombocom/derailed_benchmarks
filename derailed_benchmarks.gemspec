@@ -31,7 +31,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "thor",            ">= 0.19", "< 2"
   gem.add_dependency "ruby-statistics", ">= 2.1"
   gem.add_dependency "mini_histogram",  ">= 0.3.0"
-  gem.add_dependency "dead_end",        ">= 0"
+  gem.add_dependency "syntax_suggest",  ">= 1.0.2"
   gem.add_dependency "rack-test",       ">= 0"
 
   gem.add_development_dependency "webrick",  ">= 0"
