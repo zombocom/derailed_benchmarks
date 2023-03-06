@@ -21,8 +21,11 @@ jobs:
           - gemfiles/rails_5_2.gemfile
           - gemfiles/rails_6_0.gemfile
           - gemfiles/rails_6_1.gemfile
+          - gemfiles/rails_7_0.gemfile
           - gemfiles/rails_head.gemfile
         exclude:
+          - ruby: "2.5.8"
+            gemfile: gemfiles/rails_7_0.gemfile
           - ruby: "2.5.8"
             gemfile: gemfiles/rails_head.gemfile
           - ruby: "2.7.2"

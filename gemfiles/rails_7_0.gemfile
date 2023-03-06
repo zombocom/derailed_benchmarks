@@ -2,10 +2,7 @@
 
 source "https://rubygems.org"
 
-gem "rails", "~> 6.1.0"
-gem "net-smtp", require: false
-gem "net-imap", require: false
-gem "net-pop", require: false
+gem "rails", "~> 7.0"
 
 group :development, :test do
   gem "sqlite3", platform: [:ruby, :mswin, :mingw]
