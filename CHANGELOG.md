@@ -1,5 +1,9 @@
 ## HEAD
 
+## 2.2.0 - unreleased
+- Support non-GET requests via REQUEST_METHOD and setting body via REQUEST_BODY
+- Add ability to set Content-Type and Content-Length headers via CONTENT_TYPE and CONTENT_LENGTH env vars (they don't work with HTTP_ variables)
+
 ## 2.1.2
 
 - Support rails 7 for bundle exec derailed exec mem (https://github.com/zombocom/derailed_benchmarks/pull/212)
