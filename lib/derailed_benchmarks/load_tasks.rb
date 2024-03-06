@@ -94,7 +94,8 @@ namespace :perf do
 
     DERAILED_APP = DerailedBenchmarks.add_auth(Object.class_eval { remove_const(:DERAILED_APP) })
     if server = ENV["USE_SERVER"]
-      @port = (3000..3900).to_a.sample
+      @host = ENV.fetch("HTTP_HOST") { "localhost" }
+      @port = ENV.fetch("HTTP_PORT") { (3000..3900).to_a.sample }
       puts "Port: #{ @port.inspect }"
       puts "Server: #{ server.inspect }"
       thread = Thread.new do
@@ -103,7 +104,7 @@ namespace :perf do
       sleep 1
 
       def call_app(path = File.join("/", PATH_TO_HIT))
-        cmd = "curl #{CURL_HTTP_HEADER_ARGS} 'http://localhost:#{@port}#{path}' -s --fail 2>&1"
+        cmd = "curl #{CURL_HTTP_HEADER_ARGS} 'http://#{@host}:#{@port}#{path}' -s --fail 2>&1"
         response = `#{cmd}`
         unless $?.success?
           STDERR.puts "Couldn't call app."
