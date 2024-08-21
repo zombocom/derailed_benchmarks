@@ -29,7 +29,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "rack",            ">= 1"
   gem.add_dependency "rake",            "> 10", "< 14"
   gem.add_dependency "thor",            ">= 0.19", "< 2"
-  gem.add_dependency "ruby-statistics", ">= 2.1"
+  gem.add_dependency "ruby-statistics", ">= 4.0"
   gem.add_dependency "mini_histogram",  ">= 0.3.0"
   gem.add_dependency "dead_end",        ">= 0"
   gem.add_dependency "rack-test",       ">= 0"
