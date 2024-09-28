@@ -1,5 +1,7 @@
 ## HEAD
 
+- Repair tests, support ruby-statistics in ruby < 3.0 (https://github.com/zombocom/derailed_benchmarks/pull/241)
+
 ## 2.1.2
 
 - Support rails 7 for bundle exec derailed exec mem (https://github.com/zombocom/derailed_benchmarks/pull/212)

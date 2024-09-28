@@ -40,7 +40,10 @@ namespace :perf do
       ActiveRecord::Migrator.migrations_paths = DERAILED_APP.paths['db/migrate'].to_a
       ActiveRecord::Migration.verbose         = true
 
-      if Rails.version >= "6.0"
+      # https://github.com/plataformatec/devise/blob/master/test/orm/active_record.rb
+      if Rails.version >= "7.1"
+        ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).migrate
+      elsif Rails.version >= "6.0"
         ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths, ActiveRecord::SchemaMigration).migrate
       elsif Rails.version.start_with?("5.2")
         ActiveRecord::MigrationContext.new(ActiveRecord::Migrator.migrations_paths).migrate
@@ -90,7 +93,6 @@ namespace :perf do
     CURL_HTTP_HEADER_ARGS = HTTP_HEADERS.map { |http_header_name, value| "-H \"#{http_header_name}: #{value}\"" }.join(" ")
 
     require 'rack/test'
-    require 'rack/file'
 
     DERAILED_APP = DerailedBenchmarks.add_auth(Object.class_eval { remove_const(:DERAILED_APP) })
     if server = ENV["USE_SERVER"]
@@ -98,7 +100,10 @@ namespace :perf do
       puts "Port: #{ @port.inspect }"
       puts "Server: #{ server.inspect }"
       thread = Thread.new do
-        Rack::Server.start(app: DERAILED_APP, :Port => @port, environment: "none", server: server)
+        # rack 3 doesn't have Rack::Server
+        require 'rackup' unless defined?(Rack::Server)
+        server_class = defined?(Rack::Server) ? Rack::Server : Rackup::Server
+        server_class.start(app: DERAILED_APP, :Port => @port, environment: "none", server: server)
       end
       sleep 1
 
