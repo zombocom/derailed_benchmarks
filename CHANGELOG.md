@@ -6,6 +6,7 @@
 - Repair tests, support ruby-statistics in ruby < 3.0 (https://github.com/zombocom/derailed_benchmarks/pull/241)
 - Test Rails 7.1 and 7.2 (https://github.com/zombocom/derailed_benchmarks/pull/242)
 - Switch from dead_end to syntax_suggest (https://github.com/zombocom/derailed_benchmarks/pull/243)
+- require `ruby2_keywords` so drb doesn't break in ruby < 2.7 (https://github.com/zombocom/derailed_benchmarks/pull/244)
 
 ## 2.1.2
 
