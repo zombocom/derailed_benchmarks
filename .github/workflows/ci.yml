@@ -10,42 +10,73 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby:
-          - '2.5.8'
-          - '2.7.2'
-          - '3.0.0'
-          - '3.1.2'
-          - 'head'
-        gemfile:
-          - gemfiles/rails_5_1.gemfile
-          - gemfiles/rails_5_2.gemfile
-          - gemfiles/rails_6_0.gemfile
-          - gemfiles/rails_6_1.gemfile
-          - gemfiles/rails_7_0.gemfile
-          - gemfiles/rails_head.gemfile
-        exclude:
-          - ruby: "2.5.8"
-            gemfile: gemfiles/rails_7_0.gemfile
-          - ruby: "2.5.8"
-            gemfile: gemfiles/rails_head.gemfile
-          - ruby: "2.7.2"
-            gemfile: gemfiles/rails_head.gemfile
-          - ruby: "3.0.0"
-            gemfile: gemfiles/rails_5_1.gemfile
-          - ruby: "3.0.0"
-            gemfile: gemfiles/rails_5_2.gemfile
-          - ruby: "3.1.2"
-            gemfile: gemfiles/rails_5_1.gemfile
-          - ruby: "3.1.2"
-            gemfile: gemfiles/rails_5_2.gemfile
-          - ruby: "3.1.2"
-            gemfile: gemfiles/rails_6_0.gemfile
-          - ruby: "head"
-            gemfile: gemfiles/rails_5_1.gemfile
-          - ruby: "head"
-            gemfile: gemfiles/rails_5_2.gemfile
-          - ruby: "head"
-            gemfile: gemfiles/rails_6_0.gemfile
+        include:
+        - ruby: "2.5"
+          gemfile: gemfiles/rails_5_1.gemfile
+        - ruby: "2.5"
+          gemfile: gemfiles/rails_5_2.gemfile
+        # - ruby: "2.5"
+        #   gemfile: gemfiles/rails_6_0.gemfile
+        # - ruby: "2.5"
+        #   gemfile: gemfiles/rails_6_1.gemfile
+        - ruby: "2.6"
+          gemfile: gemfiles/rails_5_2.gemfile
+        # - ruby: "2.6"
+        #   gemfile: gemfiles/rails_6_0.gemfile
+        # - ruby: "2.6"
+        #   gemfile: gemfiles/rails_6_1.gemfile
+        - ruby: "2.7"
+          gemfile: gemfiles/rails_5_1.gemfile
+        - ruby: "2.7"
+          gemfile: gemfiles/rails_5_2.gemfile
+        - ruby: "2.7"
+          gemfile: gemfiles/rails_6_0.gemfile
+        - ruby: "2.7"
+          gemfile: gemfiles/rails_6_1.gemfile
+        - ruby: "2.7"
+          gemfile: gemfiles/rails_7_0.gemfile
+        - ruby: "2.7"
+          gemfile: gemfiles/rails_7_1.gemfile
+        - ruby: "3.0"
+          gemfile: gemfiles/rails_6_0.gemfile
+        - ruby: "3.0"
+          gemfile: gemfiles/rails_6_1.gemfile
+        - ruby: "3.0"
+          gemfile: gemfiles/rails_7_0.gemfile
+        - ruby: "3.0"
+          gemfile: gemfiles/rails_7_1.gemfile
+        - ruby: "3.1"
+          gemfile: gemfiles/rails_6_0.gemfile
+        - ruby: "3.1"
+          gemfile: gemfiles/rails_6_1.gemfile
+        - ruby: "3.1"
+          gemfile: gemfiles/rails_7_0.gemfile
+        - ruby: "3.1"
+          gemfile: gemfiles/rails_7_1.gemfile
+        - ruby: "3.1"
+          gemfile: gemfiles/rails_7_2.gemfile
+        - ruby: "3.2"
+          gemfile: gemfiles/rails_6_0.gemfile
+        - ruby: "3.2"
+          gemfile: gemfiles/rails_6_1.gemfile
+        - ruby: "3.2"
+          gemfile: gemfiles/rails_7_0.gemfile
+        - ruby: "3.2"
+          gemfile: gemfiles/rails_7_1.gemfile
+        - ruby: "3.2"
+          gemfile: gemfiles/rails_7_2.gemfile
+        - ruby: "3.3"
+          gemfile: gemfiles/rails_6_0.gemfile
+        - ruby: "3.3"
+          gemfile: gemfiles/rails_6_1.gemfile
+        - ruby: "3.3"
+          gemfile: gemfiles/rails_7_0.gemfile
+        - ruby: "3.3"
+          gemfile: gemfiles/rails_7_1.gemfile
+        - ruby: "3.3"
+          gemfile: gemfiles/rails_7_2.gemfile
+        - ruby: "head"
+          gemfile: gemfiles/rails_head.gemfile
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}
     steps:

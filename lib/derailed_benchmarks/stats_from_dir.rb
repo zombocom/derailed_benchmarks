@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 require 'bigdecimal'
-require 'statistics'
+# keep this in sync with gemspec
+if RUBY_VERSION >= '3.0'
+  require 'ruby-statistics'
+else
+  require 'statistics'
+end
 require 'stringio'
 require 'mini_histogram'
 require 'mini_histogram/plot'
