@@ -32,7 +32,9 @@ require_relative "rails_app/config/environment"
 
 # https://github.com/plataformatec/devise/blob/master/test/orm/active_record.rb
 migrate_path = File.expand_path("../rails_app/db/migrate", __FILE__)
-if Rails.version >= "6.0"
+if Rails.version >= "7.1"
+  ActiveRecord::MigrationContext.new(migrate_path).migrate
+elsif Rails.version >= "6.0"
   ActiveRecord::MigrationContext.new(migrate_path, ActiveRecord::SchemaMigration).migrate
 elsif Rails.version.start_with? "5.2"
   ActiveRecord::MigrationContext.new(migrate_path).migrate
