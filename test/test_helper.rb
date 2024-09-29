@@ -6,6 +6,9 @@ require 'bundler/setup'
 # Configure Rails Envinronment
 ENV["RAILS_ENV"] = "test"
 
+
+require "ruby2_keywords" if RUBY_VERSION < "2.7"
+
 require 'rails'
 require 'rails/test_help'
 

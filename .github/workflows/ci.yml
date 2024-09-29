@@ -15,16 +15,16 @@ jobs:
           gemfile: gemfiles/rails_5_1.gemfile
         - ruby: "2.5"
           gemfile: gemfiles/rails_5_2.gemfile
-        # - ruby: "2.5"
-        #   gemfile: gemfiles/rails_6_0.gemfile
-        # - ruby: "2.5"
-        #   gemfile: gemfiles/rails_6_1.gemfile
+        - ruby: "2.5"
+          gemfile: gemfiles/rails_6_0.gemfile
+        - ruby: "2.5"
+          gemfile: gemfiles/rails_6_1.gemfile
         - ruby: "2.6"
           gemfile: gemfiles/rails_5_2.gemfile
-        # - ruby: "2.6"
-        #   gemfile: gemfiles/rails_6_0.gemfile
-        # - ruby: "2.6"
-        #   gemfile: gemfiles/rails_6_1.gemfile
+        - ruby: "2.6"
+          gemfile: gemfiles/rails_6_0.gemfile
+        - ruby: "2.6"
+          gemfile: gemfiles/rails_6_1.gemfile
         - ruby: "2.7"
           gemfile: gemfiles/rails_5_1.gemfile
         - ruby: "2.7"
