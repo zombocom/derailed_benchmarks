@@ -575,6 +575,22 @@ $ HTTP_AUTHORIZATION="Basic YWRtaW46c2VjcmV0\n" \
   PATH_TO_HIT=/foo_secret bundle exec derailed exec perf:ips
 ```
 
+The `Content-Type` and `Content-Length` headers are a bit different. To set those, ignore the HTTP_ prefix, use the `CONTENT_TYPE` and `CONTENT_LENGTH` variables.
+
+### Performing non-GET requests
+
+If the endpoint being tested is not a GET request, you can set the `REQUEST_METHOD` variable with the HTTP method you want (e.g. POST, PUT, PATCH, DELETE).
+
+To set the request body, you can use the `REQUEST_BODY`.
+
+```
+$ REQUEST_METHOD=POST \
+  REQUEST_BODY="{\"user\":{\"email\":\"foo@bar.com\",\"password\":\"123456\",\"password_confirmation\":\"123456\"}}" \
+  CONTENT_TYPE="application/json" \
+  PATH_TO_HIT=/users \
+  bundle exec derailed exec perf:test
+```
+
 ### Using a real web server with `USE_SERVER`
 
 All tests are run without a webserver (directly using `Rack::Mock` by default), if you want to use a webserver set `USE_SERVER` to a Rack::Server compliant server, such as `webrick`.
