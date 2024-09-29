@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'bigdecimal'
-require 'statistics'
+require 'ruby-statistics'
 require 'stringio'
 require 'mini_histogram'
 require 'mini_histogram/plot'
