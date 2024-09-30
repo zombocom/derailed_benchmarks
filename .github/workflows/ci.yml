@@ -78,7 +78,7 @@ jobs:
         - ruby: "head"
           gemfile: gemfiles/rails_head.gemfile
     env:
-      BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

@@ -7,6 +7,7 @@
 - Test Rails 7.1 and 7.2 (https://github.com/zombocom/derailed_benchmarks/pull/242)
 - Switch from dead_end to syntax_suggest (https://github.com/zombocom/derailed_benchmarks/pull/243)
 - require `ruby2_keywords` so drb doesn't break in ruby < 2.7 (https://github.com/zombocom/derailed_benchmarks/pull/244)
+- support relative BUNDLE_GEMFILE in tests (https://github.com/zombocom/derailed_benchmarks/pull/245)
 
 ## 2.1.2
 
