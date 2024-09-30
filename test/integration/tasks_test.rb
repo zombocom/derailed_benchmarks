@@ -26,7 +26,11 @@ class TasksTest < ActiveSupport::TestCase
     env_string = env.map {|key, value| "#{key.shellescape}=#{value.to_s.shellescape}" }.join(" ")
     cmd        = "env #{env_string} bundle exec rake -f perf.rake #{cmd} --trace"
     puts "Running: #{cmd}"
-    result = Bundler.with_original_env { `cd '#{rails_app_path}' && #{cmd} 2>&1` }
+    result = Bundler.with_original_env do
+      # Ensure relative BUNDLE_GEMFILE is expanded so path is still correct after cd
+      ENV['BUNDLE_GEMFILE'] = File.expand_path(ENV['BUNDLE_GEMFILE']) if ENV['BUNDLE_GEMFILE']
+      `cd '#{rails_app_path}' && #{cmd} 2>&1` 
+    end
     if assert_success && !$?.success?
       puts result
       raise "Expected '#{cmd}' to return a success status.\nOutput: #{result}"
@@ -44,7 +48,7 @@ class TasksTest < ActiveSupport::TestCase
   end
 
   test 'rails perf:library from git' do
-    # BUNDLE_GEMFILE="$(pwd)/gemfiles/rails_git.gemfile" bundle exec m test/integration/tasks_test.rb:<linenumber>
+    # BUNDLE_GEMFILE="gemfiles/rails_git.gemfile" bundle exec m test/integration/tasks_test.rb:<linenumber>
 
     skip # unless ENV['USING_RAILS_GIT']
 
@@ -54,7 +58,7 @@ class TasksTest < ActiveSupport::TestCase
   end
 
   test "rails perf:library with bad script" do
-    # BUNDLE_GEMFILE="$(pwd)/gemfiles/rails_git.gemfile" bundle exec m test/integration/tasks_test.rb:<linenumber>
+    # BUNDLE_GEMFILE="gemfiles/rails_git.gemfile" bundle exec m test/integration/tasks_test.rb:<linenumber>
 
     skip # unless ENV['USING_RAILS_GIT']
 
