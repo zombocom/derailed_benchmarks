@@ -1,6 +1,5 @@
 ## HEAD
 
-- Support DERAILED_SKIP_RAILS_REQUIRES (https://github.com/zombocom/derailed_benchmarks/pull/199)
 - Support REQUEST_METHOD, REQUEST_BODY, CONTENT_TYPE, and CONTENT_LENGTH env vars (https://github.com/zombocom/derailed_benchmarks/pull/234, https://github.com/zombocom/derailed_benchmarks/pull/122)
 - Support ruby-statistics 4.x (https://github.com/zombocom/derailed_benchmarks/pull/238, https://github.com/zombocom/derailed_benchmarks/pull/239)
 - Repair tests, support ruby-statistics in ruby < 3.0 (https://github.com/zombocom/derailed_benchmarks/pull/241)
@@ -11,6 +10,7 @@
 
 ## 2.1.2
 
+- Support DERAILED_SKIP_RAILS_REQUIRES (https://github.com/zombocom/derailed_benchmarks/pull/199)
 - Support rails 7 for bundle exec derailed exec mem (https://github.com/zombocom/derailed_benchmarks/pull/212)
 - Update the gemspec's homepage to the current repo URL (https://github.com/zombocom/derailed_benchmarks/pull/212)
 
