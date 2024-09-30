@@ -6,7 +6,6 @@ require 'bundler/setup'
 # Configure Rails Envinronment
 ENV["RAILS_ENV"] = "test"
 
-
 require "ruby2_keywords" if RUBY_VERSION < "2.7"
 
 require 'rails'
@@ -18,7 +17,6 @@ require 'pathname'
 require 'derailed_benchmarks'
 
 require File.expand_path("../rails_app/config/environment.rb",  __FILE__)
-require "rails/test_help"
 
 ActionMailer::Base.delivery_method    = :test
 ActionMailer::Base.perform_deliveries = true

@@ -14,7 +14,6 @@ class TasksTest < ActiveSupport::TestCase
   end
 
   def run!(cmd)
-    puts "Running: #{cmd}"
     out = `#{cmd}`
     raise "Could not run #{cmd}, output: #{out}" unless $?.success?
     out
@@ -25,7 +24,6 @@ class TasksTest < ActiveSupport::TestCase
     env             = options[:env]           || {}
     env_string = env.map {|key, value| "#{key.shellescape}=#{value.to_s.shellescape}" }.join(" ")
     cmd        = "env #{env_string} bundle exec rake -f perf.rake #{cmd} --trace"
-    puts "Running: #{cmd}"
     result = Bundler.with_original_env do
       # Ensure relative BUNDLE_GEMFILE is expanded so path is still correct after cd
       ENV['BUNDLE_GEMFILE'] = File.expand_path(ENV['BUNDLE_GEMFILE']) if ENV['BUNDLE_GEMFILE']
