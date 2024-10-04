@@ -30,7 +30,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "rake",            "> 10", "< 14"
   gem.add_dependency "thor",            ">= 0.19", "< 2"
   if RUBY_VERSION >= '3.0'
-    gem.add_dependency "ruby-statistics", ">= 4.0"
+    gem.add_dependency "ruby-statistics", ">= 4.0.1"
   else
     gem.add_dependency "ruby-statistics", ">= 2.1"
   end
