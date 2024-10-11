@@ -1,5 +1,7 @@
 ## HEAD
 
+## 2.2.0
+
 - Support REQUEST_METHOD, REQUEST_BODY, CONTENT_TYPE, and CONTENT_LENGTH env vars (https://github.com/zombocom/derailed_benchmarks/pull/234, https://github.com/zombocom/derailed_benchmarks/pull/122)
 - Support ruby-statistics 4.x (https://github.com/zombocom/derailed_benchmarks/pull/238, 
     https://github.com/zombocom/derailed_benchmarks/pull/239, https://github.com/zombocom/derailed_benchmarks/pull/247)
