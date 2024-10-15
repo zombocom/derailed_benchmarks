@@ -1,5 +1,7 @@
 ## HEAD
 
+- `get_process_mem` version requirements relaxed (https://github.com/zombocom/derailed_benchmarks/pull/252)
+
 ## 2.2.0
 
 - Support REQUEST_METHOD, REQUEST_BODY, CONTENT_TYPE, and CONTENT_LENGTH env vars (https://github.com/zombocom/derailed_benchmarks/pull/234, https://github.com/zombocom/derailed_benchmarks/pull/122)
