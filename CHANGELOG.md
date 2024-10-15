@@ -1,5 +1,7 @@
 ## HEAD
 
+## 2.2.1
+
 - `get_process_mem` version requirements relaxed (https://github.com/zombocom/derailed_benchmarks/pull/252)
 
 ## 2.2.0
