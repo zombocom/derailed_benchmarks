@@ -80,7 +80,9 @@ class DerailedBenchmarkCLI < Thor
       require 'bundler/setup'
 
       begin
-        if ENV["DERAILED_SKIP_RAILS_REQUIRES"]
+        if ENV["DERAILED_REQUIRE_APPLICATION"]
+          require "./config/application"
+        elsif ENV["DERAILED_SKIP_RAILS_REQUIRES"]
           # do nothing. your app will handle requiring Rails for booting.
         elsif ENV["DERAILED_SKIP_ACTIVE_RECORD"]
           require "action_controller/railtie"
