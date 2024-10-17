@@ -121,7 +121,7 @@ namespace :perf do
 
     DERAILED_APP = DerailedBenchmarks.add_auth(Object.class_eval { remove_const(:DERAILED_APP) })
     if server = ENV["USE_SERVER"]
-      @port = (3000..3900).to_a.sample
+      @port = ENV.fetch("USE_PORT") { (3000..3900).to_a.sample }
       puts "Port: #{ @port.inspect }"
       puts "Server: #{ server.inspect }"
       thread = Thread.new do
