@@ -34,7 +34,11 @@ Gem::Specification.new do |gem|
   else
     gem.add_dependency "ruby-statistics", ">= 2.1"
   end
-  gem.add_dependency "syntax_suggest"
+  if RUBY_VERSION >= '3.2'
+    gem.add_dependency "syntax_suggest", ">= 2.0"
+  else
+    gem.add_dependency "syntax_suggest", "~> 1.1"
+  end
   gem.add_dependency "mini_histogram",  ">= 0.3.0"
   gem.add_dependency "rack-test",       ">= 0"
   gem.add_dependency "base64",          ">= 0"
