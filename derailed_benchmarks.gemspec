@@ -35,7 +35,7 @@ Gem::Specification.new do |gem|
     gem.add_dependency "ruby-statistics", ">= 2.1"
   end
   if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("3.2")
-    gem.add_dependency "syntax_suggest", "~> 1.1.0"
+    gem.add_dependency "syntax_suggest", ">= 1.1.0"
   end
   gem.add_dependency "mini_histogram",  ">= 0.3.0"
   gem.add_dependency "rack-test",       ">= 0"
