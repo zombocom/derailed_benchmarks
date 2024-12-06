@@ -29,12 +29,12 @@ Gem::Specification.new do |gem|
   gem.add_dependency "rack",            ">= 1"
   gem.add_dependency "rake",            "> 10", "< 14"
   gem.add_dependency "thor",            ">= 0.19", "< 2"
-  if RUBY_VERSION >= '3.0'
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("3.0")
     gem.add_dependency "ruby-statistics", ">= 4.0.1"
   else
     gem.add_dependency "ruby-statistics", ">= 2.1"
   end
-  if RUBY_VERSION < "3.2"
+  if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("3.2")
     gem.add_dependency "syntax_suggest", "~> 1.1.0"
   end
   gem.add_dependency "mini_histogram",  ">= 0.3.0"
