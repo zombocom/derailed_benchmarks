@@ -65,6 +65,8 @@ jobs:
           gemfile: gemfiles/rails_7_1.gemfile
         - ruby: "3.2"
           gemfile: gemfiles/rails_7_2.gemfile
+        - ruby: "3.2"
+          gemfile: gemfiles/rails_8_0.gemfile
         - ruby: "3.3"
           gemfile: gemfiles/rails_6_0.gemfile
         - ruby: "3.3"
@@ -75,6 +77,16 @@ jobs:
           gemfile: gemfiles/rails_7_1.gemfile
         - ruby: "3.3"
           gemfile: gemfiles/rails_7_2.gemfile
+        - ruby: "3.3"
+          gemfile: gemfiles/rails_8_0.gemfile
+        - ruby: "3.4"
+          gemfile: gemfiles/rails_7_0.gemfile
+        - ruby: "3.4"
+          gemfile: gemfiles/rails_7_1.gemfile
+        - ruby: "3.4"
+          gemfile: gemfiles/rails_7_2.gemfile
+        - ruby: "3.4"
+          gemfile: gemfiles/rails_8_0.gemfile
         - ruby: "head"
           gemfile: gemfiles/rails_head.gemfile
     env:
