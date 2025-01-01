@@ -127,13 +127,13 @@ class TasksTest < ActiveSupport::TestCase
     }
     result = rake "perf:test", env: env
     assert_match 'Endpoint: "foo_secret"', result
-    assert_match (/"Authorization"=>"Basic YWRtaW46c2VjcmV0"/), result
-    assert_match (/"Cache-Control"=>"no-cache"/), result
+    assert_match (/"Authorization"\s?=>\s?"Basic YWRtaW46c2VjcmV0"/), result
+    assert_match (/"Cache-Control"\s?=>\s?"no-cache"/), result
 
     env["USE_SERVER"] = "webrick"
     result = rake "perf:test", env: env
-    assert_match (/"Authorization"=>"Basic YWRtaW46c2VjcmV0"/), result
-    assert_match (/"Cache-Control"=>"no-cache"/), result
+    assert_match (/"Authorization"\s?=>\s?"Basic YWRtaW46c2VjcmV0"/), result
+    assert_match (/"Cache-Control"\s?=>\s?"no-cache"/), result
   end
 
   test 'CONTENT_TYPE' do
@@ -147,12 +147,12 @@ class TasksTest < ActiveSupport::TestCase
 
     result = rake "perf:test", env: env
     assert_match 'Body: {"user":{"email":"foo@bar.com","password":"123456","password_confirmation":"123456"}}', result
-    assert_match 'HTTP headers: {"Content-Type"=>"application/json"}', result
+    assert_match(/HTTP headers: {"Content-Type"\s?=>\s?"application\/json"}/, result)
 
     env["USE_SERVER"] = "webrick"
     result = rake "perf:test", env: env
     assert_match 'Body: {"user":{"email":"foo@bar.com","password":"123456","password_confirmation":"123456"}}', result
-    assert_match 'HTTP headers: {"Content-Type"=>"application/json"}', result
+    assert_match(/HTTP headers: {"Content-Type"\s?=>\s?"application\/json"}/, result)
   end
 
   test 'REQUEST_METHOD and REQUEST_BODY' do

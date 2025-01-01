@@ -1,5 +1,7 @@
 ## HEAD
 
+- Add tests for rails 8, ruby 3.4
+
 ## 2.2.1
 
 - `get_process_mem` version requirements relaxed (https://github.com/zombocom/derailed_benchmarks/pull/252)
