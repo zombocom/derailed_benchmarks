@@ -1,6 +1,7 @@
 ## HEAD
 
-- Add tests for rails 8, ruby 3.4
+- Add tests for rails 8, ruby 3.4 (https://github.com/zombocom/derailed_benchmarks/pull/260)
+- Gemspec: correctly compare ruby versions, loosen syntax_suggest version constraint (https://github.com/zombocom/derailed_benchmarks/pull/259)
 
 ## 2.2.1
 
