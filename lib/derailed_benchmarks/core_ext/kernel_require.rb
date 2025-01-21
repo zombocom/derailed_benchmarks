@@ -35,7 +35,8 @@ module Kernel
     if Pathname.new(file).absolute?
       require file
     else
-      require File.expand_path("../#{file}", caller_locations(1, 1)[0].absolute_path)
+      path = caller_locations(1, 1)[0].absolute_path || caller_locations(1, 1)[0].path
+      require File.expand_path("../#{file}", path)
     end
   end
 
