@@ -50,4 +50,6 @@ require 'derailed_benchmarks/git/switch_project'
 
 if DerailedBenchmarks.gem_is_bundled?("devise")
   DerailedBenchmarks.auth = DerailedBenchmarks::AuthHelpers::Devise.new
+elsif DerailedBenchmarks.gem_is_bundled?("clearance")
+  DerailedBenchmarks.auth = DerailedBenchmarks::AuthHelpers::Clearance.new
 end
