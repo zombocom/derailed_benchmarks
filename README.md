@@ -702,7 +702,7 @@ end
 
 ## Authentication
 
-If you're trying to test an endpoint that has authentication you'll need to tell your task how to bypass that authentication. Authentication is controlled by the `DerailedBenchmarks.auth` object. There is a built in support for Devise. If you're using some other authentication method, you can write your own authentication strategy.
+If you're trying to test an endpoint that has authentication you'll need to tell your task how to bypass that authentication. Authentication is controlled by the `DerailedBenchmarks.auth` object. There is a built in support for Devise and Clearance. If you're using some other authentication method, you can write your own authentication strategy.
 
 To enable authentication in a test run with:
 
@@ -732,9 +732,29 @@ You will need to provide a valid user, so depending on the validations you have 
 
 If you're trying to authenticate a non-user model, you'll need to write your own custom auth strategy.
 
+### Authentication with Clearance
+
+If you're using [Clearance](https://github.com/thoughtbot/clearance), there is a built in auth helper that will detect the presence of the devise gem and load automatically.
+
+Create a `perf.rake` file at your root.
+
+```
+$ cat perf.rake
+```
+
+If you want you can customize the user that is logged in by setting that value in your `perf.rake` file.
+
+```ruby
+DerailedBenchmarks.auth.user = -> { User.find_or_create_by!(twitter: "schneems") }
+```
+
+You will need to provide a valid user, so depending on the validations you have in your `user.rb`, you may need to provide different parameters.
+
+If you're trying to authenticate a non-user model, you'll need to write your own custom auth strategy.
+
 ### Custom Authentication Strategy
 
-To implement your own authentication strategy You will need to create a class that [inherits from auth_helper.rb](lib/derailed_benchmarks/auth_helper.rb). You will need to implement a `setup` and a `call` method. You can see an example of [how the devise auth helper was written](lib/derailed_benchmarks/auth_helpers/devise.rb) and [how it can be done for Clearance](https://gist.github.com/zavan/f4d34dd86bf825db549a0ac28c7e10d5). You can put this code in your `perf.rake` file.
+To implement your own authentication strategy You will need to create a class that [inherits from auth_helper.rb](lib/derailed_benchmarks/auth_helper.rb). You will need to implement a `setup` and a `call` method. You can see an example of [how the devise auth helper was written](lib/derailed_benchmarks/auth_helpers/devise.rb) and [the Clearance auth helper](lib/derailed_benchmarks/auth_helpers/clearance.rb). You can put this code in your `perf.rake` file.
 
 ```ruby
 class MyCustomAuth < DerailedBenchmarks::AuthHelper
