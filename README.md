@@ -148,7 +148,7 @@ By default this task will only return results from the `:default` and `"producti
 $ bundle exec derailed bundle:objects development
 ```
 
-Note: This method won't include files in your own app, only items in your Gemfile. For that you'll need to use `bundle exec derailed exec objects`. See below for more info.
+Note: This method won't include files in your own app, only items in your Gemfile. For that you'll need to use `bundle exec derailed exec perf:objects`. See below for more info.
 
 
 ## Dynamic app Benchmarking
